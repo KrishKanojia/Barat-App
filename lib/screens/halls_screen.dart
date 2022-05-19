@@ -1,4 +1,5 @@
 import 'package:barat/services/locationservices.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -23,11 +24,15 @@ class _HallsScreenState extends State<HallsScreen> {
   var data = Get.arguments[0]['id'];
   var hallOwnerId = Get.arguments[0]['hallOwnerId'];
   String? areaName = Get.arguments[1]['AreaName'];
-
+  var areaid;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    areaid = FirebaseFirestore.instance
+        .collection("admin")
+        .doc(data)
+        .collection("halls");
     print('20 ${areaName.toString()}');
     print('21 ${data.toString()}');
     LocationServices();
@@ -59,93 +64,97 @@ class _HallsScreenState extends State<HallsScreen> {
             height: height * 0.01,
           ),
           Expanded(
-              child: FutureBuilder(
-                  future: locationServices.getHallApiById(data),
-                  builder: (context, AsyncSnapshot<GetHallsByID?> snapshot) {
-                    if (!snapshot.hasData) {
-                      return SizedBox(
-                        height: MediaQuery.of(context).size.height,
-                        child: const Center(child: CircularProgressIndicator()),
+              child: StreamBuilder<QuerySnapshot>(
+                  stream: areaid.snapshots(),
+                  // locationServices.getHallApiById(data),
+                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                          child: CircularProgressIndicator(
+                        color: Colors.green,
+                      ));
+                    } else if (!snapshot.hasData || snapshot.data!.size == 0) {
+                      return const Center(
+                        child: Text(
+                          "No Hall Found",
+                          style: TextStyle(
+                            fontFamily: "Poppins",
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black,
+                          ),
+                        ),
                       );
                     } else {
-                      return GridView.builder(
-                          itemCount: snapshot.data!.data!.length,
-                          gridDelegate:
-                              SliverGridDelegateWithMaxCrossAxisExtent(
-                                  maxCrossAxisExtent: 160.h,
-                                  mainAxisExtent: 230.w,
-                                  crossAxisSpacing: 25.0.h,
-                                  mainAxisSpacing: 10.0.w,
-                                  childAspectRatio: 0.7),
-                          itemBuilder: (context, index) {
-                            // hallName = snapshot.data!.data[index].;
-                            return InkWell(
-                              onTap: () {
-                                Get.to(() => const HallDetailScreen(),
-                                    arguments: [
-                                      {
-                                        "ListImage":
-                                            snapshot.data!.data![index].images
-                                      },
-                                      {"userId": data.toString()},
-                                      {
-                                        "ownerName": snapshot
-                                            .data!.data![index].ownerName
-                                      },
-                                      {
-                                        "ownerContact": snapshot
-                                            .data!.data![index].ownerContact
-                                      },
-                                      {
-                                        "ownerEmail": snapshot
-                                            .data!.data![index].ownerEmail
-                                      },
-                                      {
-                                        "hallAddress": snapshot
-                                            .data!.data![index].hallAddress
-                                      },
-                                      {
-                                        "hallCapacity": snapshot
-                                            .data!.data![index].hallCapacity
-                                      },
-                                      {
-                                        "pricePerHead": snapshot
-                                            .data!.data![index].pricePerHead
-                                      },
-                                      {
-                                        "cateringPerHead": snapshot
-                                            .data!.data![index].cateringPerHead
-                                      },
-                                      {
-                                        "hallOwnerId": snapshot
-                                            .data!.data![index].hallOwnerId
-                                      },
-                                    ]);
-                              },
-                              child: Container(
-                                padding: EdgeInsets.only(bottom: 15.h),
-                                decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadiusDirectional.circular(30.r),
-                                    color: Colors.red,
-                                    image: DecorationImage(
-                                        image: NetworkImage(
-                                            snapshot.data!.data![index].images![0]),
-                                        fit: BoxFit.cover)),
-                                child: Align(
-                                  alignment: Alignment.bottomCenter,
-                                  child: Container(
-                                    color: whiteColor,
-                                    child: ReusableBigText(
-                                      text:
-                                          "${snapshot.data!.data![index].hallName}",
-                                      fontSize: 21,
-                                    ),
+                      return GridView.count(
+                        physics: const NeverScrollableScrollPhysics(),
+                        // itemCount: snapshot.data!.docs.isEmpty ? 1 : snapshot.data!.docs.length,
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        crossAxisCount: 2,
+
+                        childAspectRatio: 0.7,
+                        mainAxisSpacing: 10,
+                        crossAxisSpacing: 25,
+                        padding: const EdgeInsets.only(
+                            top: 10.0, bottom: 12.0, left: 5, right: 5),
+
+                        children: snapshot.data!.docs
+                            .map((DocumentSnapshot documentSnapshot) {
+                          Map<String, dynamic> data =
+                              documentSnapshot.data()! as Map<String, dynamic>;
+                          return InkWell(
+                            onTap: () {
+                              Get.to(() => const HallDetailScreen(),
+                                  arguments: [
+                                    {"ListImage": data["images"]},
+                                    {"userId": data.toString()},
+                                    {"ownerName": data["OwnerName"]},
+                                    {"ownerContact": data["OwnerContact"]},
+                                    {"ownerEmail": data["OwnerEmail"]},
+                                    {"hallAddress": data["HallAddress"]},
+                                    {"hallCapacity": data["HallCapacity"]},
+                                    {"pricePerHead": data["PricePerHead"]},
+                                    {
+                                      "cateringPerHead": data["CateringPerHead"]
+                                    },
+                                    {"hallOwnerId": data["hallOwnerId"]},
+                                  ]);
+                            },
+                            child: Container(
+                              padding: EdgeInsets.only(bottom: 15.h),
+                              decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadiusDirectional.circular(30.r),
+                                  color: Colors.red,
+                                  image: DecorationImage(
+                                      image: NetworkImage(data["images"][0]),
+                                      fit: BoxFit.cover)),
+                              child: Align(
+                                alignment: Alignment.bottomCenter,
+                                child: Container(
+                                  color: whiteColor,
+                                  child: ReusableBigText(
+                                    text: "${data["hallName"]}",
+                                    fontSize: 21,
                                   ),
                                 ),
                               ),
-                            );
-                          });
+                            ),
+                          );
+                        }).toList(),
+                        // itemCount: snapshot.data!.data!.length,
+                        // gridDelegate:
+                        //     SliverGridDelegateWithMaxCrossAxisExtent(
+                        //         maxCrossAxisExtent: 160.h,
+                        //         mainAxisExtent: 230.w,
+                        //         crossAxisSpacing: 25.0.h,
+                        //         mainAxisSpacing: 10.0.w,
+                        //         childAspectRatio: 0.7),
+                        // itemBuilder: (context, index) {
+                        // hallName = snapshot.data!.data[index].;
+
+                        // }
+                      );
                     }
                   }))
         ],

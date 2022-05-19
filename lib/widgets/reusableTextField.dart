@@ -9,14 +9,14 @@ class ReusableTextField extends StatelessWidget {
   final String hintText;
   final bool? enabled;
 
-  const ReusableTextField(
-      {Key? key,
-      required this.hintText,
-      required this.controller,
-      required this.keyboardType,
-      this.enabled,
-      this.obscure = false})
-      : super(key: key);
+  const ReusableTextField({
+    Key? key,
+    required this.hintText,
+    required this.controller,
+    required this.keyboardType,
+    this.enabled,
+    this.obscure = false,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +28,9 @@ class ReusableTextField extends StatelessWidget {
         obscureText: obscure,
         keyboardType: keyboardType,
         decoration: InputDecoration(
+          counterStyle: const TextStyle(
+            height: double.minPositive,
+          ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(5),
             borderSide: const BorderSide(color: borderColor),

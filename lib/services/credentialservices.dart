@@ -4,8 +4,10 @@ import 'package:barat/Models/user_model.dart';
 import 'package:barat/screens/admin.dart';
 import 'package:barat/screens/loginPage.dart';
 import 'package:barat/screens/order_confirm_list.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -151,6 +153,20 @@ class CredentialServices {
           email: email, password: password);
 
       userUid = userCredential.user!.uid;
+      FirebaseFirestore.instance
+          .collection('admincredentials')
+          .doc('h5Qk4puK8RstLGoS6Ssw')
+          .get()
+          .then((DocumentSnapshot DocumentSnapshot) {
+        Map<String, dynamic> data =
+            DocumentSnapshot.data()! as Map<String, dynamic>;
+        if (userCredential.user!.email == data["email"] ||
+            password == data["password"]) {
+          Get.off(() => const AdminPage());
+        } else {
+          Get.off(() => const HomePage());
+        }
+      });
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -202,16 +218,45 @@ class CredentialServices {
   //   userUid = userCredential.user!.uid;
 
   //   Get.off(() => const HomePage());
-  //   print(userUid);
+  //    print(userUid);
   // }
 
   Future registerAccount(
-      {required String email, required String password}) async {
-    UserCredential userCredential = await auth.createUserWithEmailAndPassword(
-        email: email, password: password);
+      {required String username,
+      required String fullname,
+      required String phNo,
+      required String email,
+      required String password,
+      required BuildContext context}) async {
+    try {
+      UserCredential User = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+      FirebaseFirestore.instance.collection("User").doc(User.user!.uid).set({
+        "userName": username,
+        "fullname": fullname,
+        "userId": User.user!.uid,
+        "email": email,
+        "phoneNumber": phNo,
+      });
 
-    userUid = userCredential.user!.uid;
-    print("Created new User Account $userUid");
+      Get.off(() => const HomePage());
+    } on PlatformException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e.toString(),
+          ),
+        ),
+      );
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        print('The password provided is too weak.');
+      } else if (e.code == 'email-already-in-use') {
+        print('The account already exists for that email.');
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future LogOutViaEmail() async {

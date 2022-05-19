@@ -4,6 +4,7 @@ import 'package:barat/services/locationservices.dart';
 import 'package:barat/utils/color.dart';
 import 'package:barat/widgets/reusableBigText.dart';
 import 'package:barat/widgets/reusableText.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -25,7 +26,7 @@ class _HomePageState extends State<HomePage> {
   final box = GetStorage();
   LocationServices locationServices = LocationServices();
   final CredentialServices credentialServices = CredentialServices();
-
+  final getHall = FirebaseFirestore.instance.collection("admin");
   @override
   void initState() {
     // TODO: implement initState
@@ -41,6 +42,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
         body: Container(
       width: width,
+      height: height,
       color: background1Color,
       padding:
           EdgeInsets.symmetric(horizontal: width / 13, vertical: height / 18),
@@ -95,9 +97,12 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
           Expanded(
-              child: FutureBuilder(
-                  future: locationServices.fetchLocationArea(),
-                  builder: (context, AsyncSnapshot<LocationModel?> snapshot) {
+              child: StreamBuilder<QuerySnapshot>(
+                  stream: getHall.snapshots(),
+                  // locationServices.fetchLocationArea()
+
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
                           child: CircularProgressIndicator.adaptive());
@@ -108,68 +113,138 @@ class _HomePageState extends State<HomePage> {
                         height: MediaQuery.of(context).size.height,
                         child: const Center(child: CircularProgressIndicator()),
                       );
-                    } else {
-                      return GridView.builder(
-                          itemCount: snapshot.data!.data == null
-                              ? 1
-                              : snapshot.data!.data?.length,
-                          gridDelegate:
-                              SliverGridDelegateWithMaxCrossAxisExtent(
-                                  maxCrossAxisExtent: 160.h,
-                                  mainAxisExtent: 230.w,
-                                  crossAxisSpacing: 25.0.h,
-                                  mainAxisSpacing: 10.0.w,
-                                  childAspectRatio: 0.7),
-                          itemBuilder: (context, index) {
-                            if (snapshot.data!.data == null ||
-                                snapshot.data!.data!.isEmpty) {
-                              return Center(
-                                child: Text(
-                                  'Record not found',
-                                  style: theme.textTheme.headline5,
-                                ),
-                              );
-                            } else {
-                              print("81 ${snapshot.data!.data![index].id}");
+                    } else if (!snapshot.hasData && snapshot.data!.size == 0) {
+                      // Assigning total document size to document field
+                      print("We have data");
 
-                              return InkWell(
-                                onTap: () async {
-                                  // await locationServices.getHallApiById(
-                                  //     "${snapshot.data!.data![index].id}");
-                                  Get.to(() => const HallsScreen(), arguments: [
-                                    {"id": snapshot.data!.data![index].id},
-                                    {
-                                      "AreaName":
-                                          snapshot.data!.data![index].areaName
-                                    },
-                                  ]);
-                                },
+                      // Provider.of<CustomerData>(context, listen: false)
+                      //     .numberOfCust(context);
+                      return Center(
+                        child: Text(
+                          'Record not found',
+                          style: theme.textTheme.headline5,
+                        ),
+                      );
+                    } else {
+                      // return ListView(
+                      //   shrinkWrap: true,
+                      //   children: snapshot.data!.docs
+                      //       .map((DocumentSnapshot documentSnapshot) {
+                      //     Map<String, dynamic> data =
+                      //         documentSnapshot.data()! as Map<String, dynamic>;
+
+                      return GridView.count(
+                        physics: const NeverScrollableScrollPhysics(),
+                        // itemCount: snapshot.data!.docs.isEmpty ? 1 : snapshot.data!.docs.length,
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        // gridDelegate:
+                        // SliverGridDelegateWithMaxCrossAxisExtent(
+                        //     maxCrossAxisExtent: 160.h,
+                        //     mainAxisExtent: 230.w,
+                        //     crossAxisSpacing: 25.0.h,
+                        //     mainAxisSpacing: 10.0.w,
+                        //     childAspectRatio: 0.7),
+                        crossAxisCount: 2,
+
+                        childAspectRatio: 0.7,
+                        mainAxisSpacing: 10,
+                        crossAxisSpacing: 25,
+                        padding: const EdgeInsets.only(
+                            top: 10.0, bottom: 12.0, left: 5, right: 5),
+
+                        children: snapshot.data!.docs
+                            .map((DocumentSnapshot documentSnapshot) {
+                          Map<String, dynamic> data =
+                              documentSnapshot.data()! as Map<String, dynamic>;
+
+                          return InkWell(
+                            onTap: () async {
+                              // await locationServices.getHallApiById(
+                              //     "${snapshot.data!.data![index].id}");
+                              Get.to(() => const HallsScreen(), arguments: [
+                                {"id": data["id"]},
+                                {"AreaName": data["areaName"]},
+                              ]);
+                            },
+                            child: Container(
+                              padding: EdgeInsets.only(bottom: 15.h),
+                              decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadiusDirectional.circular(30.r),
+                                  color: Colors.red,
+                                  image: DecorationImage(
+                                      image:
+                                          NetworkImage("${data["areaImage"]}"),
+                                      fit: BoxFit.cover)),
+                              child: Align(
+                                alignment: Alignment.bottomCenter,
                                 child: Container(
-                                  padding: EdgeInsets.only(bottom: 15.h),
-                                  decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadiusDirectional.circular(
-                                              30.r),
-                                      color: Colors.red,
-                                      image: DecorationImage(
-                                          image: NetworkImage(
-                                              "${snapshot.data!.data![index].areaImage}"),
-                                          fit: BoxFit.cover)),
-                                  child: Align(
-                                    alignment: Alignment.bottomCenter,
-                                    child: Container(
-                                      color: whiteColor,
-                                      child: ReusableBigText(
-                                        text:
-                                            "${snapshot.data!.data![index].areaName}",
-                                        fontSize: 21,
-                                      ),
-                                    ),
+                                  color: whiteColor,
+                                  child: ReusableBigText(
+                                    text: "${data["areaName"]}",
+                                    fontSize: 16,
                                   ),
                                 ),
-                              );
-                            }
-                          });
+                              ),
+                            ),
+                          );
+                        }).toList(),
+
+                        //   return InkWell(
+                        //   onTap: () async {
+                        //     // await locationServices.getHallApiById(
+                        //     //     "${snapshot.data!.data![index].id}");
+                        //     // Get.to(() => const HallsScreen(), arguments: [
+                        //     //   {"id": snapshot.data!.data![index].id},
+                        //     //   {
+                        //     //     "AreaName":
+                        //     //         snapshot.data!.data![index].areaName
+                        //     //   },
+                        //     // ]);
+                        //   },
+                        //   child: Container(
+                        //     padding: EdgeInsets.only(bottom: 15.h),
+                        //     decoration: BoxDecoration(
+                        //         borderRadius:
+                        //             BorderRadiusDirectional.circular(
+                        //                 30.r),
+                        //         color: Colors.red,
+                        //         image: DecorationImage(
+                        //             image: NetworkImage(
+                        //                 "${data["areaImage"]}"),
+                        //             fit: BoxFit.cover)),
+                        //     child: Align(
+                        //       alignment: Alignment.bottomCenter,
+                        //       child: Container(
+                        //         color: whiteColor,
+                        //         child: ReusableBigText(
+                        //           text: "${data["areaName"]}",
+                        //           fontSize: 21,
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ),
+                        // );
+                        // itemBuilder:
+                        //  (BuildContext context, index) {
+
+                        // if (snapshot.data!.data == null ||
+                        //     snapshot.data!.data!.isEmpty) {
+                        //   return Center(
+                        //     child: Text(
+                        //       'Record not found',
+                        //       style: theme.textTheme.headline5,
+                        //     ),
+                        //   );
+                        // }
+                        // else {
+                        // print("81 $data");
+
+                        // }
+                      );
+                      //   }).toList(),
+                      // );
                     }
                   }))
         ],
