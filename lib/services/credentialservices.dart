@@ -160,7 +160,7 @@ class CredentialServices {
           .then((DocumentSnapshot DocumentSnapshot) {
         Map<String, dynamic> data =
             DocumentSnapshot.data()! as Map<String, dynamic>;
-        if (userCredential.user!.email == data["email"] ||
+        if (userCredential.user!.email == data["email"] &&
             password == data["password"]) {
           Get.off(() => const AdminPage());
         } else {

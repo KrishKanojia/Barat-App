@@ -171,7 +171,7 @@ class _HomePageState extends State<HomePage> {
                               padding: EdgeInsets.only(bottom: 15.h),
                               decoration: BoxDecoration(
                                   borderRadius:
-                                      BorderRadiusDirectional.circular(30.r),
+                                      BorderRadiusDirectional.circular(20.r),
                                   color: Colors.red,
                                   image: DecorationImage(
                                       image:

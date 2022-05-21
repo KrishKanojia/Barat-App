@@ -21,57 +21,60 @@ class _AdminPageState extends State<AdminPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      LoadingButton(
-          onClick: () async {
-            if (kDebugMode) {
-              Get.to(() => const AdminAreaForm());
-            }
+        body: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+        LoadingButton(
+            onClick: () async {
+              if (kDebugMode) {
+                Get.to(() => const AdminAreaForm());
+              }
+            },
+            color: Colors.red,
+            childWidget: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Text('Create Area'),
+              ],
+            )),
+        SizedBox(height: 10.h),
+        LoadingButton(
+            onClick: () async {
+              if (kDebugMode) {
+                Get.to(() => const HallsDetailForm());
+              }
+            },
+            color: Colors.red,
+            childWidget: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Text('Create Halls'),
+              ],
+            )),
+        SizedBox(height: 10.h),
+        LoadingButton(
+            onClick: () async {
+              if (kDebugMode) {
+                Get.to(() => const HomePage());
+              }
+            },
+            color: Colors.red,
+            childWidget: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Text('Go To Home Page '),
+              ],
+            )),
+        SizedBox(height: 10.h),
+        InkWell(
+          onTap: () {
+            Get.to(() => const CreateHallUser());
           },
-          color: Colors.red,
-          childWidget: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Text('Create Area'),
-            ],
-          )),
-      SizedBox(height: 10.h),
-      LoadingButton(
-          onClick: () async {
-            if (kDebugMode) {
-              Get.to(() => const HallsDetailForm());
-            }
-          },
-          color: Colors.red,
-          childWidget: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Text('Create Halls'),
-            ],
-          )),
-      SizedBox(height: 10.h),
-      LoadingButton(
-          onClick: () async {
-            if (kDebugMode) {
-              Get.to(() => const HomePage());
-            }
-          },
-          color: Colors.red,
-          childWidget: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Text('Go To Home Page '),
-            ],
-          )),
-      SizedBox(height: 10.h),
-      InkWell(
-        onTap: () {
-          Get.to(() => const CreateHallUser());
-        },
-        child: const ReusableTextIconButton(
-          text: 'Create Halls User',
-        ),
-      )
-    ]));
+          child: const ReusableTextIconButton(
+            text: 'Create Halls User',
+          ),
+        )
+      ]),
+    ));
   }
 }

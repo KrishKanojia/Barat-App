@@ -24,7 +24,17 @@ class ReusableTextIconButton extends StatelessWidget {
       height: height / 14,
       margin: EdgeInsets.symmetric(horizontal: margin.w),
       decoration: BoxDecoration(
-          color: color, borderRadius: BorderRadiusDirectional.circular(15)),
+        color: color,
+        borderRadius: BorderRadiusDirectional.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 2,
+            blurRadius: 7,
+            offset: const Offset(0, 3), // changes position of shadow
+          ),
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(14.0),
         child: Row(
