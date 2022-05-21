@@ -75,7 +75,7 @@ class _BookingFormState extends State<BookingForm> {
                           width: 2.0),
                     ),
                     border: OutlineInputBorder(),
-                    labelText: 'Time',
+                    labelText: 'Date',
                   ),
                   type: DateTimePickerType.date,
                   //dateMask: 'yyyy/MM/dd',

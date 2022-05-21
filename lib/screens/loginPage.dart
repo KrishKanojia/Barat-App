@@ -18,8 +18,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final box = GetStorage();
-  final CredentialServices credentialServices = CredentialServices();
-
+  // final CredentialServices credentialServices = CredentialServices();
+  final credentialServices = Get.put(CredentialServices());
   final TextEditingController _username = TextEditingController();
   final TextEditingController _password = TextEditingController();
   // final String username = "admin@gmail.com";

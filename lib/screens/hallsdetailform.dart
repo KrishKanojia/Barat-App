@@ -47,6 +47,7 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
   final TextEditingController hallCapacity = TextEditingController();
   final TextEditingController pricePerHead = TextEditingController();
   final TextEditingController cateringPerHead = TextEditingController();
+  final TextEditingController areaName = TextEditingController();
   bool isLoading = true;
   bool eventPlanner = false;
   bool isAdmin = true;
@@ -74,6 +75,7 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
     hallCapacity.dispose();
     pricePerHead.dispose();
     cateringPerHead.dispose();
+    areaName.dispose();
   }
 
   Future<void> showPlacePicker(BuildContext context) async {
@@ -261,23 +263,28 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
                       SizedBox(
                         height: height * 0.01,
                       ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ReusableTextField(
-                              controller: hallAddress,
-                              hintText: 'Hall Address',
-                              keyboardType: TextInputType.text,
-                              enabled: false,
-                            ),
-                          ),
-                          const SizedBox(width: 5),
-                          IconButton(
-                              onPressed: () async {
-                                await showPlacePicker(context);
-                              },
-                              icon: const Icon(Icons.location_on)),
-                        ],
+                      // Row(
+                      //   children: [
+                      //     Expanded(
+                      //       child: ReusableTextField(
+                      //         controller: hallAddress,
+                      //         hintText: 'Hall Address',
+                      //         keyboardType: TextInputType.text,
+                      //         enabled: false,
+                      //       ),
+                      //     ),
+                      //     const SizedBox(width: 5),
+                      //     IconButton(
+                      //         onPressed: () async {
+                      //           await showPlacePicker(context);
+                      //         },
+                      //         icon: const Icon(Icons.location_on)),
+                      //   ],
+                      // ),
+                      ReusableTextField(
+                        controller: areaName,
+                        hintText: 'Area Name',
+                        keyboardType: TextInputType.emailAddress,
                       ),
                       SizedBox(
                         height: height * 0.01,
@@ -367,33 +374,31 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
                       ),
                       InkWell(
                         onTap: () async {
-                          if (_selectedFiles.isNotEmpty) {
+                          if (_selectedFiles.isEmpty) {
                             await uploadFunction(_selectedFiles);
                             locationServices.postHallsByAdmin(
-                              arrimgsUrl,
-                              AreaName.toString(),
-                              UserName.toString(),
-                              ownerName.text.toString(),
-                              hallName.text.toString(),
-                              int.tryParse(ownerContact.text) ?? 1,
-                              ownerEmail.text.toString(),
-                              hallAddress.text.toString(),
-                              int.parse(hallCapacity.text),
-                              int.parse(pricePerHead.text),
-                              int.parse(cateringPerHead.text),
-                              eventPlanner,
-                            );
-                            Get.to(() => const AdminPage());
-                          } else if (ownerName.toString().isNotEmpty) {
+                                arrimgsUrl,
+                                AreaName.toString(),
+                                UserName.toString(),
+                                ownerName.text.toString(),
+                                hallName.text.toString(),
+                                int.tryParse(ownerContact.text) ?? 1,
+                                ownerEmail.text.toString(),
+                                areaName.text.toString().toLowerCase(),
+                                int.parse(hallCapacity.text),
+                                int.parse(pricePerHead.text),
+                                int.parse(cateringPerHead.text),
+                                eventPlanner,
+                                context);
+                            // Get.to(() => const AdminPage());
+                          } else if (ownerName.toString().isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                    content:
-                                        Text("PLEASE Type Area Name")));
+                                    content: Text("PLEASE Type Area Name")));
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                    content:
-                                        Text("PLEASE Select Image")));
+                                    content: Text("PLEASE Select Image")));
                           }
                         },
                         child: const ReusableTextIconButton(

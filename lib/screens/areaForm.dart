@@ -30,6 +30,7 @@ class _AdminAreaFormState extends State<AdminAreaForm> {
   var img_url;
 
   final TextEditingController areaName = TextEditingController();
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -116,17 +117,20 @@ class _AdminAreaFormState extends State<AdminAreaForm> {
                       ),
                       InkWell(
                         onTap: () async {
-                          if (_selectedFiles.isNotEmpty) {
+                          if (_selectedFiles.isNotEmpty &&
+                              areaName.text.toString().trim().isNotEmpty) {
                             await uploadFile(_selectedFiles.first);
                             locationServices.postLocationByAdmin(
                                 img_url, areaName.text.toString());
                             Get.to(() => const AdminPage());
-                          } else if (areaName.toString().isNotEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                                content: Text("PLEASE Type Area Name")));
+                          } else if (areaName.text.toString().trim().isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text("PLEASE Type Area Name")));
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("PLEASE Select Image")));
+                                const SnackBar(
+                                    content: Text("PLEASE Select Image")));
                           }
                         },
                         child: const ReusableTextIconButton(

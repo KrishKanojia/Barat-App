@@ -11,11 +11,11 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:http/http.dart' as http;
+// import 'package:http/http.dart' as http;
 
 import '../screens/HomePage.dart';
 
-class CredentialServices {
+class CredentialServices extends GetxController {
   // static var client = http.Client();
 
   // final box = GetStorage();
@@ -139,9 +139,9 @@ class CredentialServices {
   FirebaseAuth auth = FirebaseAuth.instance;
   GoogleSignIn googleSignIn = GoogleSignIn();
 
-  late String userUid;
-  String get getUserId => userUid;
-
+  var userUid = ' '.obs;
+  String get getUserId => userUid.value;
+  String adminUid = "mqDeynQAVabEqKSfwGqIVjQmUfC2";
   Future signIn(
       {required String email,
       required String password,
@@ -152,16 +152,17 @@ class CredentialServices {
       UserCredential userCredential = await auth.signInWithEmailAndPassword(
           email: email, password: password);
 
-      userUid = userCredential.user!.uid;
+      userUid.value = userCredential.user!.uid;
       FirebaseFirestore.instance
           .collection('admincredentials')
-          .doc('h5Qk4puK8RstLGoS6Ssw')
+          .doc('mqDeynQAVabEqKSfwGqIVjQmUfC2')
           .get()
           .then((DocumentSnapshot DocumentSnapshot) {
         Map<String, dynamic> data =
             DocumentSnapshot.data()! as Map<String, dynamic>;
         if (userCredential.user!.email == data["email"] &&
             password == data["password"]) {
+          print("The Value of Admin is ${userUid.value}");
           Get.off(() => const AdminPage());
         } else {
           Get.off(() => const HomePage());
@@ -227,7 +228,8 @@ class CredentialServices {
       required String phNo,
       required String email,
       required String password,
-      required BuildContext context}) async {
+      required BuildContext context,
+      required String routename}) async {
     try {
       UserCredential User = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
@@ -237,9 +239,13 @@ class CredentialServices {
         "userId": User.user!.uid,
         "email": email,
         "phoneNumber": phNo,
+        "account_created": Timestamp.now(),
       });
-
-      Get.off(() => const HomePage());
+      if (routename == '/create-hall-user') {
+        Get.back();
+      } else if (routename == "/HomePage") {
+        Get.off(() => const HomePage());
+      }
     } on PlatformException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -280,7 +286,7 @@ class CredentialServices {
 
     final User? user = userCredential.user;
     assert(user!.uid != null);
-    userUid = user!.uid;
+    userUid.value = user!.uid;
     print("Google Sign In => $userUid");
   }
 

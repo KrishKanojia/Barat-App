@@ -89,13 +89,13 @@ class _SignUpPageState extends State<SignUpPage> {
       );
     } else {
       credentialServices.registerAccount(
-        context: context,
-        email: _email.text.toString(),
-        fullname: _fullname.text.toString(),
-        password: _password.text.toString(),
-        phNo: _phone.text.toString(),
-        username: _username.text.toString(),
-      );
+          context: context,
+          email: _email.text.toString(),
+          fullname: _fullname.text.toString(),
+          password: _password.text.toString(),
+          phNo: _phone.text.toString(),
+          username: _username.text.toString(),
+          routename: "/HomePage");
     }
   }
 

@@ -125,7 +125,7 @@ class _MyAppState extends State<MyApp> {
         debugShowCheckedModeBanner: false,
         title: 'Barat',
         theme: ThemeData(primarySwatch: deepOrange),
-        home: const AuthGate(),
+        // home: const AuthGate(),
         // home: const AdminAreaForm(),
         // home: const AdminPage(),
         // home: box.read('responseSignUp') == null

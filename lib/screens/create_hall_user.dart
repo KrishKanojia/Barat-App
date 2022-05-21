@@ -109,6 +109,14 @@ class _CreateHallUserState extends State<CreateHallUser> {
                       ),
                       InkWell(
                         onTap: () {
+                          credentialServices.registerAccount(
+                              context: context,
+                              email: _email.text.trim().toString(),
+                              fullname: _fullname.text.trim().toString(),
+                              password: _password.text.trim().toString(),
+                              phNo: _phone.text.trim().toString(),
+                              username: _username.text.trim().toString(),
+                              routename: '/create-hall-user');
                           // credentialServices.signUpPost(
                           //     _username.text,
                           //     _fullname.text,
