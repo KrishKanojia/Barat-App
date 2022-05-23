@@ -25,10 +25,8 @@ class _AdminPageState extends State<AdminPage> {
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
         LoadingButton(
-            onClick: () async {
-              if (kDebugMode) {
-                Get.to(() => const AdminAreaForm());
-              }
+            onClick: () {
+              Get.to(() => const AdminAreaForm());
             },
             color: Colors.red,
             childWidget: Row(
@@ -39,10 +37,8 @@ class _AdminPageState extends State<AdminPage> {
             )),
         SizedBox(height: 10.h),
         LoadingButton(
-            onClick: () async {
-              if (kDebugMode) {
-                Get.to(() => const HallsDetailForm());
-              }
+            onClick: () {
+              Get.to(() => const HallsDetailForm());
             },
             color: Colors.red,
             childWidget: Row(
@@ -53,10 +49,8 @@ class _AdminPageState extends State<AdminPage> {
             )),
         SizedBox(height: 10.h),
         LoadingButton(
-            onClick: () async {
-              if (kDebugMode) {
-                Get.to(() => const HomePage());
-              }
+            onClick: () {
+              Get.to(() => const HomePage());
             },
             color: Colors.red,
             childWidget: Row(

@@ -54,7 +54,9 @@ dependencies:
   google_maps_place_picker_mb: 
   google_sign_in: 
   flutter_rating_stars: 
-  
+  location: 
+  search_map_place_updated:
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

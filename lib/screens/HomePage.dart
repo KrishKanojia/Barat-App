@@ -26,7 +26,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final box = GetStorage();
-  LocationServices locationServices = LocationServices();
+  final locationServices = Get.put(LocationServices());
   // final CredentialServices credentialServices = CredentialServices();
   final credentialServices = Get.find<CredentialServices>();
   final getHall = FirebaseFirestore.instance.collection("admin");

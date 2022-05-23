@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:barat/screens/custom_google_map.dart';
 import 'package:barat/widgets/reusableBigText.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
@@ -26,7 +28,8 @@ class HallsDetailForm extends StatefulWidget {
 }
 
 class _HallsDetailFormState extends State<HallsDetailForm> {
-  LocationServices locationServices = LocationServices();
+  final locationServices = Get.put(LocationServices());
+  // LocationServices locationServices = LocationServices();
   final ImagePicker _imagePicker = ImagePicker();
   final List<XFile> _selectedFiles = [];
   final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
@@ -76,6 +79,97 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
     pricePerHead.dispose();
     cateringPerHead.dispose();
     areaName.dispose();
+  }
+
+  Future<void> postHallsByAdmin(
+      {required List listImages,
+      required String ownerName,
+      required String hallName,
+      required String halladdress,
+      required int ownerContact,
+      required String ownerEmail,
+      required String areaName,
+      required int hallCapacity,
+      required int pricePerHead,
+      required int cateringPerHead,
+      required bool eventPlanner,
+      required BuildContext context}) async {
+    var db = FirebaseFirestore.instance;
+    bool? checkOwnerEmail;
+    bool? checklawn;
+    var ownerid;
+    var areaid;
+    print("Owner email is $ownerEmail");
+
+    // get user from Firebase
+    QuerySnapshot userdata =
+        await db.collection('User').where('email', isEqualTo: ownerEmail).get();
+
+    // get area from Firebase
+    // check if area exist in Firebase
+    final QuerySnapshot area = await db
+        .collection('admin')
+        .where('areaName', isEqualTo: areaName)
+        .get();
+
+    if (userdata.docs.isNotEmpty && area.docs.isNotEmpty) {
+      userdata.docs.forEach((doc) {
+        ownerid = doc.get("userId");
+      });
+      area.docs.forEach((doc) {
+        print("The Data is F0ollowing : ${userdata.docs[0].get("email")}");
+        areaid = doc.get("id");
+      });
+      print("The Area Name is $areaid");
+      await uploadFunction(_selectedFiles);
+      var halldoc = await FirebaseFirestore.instance
+          .collection("admin")
+          .doc(areaid)
+          .collection("halls")
+          .doc();
+      print("The Hall id is ${halldoc}");
+
+      await FirebaseFirestore.instance
+          .collection("admin")
+          .doc(areaid)
+          .collection("halls")
+          .doc(halldoc.id)
+          .set({
+        "areaId": area.docs[0].id,
+        "hallName": hallName,
+        "hall_id": halldoc.id,
+        "EventPlanner": eventPlanner,
+        // "longitiude": longitude.value,
+        // "latitude": latitude.value,
+        "CateringPerHead": cateringPerHead,
+        // kep for testing to fetch in place of longitude and latitude
+        "HallAddress": "testing",
+        "HallCapacity": hallCapacity,
+        "OwnerContact": ownerContact,
+        "OwnerEmail": ownerEmail,
+        "OwnerName": ownerName,
+        "PricePerHead": pricePerHead,
+        "createdAt": Timestamp.now(),
+        "images": listImages,
+        "updatedAt": Timestamp.now(),
+        "hallOwnerId": ownerid,
+      });
+
+      print("Hall Created");
+    } else if (ownerEmail.isEmpty) {
+      print("The Email is ${ownerEmail}");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Owner Email is Invalid"),
+        ),
+      );
+    } else if (area.docs.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Area is Invalid"),
+        ),
+      );
+    }
   }
 
   Future<void> showPlacePicker(BuildContext context) async {
@@ -240,6 +334,14 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
                         height: height * 0.01,
                       ),
                       ReusableTextField(
+                        controller: areaName,
+                        hintText: 'Area Name',
+                        keyboardType: TextInputType.emailAddress,
+                      ),
+                      SizedBox(
+                        height: height * 0.01,
+                      ),
+                      ReusableTextField(
                         controller: ownerName,
                         hintText: 'Owner Name',
                         keyboardType: TextInputType.text,
@@ -263,32 +365,27 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
                       SizedBox(
                         height: height * 0.01,
                       ),
-                      // Row(
-                      //   children: [
-                      //     Expanded(
-                      //       child: ReusableTextField(
-                      //         controller: hallAddress,
-                      //         hintText: 'Hall Address',
-                      //         keyboardType: TextInputType.text,
-                      //         enabled: false,
-                      //       ),
-                      //     ),
-                      //     const SizedBox(width: 5),
-                      //     IconButton(
-                      //         onPressed: () async {
-                      //           await showPlacePicker(context);
-                      //         },
-                      //         icon: const Icon(Icons.location_on)),
-                      //   ],
-                      // ),
-                      ReusableTextField(
-                        controller: areaName,
-                        hintText: 'Area Name',
-                        keyboardType: TextInputType.emailAddress,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ReusableTextField(
+                              controller: hallAddress,
+                              hintText: 'Hall Address',
+                              keyboardType: TextInputType.text,
+                              enabled: false,
+                            ),
+                          ),
+                          const SizedBox(width: 5),
+                          IconButton(
+                              onPressed: () async {
+                                // await showPlacePicker(context);
+                                // await locationServices.determinePosition();
+                                Get.to(() => const CustomGoogleMap());
+                              },
+                              icon: const Icon(Icons.location_on)),
+                        ],
                       ),
-                      SizedBox(
-                        height: height * 0.01,
-                      ),
+
                       ReusableTextField(
                         controller: hallCapacity,
                         hintText: 'Hall Capacity',
@@ -374,22 +471,23 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
                       ),
                       InkWell(
                         onTap: () async {
-                          if (_selectedFiles.isEmpty) {
-                            await uploadFunction(_selectedFiles);
-                            locationServices.postHallsByAdmin(
-                                arrimgsUrl,
-                                AreaName.toString(),
-                                UserName.toString(),
-                                ownerName.text.toString(),
-                                hallName.text.toString(),
-                                int.tryParse(ownerContact.text) ?? 1,
-                                ownerEmail.text.toString(),
-                                areaName.text.toString().toLowerCase(),
-                                int.parse(hallCapacity.text),
-                                int.parse(pricePerHead.text),
-                                int.parse(cateringPerHead.text),
-                                eventPlanner,
-                                context);
+                          if (_selectedFiles.isNotEmpty) {
+                            postHallsByAdmin(
+                                listImages: arrimgsUrl,
+                                areaName:
+                                    areaName.text.toString().toLowerCase(),
+                                halladdress: hallAddress.text.toString(),
+                                ownerName: UserName.toString(),
+                                hallName: hallName.text.toString(),
+                                ownerContact:
+                                    int.tryParse(ownerContact.text) ?? 1,
+                                ownerEmail: ownerEmail.text.toString(),
+                                hallCapacity: int.parse(hallCapacity.text),
+                                pricePerHead: int.parse(pricePerHead.text),
+                                cateringPerHead:
+                                    int.parse(cateringPerHead.text),
+                                eventPlanner: eventPlanner,
+                                context: context);
                             // Get.to(() => const AdminPage());
                           } else if (ownerName.toString().isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(
