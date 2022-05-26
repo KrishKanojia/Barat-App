@@ -32,12 +32,15 @@ class _HallDetailScreenState extends State<HallDetailScreen> {
   final pricePerHead = Get.arguments[7]['pricePerHead'];
   final cateringPerHead = Get.arguments[8]['cateringPerHead'];
   final hallOwnerId = Get.arguments[9]['hallOwnerId'];
-
+  final hallid = Get.arguments[10]['hallid'];
+  final areaid = Get.arguments[11]['areaid'];
+  final hallname = Get.arguments[12]['hallname'];
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    print('31,$userID $ownerName $ownerContact');
+    print(
+        '31,$userID $ownerName $ownerContact hall id :  $hallid, area id : $areaid ');
   }
 
   @override
@@ -156,6 +159,10 @@ class _HallDetailScreenState extends State<HallDetailScreen> {
                       {"pricePerHead": pricePerHead},
                       {"cateringPerHead": cateringPerHead},
                       {"hallOwnerId": hallOwnerId},
+                      {"hallid": hallid},
+                      {"areaid": areaid},
+                      {"images": images},
+                      {"hallname": hallname},
                     ]);
                   },
                   child: Text(

@@ -41,7 +41,8 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
   String? AreaName;
   String? UserName;
   List<String>? AreaListArray = ['A', 'B', 'C', 'D'];
-
+  RegExp regExp = RegExp(
+      r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
   final TextEditingController ownerName = TextEditingController();
   final TextEditingController hallName = TextEditingController();
   final TextEditingController ownerContact = TextEditingController();
@@ -79,6 +80,102 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
     pricePerHead.dispose();
     cateringPerHead.dispose();
     areaName.dispose();
+  }
+
+  Future<void> showPlacePicker(BuildContext context) async {
+    const apiKey = "AIzaSyBqbPKtyaIo4H85J5or0lCZ7Lyipc8nxSY";
+    const LatLng initialPosition = LatLng(31.5116835, 74.3330131);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PlacePicker(
+          apiKey: apiKey,
+          onPlacePicked: (result) {
+            print('AAAAAAA :${result.formattedAddress}');
+            Navigator.of(context).pop();
+            setState(() {
+              hallAddress.value =
+                  TextEditingValue(text: result.formattedAddress ?? '');
+            });
+          },
+          initialPosition: initialPosition,
+          useCurrentLocation: true,
+        ),
+      ),
+    );
+  }
+
+  displayValidationError(BuildContext context, String errorname) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("$errorname is Empty"),
+      ),
+    );
+  }
+
+  void validation(BuildContext context) {
+    if (ownerName.text.isEmpty &&
+        hallName.text.isEmpty &&
+        ownerContact.text.isEmpty &&
+        ownerEmail.text.isEmpty &&
+        hallAddress.text.isEmpty &&
+        hallCapacity.text.isEmpty &&
+        pricePerHead.text.isEmpty &&
+        cateringPerHead.text.isEmpty &&
+        areaName.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("All Field Are Empty"),
+        ),
+      );
+    } else if (hallName.text.isEmpty) {
+      displayValidationError(context, "Hall Name");
+    } else if (areaName.text.isEmpty) {
+      displayValidationError(context, "Area Name");
+    } else if (ownerName.text.isEmpty) {
+      displayValidationError(context, "Owner Name");
+    } else if (ownerContact.text.isEmpty) {
+      displayValidationError(context, "Owner's Contact");
+    } else if (ownerEmail.text.isEmpty) {
+      displayValidationError(context, "Owner's Email");
+    } else if (!regExp.hasMatch(ownerEmail.text)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please Try Vaild Email"),
+        ),
+      );
+    } else if (hallAddress.text.isEmpty) {
+      displayValidationError(context, "Hall Address");
+    } else if (hallCapacity.text.isEmpty) {
+      displayValidationError(context, "Hall Capacity");
+    } else if (pricePerHead.text.isEmpty) {
+      displayValidationError(context, "Price");
+    } else if (cateringPerHead.text.isEmpty) {
+      displayValidationError(context, "Catering Price");
+    } else if (_selectedFiles.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please Select Image"),
+        ),
+      );
+    } else {
+      if (_selectedFiles.isNotEmpty) {
+        postHallsByAdmin(
+            listImages: arrimgsUrl,
+            areaName: areaName.text.toString().toLowerCase(),
+            halladdress: hallAddress.text.toString(),
+            ownerName: ownerName.text.toString(),
+            hallName: hallName.text.toString(),
+            ownerContact: int.tryParse(ownerContact.text) ?? 1,
+            ownerEmail: ownerEmail.text.toString().toLowerCase(),
+            hallCapacity: int.parse(hallCapacity.text),
+            pricePerHead: int.parse(pricePerHead.text),
+            cateringPerHead: int.parse(cateringPerHead.text),
+            eventPlanner: eventPlanner,
+            context: context);
+        // Get.to(() => const AdminPage());
+      }
+    }
   }
 
   Future<void> postHallsByAdmin(
@@ -143,7 +240,7 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
         // "latitude": latitude.value,
         "CateringPerHead": cateringPerHead,
         // kep for testing to fetch in place of longitude and latitude
-        "HallAddress": "testing",
+        "HallAddress": halladdress,
         "HallCapacity": hallCapacity,
         "OwnerContact": ownerContact,
         "OwnerEmail": ownerEmail,
@@ -154,8 +251,9 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
         "updatedAt": Timestamp.now(),
         "hallOwnerId": ownerid,
       });
-
+      _selectedFiles.clear();
       print("Hall Created");
+      Get.back();
     } else if (ownerEmail.isEmpty) {
       print("The Email is ${ownerEmail}");
       ScaffoldMessenger.of(context).showSnackBar(
@@ -170,29 +268,6 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
         ),
       );
     }
-  }
-
-  Future<void> showPlacePicker(BuildContext context) async {
-    const apiKey = "AIzaSyBqbPKtyaIo4H85J5or0lCZ7Lyipc8nxSY";
-    const LatLng initialPosition = LatLng(31.5116835, 74.3330131);
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => PlacePicker(
-          apiKey: apiKey,
-          onPlacePicked: (result) {
-            print('AAAAAAA :${result.formattedAddress}');
-            Navigator.of(context).pop();
-            setState(() {
-              hallAddress.value =
-                  TextEditingValue(text: result.formattedAddress ?? '');
-            });
-          },
-          initialPosition: initialPosition,
-          useCurrentLocation: true,
-        ),
-      ),
-    );
   }
 
   @override
@@ -365,27 +440,34 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
                       SizedBox(
                         height: height * 0.01,
                       ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ReusableTextField(
-                              controller: hallAddress,
-                              hintText: 'Hall Address',
-                              keyboardType: TextInputType.text,
-                              enabled: false,
-                            ),
-                          ),
-                          const SizedBox(width: 5),
-                          IconButton(
-                              onPressed: () async {
-                                // await showPlacePicker(context);
-                                // await locationServices.determinePosition();
-                                Get.to(() => const CustomGoogleMap());
-                              },
-                              icon: const Icon(Icons.location_on)),
-                        ],
+                      // Row(
+                      //   children: [
+                      //     Expanded(
+                      //       child: ReusableTextField(
+                      //         controller: hallAddress,
+                      //         hintText: 'Hall Address',
+                      //         keyboardType: TextInputType.text,
+                      //         enabled: false,
+                      //       ),
+                      //     ),
+                      //     const SizedBox(width: 5),
+                      //     IconButton(
+                      //         onPressed: () async {
+                      //           // await showPlacePicker(context);
+                      //           // await locationServices.determinePosition();
+                      //           Get.to(() => const CustomGoogleMap());
+                      //         },
+                      //         icon: const Icon(Icons.location_on)),
+                      //   ],
+                      // ),
+                      ReusableTextField(
+                        controller: hallAddress,
+                        hintText: 'Hall Address',
+                        keyboardType: TextInputType.emailAddress,
                       ),
-
+                      SizedBox(
+                        height: height * 0.01,
+                      ),
                       ReusableTextField(
                         controller: hallCapacity,
                         hintText: 'Hall Capacity',
@@ -471,33 +553,7 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
                       ),
                       InkWell(
                         onTap: () async {
-                          if (_selectedFiles.isNotEmpty) {
-                            postHallsByAdmin(
-                                listImages: arrimgsUrl,
-                                areaName:
-                                    areaName.text.toString().toLowerCase(),
-                                halladdress: hallAddress.text.toString(),
-                                ownerName: UserName.toString(),
-                                hallName: hallName.text.toString(),
-                                ownerContact:
-                                    int.tryParse(ownerContact.text) ?? 1,
-                                ownerEmail: ownerEmail.text.toString(),
-                                hallCapacity: int.parse(hallCapacity.text),
-                                pricePerHead: int.parse(pricePerHead.text),
-                                cateringPerHead:
-                                    int.parse(cateringPerHead.text),
-                                eventPlanner: eventPlanner,
-                                context: context);
-                            // Get.to(() => const AdminPage());
-                          } else if (ownerName.toString().isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text("PLEASE Type Area Name")));
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text("PLEASE Select Image")));
-                          }
+                          validation(context);
                         },
                         child: const ReusableTextIconButton(
                           text: "Submit",

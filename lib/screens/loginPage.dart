@@ -80,30 +80,76 @@ class _LoginPageState extends State<LoginPage> {
                       SizedBox(
                         height: height * 0.02,
                       ),
-                      InkWell(
-                        onTap: () {
-                          // if (_username.text.toString() ==
-                          //         username.toString() &&
-                          //     _password.text.toString() ==
-                          //         password.toString()) {
-                          //   Get.off(() => const AdminPage());
-                          // } else {
-                          //   credentialServices.loginPost(
-                          //       _username.text.toString(),
-                          //       _password.text.toString());
-                          // }
-                          // credentialServices.loginPost(
-                          //     _username.text.toString(),
-                          //     _password.text.toString());
-                          credentialServices.signIn(
-                            email: _username.text.toString(),
-                            password: _password.text.toString(),
-                            context: context,
-                          );
-                          // Get.off(() => '/sign-in');
-                        },
-                        child: const ReusableTextIconButton(
-                          text: "Login",
+                      Obx(
+                        () => InkWell(
+                          onTap: () {
+                            // if (_username.text.toString() ==
+                            //         username.toString() &&
+                            //     _password.text.toString() ==
+                            //         password.toString()) {
+                            //   Get.off(() => const AdminPage());
+                            // } else {
+                            //   credentialServices.loginPost(
+                            //       _username.text.toString(),
+                            //       _password.text.toString());
+                            // }
+                            // credentialServices.loginPost(
+                            //     _username.text.toString(),
+                            //     _password.text.toString());
+                            if (credentialServices.getisLoading == false) {
+                              if (_username.text.toString().isEmpty &&
+                                  _password.text.toString().isEmpty) {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
+                                  duration: Duration(seconds: 3),
+                                  content: Text(
+                                    "Field is Empty",
+                                  ),
+                                ));
+                              } else {
+                                credentialServices.signIn(
+                                  email: _username.text.toString(),
+                                  password: _password.text.toString(),
+                                  context: context,
+                                );
+                              }
+                            } else {
+                              print("Nothing Happening in Progess Indicator");
+                            }
+
+                            // Get.off(() => '/sign-in');
+                          },
+                          child: credentialServices.getisLoading == false
+                              ? const ReusableTextIconButton(
+                                  text: "Login",
+                                )
+                              : Container(
+                                  width: width,
+                                  height: height / 14,
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 45.0),
+                                  decoration: BoxDecoration(
+                                    color: secondaryColor,
+                                    borderRadius:
+                                        BorderRadiusDirectional.circular(15),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.5),
+                                        spreadRadius: 2,
+                                        blurRadius: 7,
+                                        offset: const Offset(
+                                            0, 3), // changes position of shadow
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Padding(
+                                      padding: EdgeInsets.all(14.0),
+                                      child: Center(
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                        ),
+                                      )),
+                                ),
                         ),
                       ),
                       ReusableAlreadyText(

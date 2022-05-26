@@ -25,26 +25,25 @@ class _PriceScreenState extends State<PriceScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    print("The Date is : $date, time: $time , no of guest : $noOfGuests");
     totalPriceMethod();
     print(selectedPrice);
   }
 
   final userID = Get.arguments[0]['userID'];
-
   final date = Get.arguments[1]['date'];
-
   final time = Get.arguments[2]['time'];
-
   final noOfGuests = Get.arguments[3]['noOfGuests'];
-
   final isEventPlanner = Get.arguments[4]['isEventPlanner'];
-
   final isCartService = Get.arguments[5]['isCartService'];
-
   final selectedPrice = Get.arguments[6]['selectedPrice'];
   final hallOwnerId = Get.arguments[7]['hallOwnerId'];
+  final images = Get.arguments[8]['images'];
+  final hallid = Get.arguments[9]['hallid'];
+  final areaid = Get.arguments[10]['areaid'];
+  final hallname = Get.arguments[11]['hallname'];
 
-  LocationServices locationServices = LocationServices();
+  final locationServices = Get.find<LocationServices>();
 
   var finalTotalPrice;
 
@@ -155,15 +154,21 @@ class _PriceScreenState extends State<PriceScreen> {
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text('Paid Succesfully')));
       await locationServices.postbookHallsByUser(
-          userID,
-          date!,
-          time!,
-          noOfGuests,
-          isEventPlanner,
-          isCartService,
-          finalTotalPrice,
-          hallOwnerId);
-      Get.off(() => const ConfirmOrderScreen());
+        context: context,
+        userId: userID,
+        date: date!,
+        time: time!,
+        guestsQuantity: noOfGuests,
+        eventPlaner: isEventPlanner,
+        cateringServices: isCartService,
+        totalPayment: finalTotalPrice,
+        hallOwnerId: hallOwnerId,
+        areaId: areaid,
+        hallid: hallid,
+        images: images,
+        hallname: hallname,
+      );
+      Get.offAll(() => const ConfirmOrderScreen());
     } on StripeException catch (e) {
       print('Exception/DISPLAYPAYMENTSHEET==> $e');
       showDialog(

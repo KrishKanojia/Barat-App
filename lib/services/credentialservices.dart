@@ -139,36 +139,70 @@ class CredentialServices extends GetxController {
   FirebaseAuth auth = FirebaseAuth.instance;
   GoogleSignIn googleSignIn = GoogleSignIn();
 
+  var isLoading = false.obs;
+  bool get getisLoading => isLoading.value;
   var userUid = ' '.obs;
+  var username = ' '.obs;
+  var useremail = ' '.obs;
   String get getUserId => userUid.value;
+  String get getusername => username.value;
+  String get getuseremail => useremail.value;
   String adminUid = "mqDeynQAVabEqKSfwGqIVjQmUfC2";
+  var isAdmin = false.obs;
+  bool get getisAdmin => isAdmin.value;
+
   Future signIn(
       {required String email,
       required String password,
       required BuildContext context}) async {
     String errorMessage;
-
+    var db = FirebaseFirestore.instance;
+    isLoading.value = true;
     try {
       UserCredential userCredential = await auth.signInWithEmailAndPassword(
-          email: email, password: password);
+          email: email.toLowerCase(), password: password);
 
       userUid.value = userCredential.user!.uid;
-      FirebaseFirestore.instance
+
+      await db
           .collection('admincredentials')
           .doc('mqDeynQAVabEqKSfwGqIVjQmUfC2')
           .get()
-          .then((DocumentSnapshot DocumentSnapshot) {
+          .then((DocumentSnapshot DocumentSnapshot) async {
         Map<String, dynamic> data =
             DocumentSnapshot.data()! as Map<String, dynamic>;
         if (userCredential.user!.email == data["email"] &&
             password == data["password"]) {
-          print("The Value of Admin is ${userUid.value}");
+          isAdmin.value = true;
+          // print("The Value of Admin is ${userUid.value}");
+
+          // print("Username is : $username , useremail is : $useremail");
+          isLoading.value = false;
+
           Get.off(() => const AdminPage());
         } else {
+          isAdmin.value = false;
+          await db
+              .collection("User")
+              .doc(userUid.value)
+              .get()
+              .then((docSnasphot) {
+            Map<String, dynamic> data =
+                docSnasphot.data()! as Map<String, dynamic>;
+            username.value = data["userName"];
+            useremail.value = data["email"];
+          });
+          // username = data["userName"];
+          // useremail = data["email"];
+          isAdmin.value = false;
+          isLoading.value = false;
+
           Get.off(() => const HomePage());
         }
       });
     } on FirebaseAuthException catch (e) {
+      isLoading.value = false;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           duration: const Duration(seconds: 3),
@@ -181,25 +215,35 @@ class CredentialServices extends GetxController {
       switch (error.toString()) {
         case "ERROR_INVALID_EMAIL":
           errorMessage = "Your email address appears to be malformed.";
+          isLoading.value = false;
           break;
         case "ERROR_WRONG_PASSWORD":
           errorMessage = "Your password is wrong.";
+          isLoading.value = false;
+
           break;
         case "ERROR_USER_NOT_FOUND":
           errorMessage = "User with this email doesn't exist.";
+          isLoading.value = false;
+
           break;
         case "ERROR_USER_DISABLED":
           errorMessage = "User with this email has been disabled.";
+          isLoading.value = false;
           break;
         case "ERROR_TOO_MANY_REQUESTS":
           errorMessage = "Too many requests. Try again later.";
+          isLoading.value = false;
           break;
         case "ERROR_OPERATION_NOT_ALLOWED":
           errorMessage = "Signing in with Email and Password is not enabled.";
+          isLoading.value = false;
           break;
         default:
           errorMessage = "An undefined Error happened.";
       }
+      isLoading.value = false;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           duration: const Duration(seconds: 3),
@@ -211,17 +255,6 @@ class CredentialServices extends GetxController {
     }
   }
 
-  // Future signIntoAccount(
-  //     {required String email, required String password}) async {
-  //   UserCredential userCredential =
-  //       await auth.signInWithEmailAndPassword(email: email, password: password);
-
-  //   userUid = userCredential.user!.uid;
-
-  //   Get.off(() => const HomePage());
-  //    print(userUid);
-  // }
-
   Future registerAccount(
       {required String username,
       required String fullname,
@@ -230,6 +263,8 @@ class CredentialServices extends GetxController {
       required String password,
       required BuildContext context,
       required String routename}) async {
+    isLoading.value = true;
+
     try {
       UserCredential User = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
@@ -241,12 +276,19 @@ class CredentialServices extends GetxController {
         "phoneNumber": phNo,
         "account_created": Timestamp.now(),
       });
+
       if (routename == '/create-hall-user') {
+        isLoading.value = false;
         Get.back();
       } else if (routename == "/HomePage") {
+        this.username.value = username;
+        useremail.value = email;
+        userUid.value = User.user!.uid;
+        isLoading.value = false;
         Get.off(() => const HomePage());
       }
     } on PlatformException catch (e) {
+      isLoading.value = false;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -255,12 +297,15 @@ class CredentialServices extends GetxController {
         ),
       );
     } on FirebaseAuthException catch (e) {
+      isLoading.value = false;
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');
       } else if (e.code == 'email-already-in-use') {
+        isLoading.value = false;
         print('The account already exists for that email.');
       }
     } catch (e) {
+      isLoading.value = false;
       print(e);
     }
   }
@@ -293,4 +338,15 @@ class CredentialServices extends GetxController {
   Future SignOutGoogle() async {
     return googleSignIn.signOut();
   }
+
+  // Future signIntoAccount(
+  //     {required String email, required String password}) async {
+  //   UserCredential userCredential =
+  //       await auth.signInWithEmailAndPassword(email: email, password: password);
+
+  //   userUid = userCredential.user!.uid;
+
+  //   Get.off(() => const HomePage());
+  //    print(userUid);
+  // }
 }

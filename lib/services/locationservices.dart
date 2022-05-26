@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:barat/Models/get_halls_by_i_d.dart';
 import 'package:barat/Models/hall_owner_model.dart';
 import 'package:barat/Models/location_model.dart';
+import 'package:barat/services/credentialservices.dart';
 import 'package:barat/services/utilities/app_url.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
@@ -38,7 +39,7 @@ class LocationServices extends GetxController {
     // dialog.show(max: 100, msg: "Please Wait ...");
     var areaDoc = await FirebaseFirestore.instance.collection("admin").doc();
     await FirebaseFirestore.instance.collection("admin").doc(areaDoc.id).set({
-      "areaName": areaname,
+      "areaName": areaname.toLowerCase(),
       "areaImage": imageUrl,
       "id": areaDoc.id,
       "createdAt": Timestamp.now(),
@@ -170,47 +171,117 @@ class LocationServices extends GetxController {
   }
 
   Future<void> postbookHallsByUser(
-      String userId,
-      String date,
-      String time,
-      int guestsQuantity,
-      bool eventPlaner,
-      bool cateringServices,
-      int totalPayment,
-      String hallOwnerId) async {
-    print("76 $userId");
+      {required BuildContext context,
+      required String userId,
+      required String date,
+      required String time,
+      required int guestsQuantity,
+      required bool eventPlaner,
+      required bool cateringServices,
+      required int totalPayment,
+      required String hallOwnerId,
+      required List images,
+      required String hallid,
+      required String areaId,
+      required String hallname}) async {
+    final credentialServices = Get.find<CredentialServices>();
 
-    var headers = {'Content-Type': 'application/json'};
-    var request = http.Request('POST', Uri.parse(AppUrl.postbookHallsByUser));
-    request.body = json.encode({
-      "userId": userId,
+    print("76 $userId");
+    var db = FirebaseFirestore.instance;
+    var bookingDoc = await db.collection("bookings").doc();
+    await FirebaseFirestore.instance
+        .collection("bookings")
+        .doc(bookingDoc.id)
+        .set({
+      "bookingId": bookingDoc.id,
+      // "userId": userId,
       "Date": date,
       "Time": time,
       "GuestsQuantity": guestsQuantity,
       "EventPlaner": eventPlaner,
       "CateringServices": cateringServices,
       "TotalPaynment": totalPayment,
-      "hallOwnerId": hallOwnerId
+      "hallOwnerId": hallOwnerId,
+      "bookingtime": Timestamp.now(),
+      "hallid": hallid,
+      "areaid": areaId,
+      "images": images,
+      "clientid": credentialServices.getUserId,
+      "clientname": credentialServices.getusername,
+      "clientemail": credentialServices.getuseremail,
+      "hallname": hallname,
     });
-    request.headers.addAll(headers);
+    print("Area Uploaded SuccessFully");
 
-    http.StreamedResponse response = await request.send();
+    // var headers = {'Content-Type': 'application/json'};
+    // var request = http.Request('POST', Uri.parse(AppUrl.postbookHallsByUser));
+    // request.body = json.encode({
+    //   "userId": userId,
+    //   "Date": date,
+    //   "Time": time,
+    //   "GuestsQuantity": guestsQuantity,
+    //   "EventPlaner": eventPlaner,
+    //   "CateringServices": cateringServices,
+    //   "TotalPaynment": totalPayment,
+    //   "hallOwnerId": hallOwnerId
+    // });
+    //   request.headers.addAll(headers);
 
-    if (response.statusCode == 200) {
-      print(await response.stream.bytesToString());
-    } else {
-      print(response.reasonPhrase);
+    //   http.StreamedResponse response = await request.send();
+
+    //   if (response.statusCode == 200) {
+    //     print(await response.stream.bytesToString());
+    //   } else {
+    //     print(response.reasonPhrase);
+    //   }
+    // }
+
+    Future<HallOwnerModel> getHallOwner() async {
+      final response = await http.get(Uri.parse(AppUrl.GetHallOwner));
+      if (response.statusCode == 200) {
+        print(response);
+        var data = await jsonDecode(response.body);
+        return HallOwnerModel.fromJson(data);
+      } else {
+        throw Exception('Error');
+      }
     }
   }
 
-  Future<HallOwnerModel> getHallOwner() async {
-    final response = await http.get(Uri.parse(AppUrl.GetHallOwner));
-    if (response.statusCode == 200) {
-      print(response);
-      var data = await jsonDecode(response.body);
-      return HallOwnerModel.fromJson(data);
-    } else {
-      throw Exception('Error');
-    }
+  Future<void> deleteArea({
+    required BuildContext context,
+    required String areaId,
+  }) async {
+    var db = FirebaseFirestore.instance;
+    await db
+        .collection('admin')
+        .doc(areaId)
+        .collection("halls")
+        .get()
+        .then((querySnapshot) {
+      for (DocumentSnapshot documentSnapshot in querySnapshot.docs) {
+        documentSnapshot.reference.delete();
+      }
+    });
+    await db.collection('admin').doc(areaId).delete();
+    Get.back();
+    print("Area Deleted SuccessFully");
   }
+
+  Future<void> deleteHall(
+      {required BuildContext context,
+      required String hallId,
+      required String areaId}) async {
+    var db = FirebaseFirestore.instance;
+    await db
+        .collection('admin')
+        .doc(areaId)
+        .collection("halls")
+        .doc(hallId)
+        .delete();
+    Get.back();
+    print("Hall Deleted SuccessFully");
+  }
+
+  getHallOwner() {}
 }

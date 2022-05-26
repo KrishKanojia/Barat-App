@@ -2,6 +2,7 @@ import 'package:barat/Models/location_model.dart';
 import 'package:barat/screens/admin.dart';
 import 'package:barat/screens/halls_screen.dart';
 import 'package:barat/screens/loginPage.dart';
+import 'package:barat/screens/order_confirm_list.dart';
 import 'package:barat/services/locationservices.dart';
 import 'package:barat/utils/color.dart';
 import 'package:barat/widgets/reusableBigText.dart';
@@ -38,6 +39,31 @@ class _HomePageState extends State<HomePage> {
     LocationServices();
   }
 
+  deleteAreaDialog({required String areaId}) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+            title: const Text(
+              'Are you sure you want to Delete Area?',
+            ),
+            actions: <Widget>[
+              ElevatedButton(
+                  style: ElevatedButton.styleFrom(primary: Colors.red),
+                  child: const Text('Delete'),
+                  onPressed: () {
+                    locationServices.deleteArea(
+                        context: context, areaId: areaId);
+                  }),
+              ElevatedButton(
+                  style: ElevatedButton.styleFrom(primary: Colors.blue[700]),
+                  child: const Text('Cancel'),
+                  onPressed: () => Get.back()),
+            ]);
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -50,12 +76,15 @@ class _HomePageState extends State<HomePage> {
         height: height,
         color: background1Color,
         padding: EdgeInsets.only(
-            left: width / 13, right: width / 13, top: height / 18, bottom: 5.0),
+          left: width / 13,
+          right: width / 13,
+        ),
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              SizedBox(height: height / 18),
               const ReusableBigText(
                 text: "Welcome to Baraat App",
                 fontSize: 25,
@@ -81,28 +110,58 @@ class _HomePageState extends State<HomePage> {
                       onTap: () => credentialServices.LogOutViaEmail(),
                       child: credentialServices.userUid.value !=
                               credentialServices.adminUid
-                          ? Container(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 15),
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: Colors.orangeAccent[700],
-                                borderRadius: BorderRadius.circular(12.0),
-                              ),
-                              child: Row(
-                                children: const [
-                                  Icon(
-                                    Icons.logout,
-                                    color: Colors.white,
+                          ? PopupMenuButton(
+                              onSelected: (result) {
+                                if (result == 0) {
+                                  Get.to(() => const OrderConfirmList());
+                                } else if (result == 1) {
+                                  credentialServices.LogOutViaEmail();
+                                  // Get.off(() => const LoginPage());
+                                }
+                              },
+                              itemBuilder: (BuildContext context) => const [
+                                PopupMenuItem(
+                                  value: 0,
+                                  child: Text(
+                                    'Bookings',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                    ),
                                   ),
-                                  SizedBox(width: 10.0),
-                                  Text(
+                                ),
+                                PopupMenuItem(
+                                  value: 1,
+                                  child: Text(
                                     'Sign Out',
-                                    style: TextStyle(color: Colors.white),
-                                  )
-                                ],
-                              ),
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                )
+                              ],
                             )
+                          // Container(
+                          //     padding:
+                          //         const EdgeInsets.symmetric(horizontal: 15),
+                          //     height: 40,
+                          //     decoration: BoxDecoration(
+                          //       color: Colors.orangeAccent[700],
+                          //       borderRadius: BorderRadius.circular(12.0),
+                          //     ),
+                          //     child: Row(
+                          //       children: const [
+                          //         Icon(
+                          //           Icons.logout,
+                          //           color: Colors.white,
+                          //         ),
+                          //         SizedBox(width: 10.0),
+                          //         Text(
+                          //           'Sign Out',
+                          //           style: TextStyle(color: Colors.white),
+                          //         )
+                          //       ],
+                          //     ),
+                          //   )
                           : PopupMenuButton(
                               onSelected: (result) {
                                 if (result == 0) {
@@ -221,16 +280,60 @@ class _HomePageState extends State<HomePage> {
                                           image: NetworkImage(
                                               "${data["areaImage"]}"),
                                           fit: BoxFit.cover)),
-                                  child: Align(
-                                    alignment: Alignment.bottomCenter,
-                                    child: Container(
-                                      color: whiteColor,
-                                      child: ReusableBigText(
-                                        text:
-                                            "${data["areaName"].toString().substring(0, 1).toUpperCase() + data["areaName"].toString().substring(1, data["areaName"].toString().length)} ",
-                                        fontSize: 16,
+                                  child: Stack(
+                                    children: [
+                                      Positioned(
+                                        right: 0.0,
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 5.0),
+                                          child: PopupMenuButton(
+                                            onSelected: (result) {
+                                              if (result == 0) {
+                                                deleteAreaDialog(
+                                                    areaId: data["id"]);
+                                              } else if (result == 1) {
+                                                Get.off(
+                                                    () => const LoginPage());
+                                              }
+                                            },
+                                            itemBuilder:
+                                                (BuildContext context) =>
+                                                    const [
+                                              PopupMenuItem(
+                                                value: 0,
+                                                child: Text(
+                                                  'Delete',
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                  ),
+                                                ),
+                                              ),
+                                              PopupMenuItem(
+                                                value: 1,
+                                                child: Text(
+                                                  'Edit',
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ),
                                       ),
-                                    ),
+                                      Align(
+                                        alignment: Alignment.bottomCenter,
+                                        child: Container(
+                                          color: whiteColor,
+                                          child: ReusableBigText(
+                                            text:
+                                                "${data["areaName"].toString().substring(0, 1).toUpperCase() + data["areaName"].toString().substring(1, data["areaName"].toString().length)} ",
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               );

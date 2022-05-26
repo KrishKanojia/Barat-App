@@ -19,10 +19,9 @@ class HallsScreen extends StatefulWidget {
 
 class _HallsScreenState extends State<HallsScreen> {
   String? hallName;
-  LocationServices locationServices = LocationServices();
+  final locationServices = Get.find<LocationServices>();
 
-  var data = Get.arguments[0]['id'];
-  var hallOwnerId = Get.arguments[0]['hallOwnerId'];
+  var areaId = Get.arguments[0]['id'];
   String? areaName = Get.arguments[1]['AreaName'];
   var areaid;
   @override
@@ -31,12 +30,37 @@ class _HallsScreenState extends State<HallsScreen> {
     super.initState();
     areaid = FirebaseFirestore.instance
         .collection("admin")
-        .doc(data)
+        .doc(areaId)
         .collection("halls");
     print('20 ${areaName.toString()}');
-    print('21 ${data.toString()}');
+    print('21 ${areaId.toString()}');
     LocationServices();
     // locationServices.getHallApiById(data);
+  }
+
+  deleteHallDialog({required String areaId, required String hallId}) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+            title: const Text(
+              'Are you sure you want to Delete Hall?',
+            ),
+            actions: <Widget>[
+              ElevatedButton(
+                  style: ElevatedButton.styleFrom(primary: Colors.red),
+                  child: const Text('Delete'),
+                  onPressed: () {
+                    locationServices.deleteHall(
+                        context: context, areaId: areaId, hallId: hallId);
+                  }),
+              ElevatedButton(
+                  style: ElevatedButton.styleFrom(primary: Colors.blue[700]),
+                  child: const Text('Cancel'),
+                  onPressed: () => Get.back()),
+            ]);
+      },
+    );
   }
 
   @override
@@ -118,26 +142,69 @@ class _HallsScreenState extends State<HallsScreen> {
                                       "cateringPerHead": data["CateringPerHead"]
                                     },
                                     {"hallOwnerId": data["hallOwnerId"]},
+                                    {"hallid": data["hall_id"]},
+                                    {"areaid": areaId},
+                                    {"hallname": data["hallName"]}
                                   ]);
                             },
                             child: Container(
                               padding: EdgeInsets.only(bottom: 15.h),
                               decoration: BoxDecoration(
                                   borderRadius:
-                                      BorderRadiusDirectional.circular(30.r),
+                                      BorderRadiusDirectional.circular(20.r),
                                   color: Colors.red,
                                   image: DecorationImage(
                                       image: NetworkImage(data["images"][0]),
                                       fit: BoxFit.cover)),
-                              child: Align(
-                                alignment: Alignment.bottomCenter,
-                                child: Container(
-                                  color: whiteColor,
-                                  child: ReusableBigText(
-                                    text: "${data["hallName"]}",
-                                    fontSize: 21,
+                              child: Stack(
+                                children: [
+                                  Positioned(
+                                    right: 0.0,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 5.0),
+                                      child: PopupMenuButton(
+                                        onSelected: (result) {
+                                          if (result == 0) {
+                                            deleteHallDialog(
+                                                areaId: areaId,
+                                                hallId: data["hall_id"]);
+                                          } else if (result == 1) {}
+                                        },
+                                        itemBuilder: (BuildContext context) =>
+                                            const [
+                                          PopupMenuItem(
+                                            value: 0,
+                                            child: Text(
+                                              'Delete',
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ),
+                                          PopupMenuItem(
+                                            value: 1,
+                                            child: Text(
+                                              'Edit',
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                  Align(
+                                    alignment: Alignment.bottomCenter,
+                                    child: Container(
+                                      color: whiteColor,
+                                      child: ReusableBigText(
+                                        text: "${data["hallName"]}",
+                                        fontSize: 21,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           );

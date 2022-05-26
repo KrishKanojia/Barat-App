@@ -2,6 +2,7 @@ import 'package:barat/screens/HomePage.dart';
 import 'package:barat/screens/areaForm.dart';
 import 'package:barat/screens/create_hall_user.dart';
 import 'package:barat/screens/hallsdetailform.dart';
+import 'package:barat/screens/order_confirm_list.dart';
 import 'package:barat/widgets/loading_button.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -49,23 +50,37 @@ class _AdminPageState extends State<AdminPage> {
             )),
         SizedBox(height: 10.h),
         LoadingButton(
-            onClick: () {
-              Get.to(() => const HomePage());
-            },
-            color: Colors.red,
-            childWidget: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Text('Go To Home Page '),
-              ],
-            )),
+          onClick: () {
+            Get.to(() => const CreateHallUser());
+          },
+          color: Colors.red,
+          childWidget: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              Text('Create Halls User'),
+            ],
+          ),
+        ),
+        SizedBox(height: 10.h),
+        LoadingButton(
+          onClick: () {
+            Get.to(() => const OrderConfirmList());
+          },
+          color: Colors.red,
+          childWidget: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              Text('Show All Bookings'),
+            ],
+          ),
+        ),
         SizedBox(height: 10.h),
         InkWell(
           onTap: () {
-            Get.to(() => const CreateHallUser());
+            Get.to(() => const HomePage());
           },
           child: const ReusableTextIconButton(
-            text: 'Create Halls User',
+            text: 'Go To Home Page',
           ),
         )
       ]),

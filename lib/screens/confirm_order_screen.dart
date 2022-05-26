@@ -109,7 +109,7 @@ class _ConfirmOrderScreenState extends State<ConfirmOrderScreen> {
                       onTap: () {},
                       child: IconButton(
                         onPressed: () {
-                          Get.to(() => const HomePage());
+                          Get.off(() => const HomePage());
                         },
                         icon: const Icon(
                           Icons.home,

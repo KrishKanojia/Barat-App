@@ -22,6 +22,11 @@ class _BookingFormState extends State<BookingForm> {
   final pricePerHead = Get.arguments[1]['pricePerHead'];
   final cateringPerHead = Get.arguments[2]['cateringPerHead'];
   final hallOwnerId = Get.arguments[3]['hallOwnerId'];
+  final hallid = Get.arguments[4]['hallid'];
+  final areaid = Get.arguments[5]['areaid'];
+  final images = Get.arguments[6]['images'];
+  final hallname = Get.arguments[7]['hallname'];
+
   final TextEditingController noOfGuests = TextEditingController();
 
   LocationServices locationServices = LocationServices();
@@ -38,6 +43,8 @@ class _BookingFormState extends State<BookingForm> {
     print("41 $userID");
     print("42 $pricePerHead");
     print("43 $cateringPerHead");
+    print("44 $hallid");
+    print("45 $areaid");
   }
 
   @override
@@ -279,21 +286,49 @@ class _BookingFormState extends State<BookingForm> {
                 SizedBox(height: 20.h),
                 InkWell(
                   onTap: () {
-                    Get.to(() => const PriceScreen(), arguments: [
-                      {"userID": userID},
-                      {"date": date!},
-                      {"time": time!},
-                      {
-                        "noOfGuests": int.parse(noOfGuests.text.toString()),
-                      },
-                      {"isEventPlanner": isEventPlanner},
-                      {"isCartService": isCartService},
-                      {
-                        "selectedPrice":
-                            isCartService ? cateringPerHead : pricePerHead
-                      },
-                      {"hallOwnerId": hallOwnerId},
-                    ]);
+                    if (date == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Enter Date"),
+                          duration: Duration(seconds: 3),
+                        ),
+                      );
+                    } else if (time == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Enter Time"),
+                          duration: Duration(seconds: 3),
+                        ),
+                      );
+                    } else if (noOfGuests.text.isEmpty ||
+                        int.parse(noOfGuests.text.toString()) <= 0) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Enter No of Guests"),
+                          duration: Duration(seconds: 3),
+                        ),
+                      );
+                    } else {
+                      Get.to(() => const PriceScreen(), arguments: [
+                        {"userID": userID},
+                        {"date": date!},
+                        {"time": time!},
+                        {
+                          "noOfGuests": int.parse(noOfGuests.text.toString()),
+                        },
+                        {"isEventPlanner": isEventPlanner},
+                        {"isCartService": isCartService},
+                        {
+                          "selectedPrice":
+                              isCartService ? cateringPerHead : pricePerHead
+                        },
+                        {"hallOwnerId": hallOwnerId},
+                        {"images": images},
+                        {"hallid": hallid},
+                        {"areaid": areaid},
+                        {"hallname": hallname},
+                      ]);
+                    }
                   },
                   child: const ReusableTextIconButton(
                     text: "Show Expenses",

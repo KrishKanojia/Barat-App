@@ -56,11 +56,11 @@ class _SignUpPageState extends State<SignUpPage> {
           content: Text("FullName is Empty"),
         ),
       );
-    } else if (_phone.text.trim().length < 13 ||
-        _phone.text.trim().length > 13) {
+    } else if (_phone.text.trim().length > 13 ||
+        _phone.text.toString().trim().length < 11) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Phone Number Must Be 13 "),
+          content: Text("Invalid Phone Number"),
         ),
       );
     } else if (_email.text.trim().isEmpty) {
@@ -103,7 +103,7 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
     print("32   $userRoll");
     final height = MediaQuery.of(context).size.height;
-    // final width = MediaQuery.of(context).size.width;
+    final width = MediaQuery.of(context).size.width;
     return Scaffold(
       key: _scaffoldKey,
       body: SingleChildScrollView(
@@ -183,19 +183,54 @@ class _SignUpPageState extends State<SignUpPage> {
                         SizedBox(
                           height: height * 0.02,
                         ),
-                        InkWell(
-                          onTap: () async {
-                            // credentialServices.signUpPost(
-                            //     _username.text,
-                            //     _fullname.text,
-                            //     _email.text,
-                            //     _phone.text,
-                            //     _password.text,
-                            //     userRoll);
-                            validation(context);
-                          },
-                          child: const ReusableTextIconButton(
-                            text: "SignUp",
+                        Obx(
+                          () => InkWell(
+                            onTap: () async {
+                              // credentialServices.signUpPost(
+                              //     _username.text,
+                              //     _fullname.text,
+                              //     _email.text,
+                              //     _phone.text,
+                              //     _password.text,
+                              //     userRoll);
+                              credentialServices.getisLoading == false
+                                  ? validation(context)
+                                  : () {
+                                      print(
+                                          "Nothing Happen in register Screen");
+                                    };
+                            },
+                            child: credentialServices.getisLoading == false
+                                ? const ReusableTextIconButton(
+                                    text: "SignUp",
+                                  )
+                                : Container(
+                                    width: width,
+                                    height: height / 14,
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 45.0),
+                                    decoration: BoxDecoration(
+                                      color: secondaryColor,
+                                      borderRadius:
+                                          BorderRadiusDirectional.circular(15),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.withOpacity(0.5),
+                                          spreadRadius: 2,
+                                          blurRadius: 7,
+                                          offset: const Offset(0,
+                                              3), // changes position of shadow
+                                        ),
+                                      ],
+                                    ),
+                                    child: const Padding(
+                                        padding: EdgeInsets.all(14.0),
+                                        child: Center(
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                          ),
+                                        )),
+                                  ),
                           ),
                         ),
                         ReusableAlreadyText(
