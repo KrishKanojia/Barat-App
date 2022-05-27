@@ -35,7 +35,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    print("The User Uid is ${credentialServices.userUid.value}");
+    print(
+        "The User Uid is ${credentialServices.userUid.value}, username : ${credentialServices.getusername}");
     LocationServices();
   }
 
@@ -86,7 +87,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               SizedBox(height: height / 18),
               const ReusableBigText(
-                text: "Welcome to Baraat App",
+                text: "Welcome to Barat App",
                 fontSize: 25,
               ),
               const ReusableText(
@@ -107,38 +108,42 @@ class _HomePageState extends State<HomePage> {
 
                   Obx(
                     () => InkWell(
-                      onTap: () => credentialServices.LogOutViaEmail(),
+                      onTap: () {},
                       child: credentialServices.userUid.value !=
                               credentialServices.adminUid
-                          ? PopupMenuButton(
-                              onSelected: (result) {
-                                if (result == 0) {
-                                  Get.to(() => const OrderConfirmList());
-                                } else if (result == 1) {
-                                  credentialServices.LogOutViaEmail();
-                                  // Get.off(() => const LoginPage());
-                                }
-                              },
-                              itemBuilder: (BuildContext context) => const [
-                                PopupMenuItem(
-                                  value: 0,
-                                  child: Text(
-                                    'Bookings',
-                                    style: TextStyle(
-                                      color: Colors.black,
+                          ? SizedBox(
+                              width: 20.0,
+                              child: PopupMenuButton(
+                                padding: const EdgeInsets.all(0.0),
+                                onSelected: (result) {
+                                  if (result == 0) {
+                                    Get.to(() => const OrderConfirmList());
+                                  } else if (result == 1) {
+                                    credentialServices.LogOutViaEmail();
+                                    // Get.off(() => const LoginPage());
+                                  }
+                                },
+                                itemBuilder: (BuildContext context) => const [
+                                  PopupMenuItem(
+                                    value: 0,
+                                    child: Text(
+                                      'Bookings',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                PopupMenuItem(
-                                  value: 1,
-                                  child: Text(
-                                    'Sign Out',
-                                    style: TextStyle(
-                                      color: Colors.black,
+                                  PopupMenuItem(
+                                    value: 1,
+                                    child: Text(
+                                      'Sign Out',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                      ),
                                     ),
-                                  ),
-                                )
-                              ],
+                                  )
+                                ],
+                              ),
                             )
                           // Container(
                           //     padding:
@@ -162,34 +167,39 @@ class _HomePageState extends State<HomePage> {
                           //       ],
                           //     ),
                           //   )
-                          : PopupMenuButton(
-                              onSelected: (result) {
-                                if (result == 0) {
-                                  Get.off(() => const AdminPage());
-                                } else if (result == 1) {
-                                  Get.off(() => const LoginPage());
-                                }
-                              },
-                              itemBuilder: (BuildContext context) => const [
-                                PopupMenuItem(
-                                  value: 0,
-                                  child: Text(
-                                    'Dashboard',
-                                    style: TextStyle(
-                                      color: Colors.black,
+                          : SizedBox(
+                              width: 20,
+                              child: PopupMenuButton(
+                                padding: const EdgeInsets.all(0.0),
+                                onSelected: (result) {
+                                  if (result == 0) {
+                                    Get.off(() => const AdminPage());
+                                  } else if (result == 1) {
+                                    credentialServices.LogOutViaEmail();
+                                    Get.off(() => const LoginPage());
+                                  }
+                                },
+                                itemBuilder: (BuildContext context) => const [
+                                  PopupMenuItem(
+                                    value: 0,
+                                    child: Text(
+                                      'Dashboard',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                PopupMenuItem(
-                                  value: 1,
-                                  child: Text(
-                                    'Sign Out',
-                                    style: TextStyle(
-                                      color: Colors.black,
+                                  PopupMenuItem(
+                                    value: 1,
+                                    child: Text(
+                                      'Sign Out',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                      ),
                                     ),
-                                  ),
-                                )
-                              ],
+                                  )
+                                ],
+                              ),
                             ),
                     ),
                   ),
@@ -282,46 +292,51 @@ class _HomePageState extends State<HomePage> {
                                           fit: BoxFit.cover)),
                                   child: Stack(
                                     children: [
-                                      Positioned(
-                                        right: 0.0,
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 5.0),
-                                          child: PopupMenuButton(
-                                            onSelected: (result) {
-                                              if (result == 0) {
-                                                deleteAreaDialog(
-                                                    areaId: data["id"]);
-                                              } else if (result == 1) {
-                                                Get.off(
-                                                    () => const LoginPage());
-                                              }
-                                            },
-                                            itemBuilder:
-                                                (BuildContext context) =>
-                                                    const [
-                                              PopupMenuItem(
-                                                value: 0,
-                                                child: Text(
-                                                  'Delete',
-                                                  style: TextStyle(
-                                                    color: Colors.black,
-                                                  ),
+                                      credentialServices.getisAdmin == true
+                                          ? Positioned(
+                                              right: 0.0,
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 5.0),
+                                                child: PopupMenuButton(
+                                                  onSelected: (result) {
+                                                    if (result == 0) {
+                                                      deleteAreaDialog(
+                                                          areaId: data["id"]);
+                                                    } else if (result == 1) {
+                                                      Get.off(() =>
+                                                          const LoginPage());
+                                                    }
+                                                  },
+                                                  itemBuilder:
+                                                      (BuildContext context) =>
+                                                          const [
+                                                    PopupMenuItem(
+                                                      value: 0,
+                                                      child: Text(
+                                                        'Delete',
+                                                        style: TextStyle(
+                                                          color: Colors.black,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    PopupMenuItem(
+                                                      value: 1,
+                                                      child: Text(
+                                                        'Edit',
+                                                        style: TextStyle(
+                                                          color: Colors.black,
+                                                        ),
+                                                      ),
+                                                    )
+                                                  ],
                                                 ),
                                               ),
-                                              PopupMenuItem(
-                                                value: 1,
-                                                child: Text(
-                                                  'Edit',
-                                                  style: TextStyle(
-                                                    color: Colors.black,
-                                                  ),
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ),
+                                            )
+                                          : const SizedBox(
+                                              width: 0.0,
+                                              height: 0.0,
+                                            ),
                                       Align(
                                         alignment: Alignment.bottomCenter,
                                         child: Container(

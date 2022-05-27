@@ -178,7 +178,8 @@ class CredentialServices extends GetxController {
 
           // print("Username is : $username , useremail is : $useremail");
           isLoading.value = false;
-
+          username.value = data["name"];
+          useremail.value = data["email"];
           Get.off(() => const AdminPage());
         } else {
           isAdmin.value = false;
@@ -243,7 +244,7 @@ class CredentialServices extends GetxController {
           errorMessage = "An undefined Error happened.";
       }
       isLoading.value = false;
-
+      print("Is this is Error $errorMessage");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           duration: const Duration(seconds: 3),
@@ -256,7 +257,7 @@ class CredentialServices extends GetxController {
   }
 
   Future registerAccount(
-      {required String username,
+      {required String name,
       required String fullname,
       required String phNo,
       required String email,
@@ -269,10 +270,10 @@ class CredentialServices extends GetxController {
       UserCredential User = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
       FirebaseFirestore.instance.collection("User").doc(User.user!.uid).set({
-        "userName": username,
+        "userName": name,
         "fullname": fullname,
         "userId": User.user!.uid,
-        "email": email,
+        "email": email.toLowerCase(),
         "phoneNumber": phNo,
         "account_created": Timestamp.now(),
       });
@@ -281,11 +282,11 @@ class CredentialServices extends GetxController {
         isLoading.value = false;
         Get.back();
       } else if (routename == "/HomePage") {
-        this.username.value = username;
+        username.value = name;
         useremail.value = email;
         userUid.value = User.user!.uid;
         isLoading.value = false;
-        Get.off(() => const HomePage());
+        Get.offAll(() => const LoginPage());
       }
     } on PlatformException catch (e) {
       isLoading.value = false;
@@ -299,14 +300,45 @@ class CredentialServices extends GetxController {
     } on FirebaseAuthException catch (e) {
       isLoading.value = false;
       if (e.code == 'weak-password') {
-        print('The password provided is too weak.');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            duration: Duration(seconds: 3),
+            content: Text(
+              'The password provided is too weak.',
+            ),
+          ),
+        );
       } else if (e.code == 'email-already-in-use') {
         isLoading.value = false;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            duration: Duration(seconds: 3),
+            content: Text(
+              'The account already exists for that email.',
+            ),
+          ),
+        );
         print('The account already exists for that email.');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            duration: const Duration(seconds: 3),
+            content: Text(
+              '${e.message}',
+            ),
+          ),
+        );
       }
-    } catch (e) {
+    } catch (errorMsg) {
       isLoading.value = false;
-      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 3),
+          content: Text(
+            errorMsg.toString(),
+          ),
+        ),
+      );
     }
   }
 
@@ -316,23 +348,50 @@ class CredentialServices extends GetxController {
   }
 
   Future signinWithGoogle() async {
-    final GoogleSignInAccount? googleSignInAccount =
-        await googleSignIn.signIn();
-    final GoogleSignInAuthentication googleSignInAuthentication =
-        await googleSignInAccount!.authentication;
-
-    final AuthCredential authCredential = GoogleAuthProvider.credential(
-      accessToken: googleSignInAuthentication.accessToken,
-      idToken: googleSignInAuthentication.idToken,
+    print("In Google Auth");
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    // Obtain the auth details from the request.
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser!.authentication;
+    // Create a new credential.
+    final OAuthCredential googleCredential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
     );
+    // Sign in to Firebase with the Google [UserCredential].
+    final UserCredential googleUserCredential =
+        await FirebaseAuth.instance.signInWithCredential(googleCredential);
 
-    final UserCredential userCredential =
-        await FirebaseAuth.instance.signInWithCredential(authCredential);
+    // final GoogleSignInAccount? googleSignInAccount =
+    //     await googleSignIn.signIn();
+    // final GoogleSignInAuthentication googleSignInAuthentication =
+    //     await googleSignInAccount!.authentication;
 
-    final User? user = userCredential.user;
+    // final AuthCredential authCredential = GoogleAuthProvider.credential(
+    //   accessToken: googleSignInAuthentication.accessToken,
+    //   idToken: googleSignInAuthentication.idToken,
+    // );
+
+    // final UserCredential userCredential =
+    //     await FirebaseAuth.instance.signInWithCredential(authCredential);
+
+    final User? user = googleUserCredential.user;
+
     assert(user!.uid != null);
-    userUid.value = user!.uid;
-    print("Google Sign In => $userUid");
+    FirebaseFirestore.instance.collection("User").doc(user!.uid).set({
+      "userName": user.displayName,
+      "fullname": user.displayName,
+      "userId": user.uid,
+      "email": user.email!.toLowerCase(),
+      "phoneNumber": user.phoneNumber,
+      "account_created": Timestamp.now(),
+    });
+    userUid.value = user.uid;
+    username.value = user.displayName!;
+    useremail.value = user.email!;
+    print(
+        "Google Sign In => ${userUid.value}, user name : ${username.value}, email: ${useremail.value} ");
+    Get.off(() => const HomePage());
   }
 
   Future SignOutGoogle() async {

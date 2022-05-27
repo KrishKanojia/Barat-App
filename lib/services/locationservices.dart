@@ -183,9 +183,14 @@ class LocationServices extends GetxController {
       required List images,
       required String hallid,
       required String areaId,
+      required String ownername,
+      required String ownercontact,
+      required String owneremail,
+      required String halladdress,
       required String hallname}) async {
     final credentialServices = Get.find<CredentialServices>();
-
+    print(
+        "In postbookHallsByUser  ${credentialServices.userUid.value}, username : ${credentialServices.getusername}");
     print("76 $userId");
     var db = FirebaseFirestore.instance;
     var bookingDoc = await db.collection("bookings").doc();
@@ -210,6 +215,10 @@ class LocationServices extends GetxController {
       "clientname": credentialServices.getusername,
       "clientemail": credentialServices.getuseremail,
       "hallname": hallname,
+      "ownername": ownername,
+      "ownercontact": ownercontact,
+      "owneremail": owneremail,
+      "halladdress": halladdress,
     });
     print("Area Uploaded SuccessFully");
 
@@ -282,6 +291,4 @@ class LocationServices extends GetxController {
     Get.back();
     print("Hall Deleted SuccessFully");
   }
-
-  getHallOwner() {}
 }

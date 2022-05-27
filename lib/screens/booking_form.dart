@@ -26,6 +26,10 @@ class _BookingFormState extends State<BookingForm> {
   final areaid = Get.arguments[5]['areaid'];
   final images = Get.arguments[6]['images'];
   final hallname = Get.arguments[7]['hallname'];
+  final ownername = Get.arguments[8]['ownername'];
+  final ownercontact = Get.arguments[9]['ownercontact'];
+  final owneremail = Get.arguments[10]['owneremail'];
+  final halladdress = Get.arguments[11]['halladdress'];
 
   final TextEditingController noOfGuests = TextEditingController();
 
@@ -134,6 +138,9 @@ class _BookingFormState extends State<BookingForm> {
                 SizedBox(height: 10.h),
                 TextField(
                   controller: noOfGuests,
+                  onChanged: (val) => setState(() {
+                    print((val));
+                  }),
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(
                     focusColor: Colors.black,
@@ -181,7 +188,7 @@ class _BookingFormState extends State<BookingForm> {
                                       bottomLeft: Radius.circular(25)),
                                   color: isCartService == true
                                       ? boolColor
-                                      : Colors.grey,
+                                      : Colors.red,
                                 ),
                                 child: const Center(child: Text('Yes'))),
                           ),
@@ -200,7 +207,7 @@ class _BookingFormState extends State<BookingForm> {
                                       bottomRight: Radius.circular(25)),
                                   color: isCartService == false
                                       ? boolColor
-                                      : Colors.grey,
+                                      : Colors.red,
                                 ),
                                 child: const Center(child: Text('No'))),
                           ),
@@ -212,8 +219,9 @@ class _BookingFormState extends State<BookingForm> {
                 SizedBox(height: 8.h),
                 Center(
                   child: isCartService == true
-                      ? const ReusableText(
-                          text: "Catering Service is selected for 350 person",
+                      ? ReusableText(
+                          text:
+                              "Catering Service is selected for ${noOfGuests.text.isEmpty ? '0' : noOfGuests.text.toString()} person",
                           fontSize: 12,
                         )
                       : const Text(''),
@@ -246,7 +254,7 @@ class _BookingFormState extends State<BookingForm> {
                                       bottomLeft: Radius.circular(25)),
                                   color: isEventPlanner == true
                                       ? boolColor
-                                      : Colors.grey,
+                                      : Colors.red,
                                 ),
                                 child: const Center(child: Text('Yes'))),
                           ),
@@ -265,7 +273,7 @@ class _BookingFormState extends State<BookingForm> {
                                       bottomRight: Radius.circular(25)),
                                   color: isEventPlanner == false
                                       ? boolColor
-                                      : Colors.grey,
+                                      : Colors.red,
                                 ),
                                 child: const Center(child: Text('No'))),
                           ),
@@ -327,6 +335,10 @@ class _BookingFormState extends State<BookingForm> {
                         {"hallid": hallid},
                         {"areaid": areaid},
                         {"hallname": hallname},
+                        {"ownername": ownername},
+                        {"ownercontact": ownercontact},
+                        {"owneremail": owneremail},
+                        {"halladdress": halladdress},
                       ]);
                     }
                   },

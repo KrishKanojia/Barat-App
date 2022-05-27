@@ -3,11 +3,13 @@ import 'package:barat/screens/areaForm.dart';
 import 'package:barat/screens/create_hall_user.dart';
 import 'package:barat/screens/hallsdetailform.dart';
 import 'package:barat/screens/order_confirm_list.dart';
+import 'package:barat/services/locationservices.dart';
 import 'package:barat/widgets/loading_button.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:barat/services/credentialservices.dart';
 
 import '../widgets/reusableTextIconButton.dart';
 
@@ -19,6 +21,9 @@ class AdminPage extends StatefulWidget {
 }
 
 class _AdminPageState extends State<AdminPage> {
+  final credentialServices = Get.put(CredentialServices());
+  final locationServices = Get.put(LocationServices());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

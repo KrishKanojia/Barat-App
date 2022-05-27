@@ -3,6 +3,7 @@ import 'package:barat/screens/auth_gate.dart';
 import 'package:barat/screens/hallsdetailform.dart';
 import 'package:barat/screens/loginPage.dart';
 import 'package:barat/screens/splash.dart';
+import 'package:barat/services/credentialservices.dart';
 import 'package:barat/utils/color.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';

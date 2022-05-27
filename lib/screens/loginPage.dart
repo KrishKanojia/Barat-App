@@ -7,6 +7,7 @@ import 'package:barat/widgets/reusablealreadytext.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -142,15 +143,89 @@ class _LoginPageState extends State<LoginPage> {
                                       ),
                                     ],
                                   ),
-                                  child: const Padding(
-                                      padding: EdgeInsets.all(14.0),
-                                      child: Center(
-                                        child: CircularProgressIndicator(
-                                          color: Colors.white,
-                                        ),
-                                      )),
+                                  child: const Center(
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                    ),
+                                  ),
                                 ),
                         ),
+                      ),
+                      SizedBox(
+                        height: height * 0.02,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          credentialServices.signinWithGoogle();
+                        },
+                        child: Container(
+                          width: width,
+                          height: height / 14,
+                          margin: EdgeInsets.symmetric(horizontal: 45.w),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadiusDirectional.circular(15),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 2,
+                                blurRadius: 7,
+                                offset: const Offset(
+                                    0, 3), // changes position of shadow
+                              ),
+                            ],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(14.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Image.asset(
+                                  'images/google_signin.png',
+                                  width: 20,
+                                ),
+                                const SizedBox(width: 12),
+                                Text(
+                                  "Sign in with Google",
+                                  style: TextStyle(
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        // Container(
+                        //   margin: const EdgeInsets.symmetric(horizontal: 45.0),
+                        //   decoration: BoxDecoration(
+                        //     color: Colors.white,
+                        //     borderRadius: BorderRadiusDirectional.circular(10),
+                        //     boxShadow: [
+                        //       BoxShadow(
+                        //         color: Colors.grey.withOpacity(0.5),
+                        //         spreadRadius: 2,
+                        //         blurRadius: 7,
+                        //         offset: const Offset(
+                        //             0, 3), // changes position of shadow
+                        //       ),
+                        //     ],
+                        //   ),
+                        //   child: Padding(
+                        //     padding: const EdgeInsets.symmetric(
+                        //         horizontal: 15, vertical: 12.0),
+                        //     child: Wrap(
+                        //       crossAxisAlignment: WrapCrossAlignment.center,
+                        //       children: [
+                        //         Image.asset(
+                        //           'images/google_signin.png',
+                        //           width: 20,
+                        //         ),
+                        //         const SizedBox(width: 12),
+                        //         const Text('Sign in with Google'),
+                        //       ],
+                        //     ),
+                        //   ),
+                        // ),
                       ),
                       ReusableAlreadyText(
                         text: 'Signup',
@@ -165,3 +240,23 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
+
+
+
+// InkWell(
+//   onTap: () {},
+//   child: Ink(
+//     color: Color(0xFF397AF3),
+//     child: Padding(
+//       padding: EdgeInsets.all(6),
+//       child: Wrap(
+//         crossAxisAlignment: WrapCrossAlignment.center,
+//         children: [
+//           Icon(Icons.android), // <-- Use 'Image.asset(...)' here
+//           SizedBox(width: 12),
+//           Text('Sign in with Google'),
+//         ],
+//       ),
+//     ),
+//   ),
+// )

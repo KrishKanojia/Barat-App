@@ -128,7 +128,9 @@ class _HallsScreenState extends State<HallsScreen> {
                               documentSnapshot.data()! as Map<String, dynamic>;
                           return InkWell(
                             onTap: () {
-                              Get.to(() => const HallDetailScreen(),
+                              Get.to(
+                                  () => HallDetailScreen(
+                                      routename: "Halls screen"),
                                   arguments: [
                                     {"ListImage": data["images"]},
                                     {"userId": data.toString()},

@@ -204,14 +204,15 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
 
     // get area from Firebase
     // check if area exist in Firebase
-    final QuerySnapshot area = await db
+    QuerySnapshot area = await db
         .collection('admin')
         .where('areaName', isEqualTo: areaName)
         .get();
-
-    if (userdata.docs.isNotEmpty && area.docs.isNotEmpty) {
+    print("Getting user data : $userdata and  Area $area");
+    if (userdata.size > 0 && area.size > 0) {
       userdata.docs.forEach((doc) {
         ownerid = doc.get("userId");
+        print("Owner email is $ownerEmail");
       });
       area.docs.forEach((doc) {
         print("The Data is F0ollowing : ${userdata.docs[0].get("email")}");
@@ -254,10 +255,11 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
       _selectedFiles.clear();
       print("Hall Created");
       Get.back();
-    } else if (ownerEmail.isEmpty) {
+    } else if (userdata.docs.isEmpty) {
       print("The Email is ${ownerEmail}");
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
+          duration: Duration(seconds: 3),
           content: Text("Owner Email is Invalid"),
         ),
       );
@@ -267,6 +269,8 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
           content: Text("Area is Invalid"),
         ),
       );
+    } else {
+      print("Something went Wrong");
     }
   }
 

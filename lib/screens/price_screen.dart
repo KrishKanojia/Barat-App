@@ -42,6 +42,10 @@ class _PriceScreenState extends State<PriceScreen> {
   final hallid = Get.arguments[9]['hallid'];
   final areaid = Get.arguments[10]['areaid'];
   final hallname = Get.arguments[11]['hallname'];
+  final ownername = Get.arguments[12]['ownername'];
+  final ownercontact = Get.arguments[13]['ownercontact'];
+  final owneremail = Get.arguments[14]['owneremail'];
+  final halladdress = Get.arguments[15]['halladdress'];
 
   final locationServices = Get.find<LocationServices>();
 
@@ -167,6 +171,10 @@ class _PriceScreenState extends State<PriceScreen> {
         hallid: hallid,
         images: images,
         hallname: hallname,
+        ownername: ownername,
+        ownercontact: ownercontact.toString(),
+        owneremail: owneremail,
+        halladdress: halladdress,
       );
       Get.offAll(() => const ConfirmOrderScreen());
     } on StripeException catch (e) {

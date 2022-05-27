@@ -115,7 +115,7 @@ class _CreateHallUserState extends State<CreateHallUser> {
                               fullname: _fullname.text.trim().toString(),
                               password: _password.text.trim().toString(),
                               phNo: _phone.text.trim().toString(),
-                              username: _username.text.trim().toString(),
+                              name: _username.text.trim().toString(),
                               routename: '/create-hall-user');
                           // credentialServices.signUpPost(
                           //     _username.text,

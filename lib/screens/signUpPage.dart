@@ -94,7 +94,7 @@ class _SignUpPageState extends State<SignUpPage> {
           fullname: _fullname.text.toString(),
           password: _password.text.toString(),
           phNo: _phone.text.toString(),
-          username: _username.text.toString(),
+          name: _username.text.toString(),
           routename: "/HomePage");
     }
   }

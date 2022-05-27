@@ -9,7 +9,8 @@ import 'package:get/get.dart';
 import '../utils/color.dart';
 
 class HallDetailScreen extends StatefulWidget {
-  const HallDetailScreen({Key? key}) : super(key: key);
+  String routename;
+  HallDetailScreen({required this.routename});
 
   @override
   _HallDetailScreenState createState() => _HallDetailScreenState();
@@ -35,12 +36,17 @@ class _HallDetailScreenState extends State<HallDetailScreen> {
   final hallid = Get.arguments[10]['hallid'];
   final areaid = Get.arguments[11]['areaid'];
   final hallname = Get.arguments[12]['hallname'];
+  // final guestqty = Get.arguments[13]['guestqty'];
+  // final totAmount = Get.arguments[14]['totAmount'];
+  // final clientname = Get.arguments[15]['clientname'];
+  // final date = Get.arguments[16]['date'];
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    print(
-        '31,$userID $ownerName $ownerContact hall id :  $hallid, area id : $areaid ');
+    // print(
+    //     '31,$userID $ownerName $ownerContact hall id :  $hallid, area id : $areaid ');
+    print("Onwer contact : $ownerContact");
   }
 
   @override
@@ -149,40 +155,49 @@ class _HallDetailScreenState extends State<HallDetailScreen> {
                 text1: "Event planner services",
                 text2: "Contact Owner/Manager",
               ),
-              SizedBox(
-                height: 50.h,
-                width: 110.w,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Get.to(() => const BookingForm(), arguments: [
-                      {"userID": userID},
-                      {"pricePerHead": pricePerHead},
-                      {"cateringPerHead": cateringPerHead},
-                      {"hallOwnerId": hallOwnerId},
-                      {"hallid": hallid},
-                      {"areaid": areaid},
-                      {"images": images},
-                      {"hallname": hallname},
-                    ]);
-                  },
-                  child: Text(
-                    "Book Now",
-                    style: TextStyle(
-                      fontSize: 17.sp,
-                      color: whiteColor,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    shadowColor: Colors.blueGrey,
-                    primary: secondaryColor,
-                    elevation: 9,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      // <-- Radius
-                    ),
-                  ),
-                ),
-              )
+              widget.routename == "Halls screen"
+                  ? SizedBox(
+                      height: 50.h,
+                      width: 110.w,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Get.to(() => const BookingForm(), arguments: [
+                            {"userID": userID},
+                            {"pricePerHead": pricePerHead},
+                            {"cateringPerHead": cateringPerHead},
+                            {"hallOwnerId": hallOwnerId},
+                            {"hallid": hallid},
+                            {"areaid": areaid},
+                            {"images": images},
+                            {"hallname": hallname},
+                            {"ownername": ownerName},
+                            {"ownercontact": ownerContact},
+                            {"owneremail": ownerEmail},
+                            {"halladdress": hallAddress},
+                          ]);
+                        },
+                        child: Text(
+                          "Book Now",
+                          style: TextStyle(
+                            fontSize: 17.sp,
+                            color: whiteColor,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          shadowColor: Colors.blueGrey,
+                          primary: secondaryColor,
+                          elevation: 9,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            // <-- Radius
+                          ),
+                        ),
+                      ),
+                    )
+                  : Container(
+                      width: 0.0,
+                      height: 0.0,
+                    )
             ]),
           ),
         ),
