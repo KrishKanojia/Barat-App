@@ -28,7 +28,10 @@ class HallsDetailForm extends StatefulWidget {
 }
 
 class _HallsDetailFormState extends State<HallsDetailForm> {
-  final locationServices = Get.put(LocationServices());
+  final areaid = Get.arguments[0]['areaid'];
+  final hallid = Get.arguments[1]['hallid'];
+
+  final locationServices = Get.find<LocationServices>();
   // LocationServices locationServices = LocationServices();
   final ImagePicker _imagePicker = ImagePicker();
   final List<XFile> _selectedFiles = [];
@@ -55,14 +58,42 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
   bool isLoading = true;
   bool eventPlanner = false;
   bool isAdmin = true;
+
+  Future<void> _asyncMethod() async {
+    await FirebaseFirestore.instance
+        .collection("admin")
+        .doc(areaid)
+        .collection('halls')
+        .doc(hallid)
+        .get()
+        .then((DocumentSnapshot docsnapshot) {
+      Map<String, dynamic> data = docsnapshot.data()! as Map<String, dynamic>;
+      hallName.text = data["hallName"];
+      // areaName.text = data["areaName"];
+      ownerName.text = data["OwnerName"];
+      ownerContact.text = data["OwnerContact"].toString();
+      ownerEmail.text = data["OwnerEmail"];
+      hallAddress.text = data["HallAddress"];
+      hallCapacity.text = data["HallCapacity"].toString();
+      pricePerHead.text = data["PricePerHead"].toString();
+      cateringPerHead.text = data["CateringPerHead"].toString();
+      eventPlanner = data["EventPlanner"];
+    }).whenComplete(() {
+      if (eventPlanner) {
+        setState(() {});
+      }
+    });
+  }
+
   @override
   void initState() {
     //subscribe
     if (isAdmin) {
       FirebaseMessaging.instance.subscribeToTopic("Admin");
     }
-
-    // TODO: implement initState
+    if (hallid != null) {
+      _asyncMethod().whenComplete(() {});
+    }
     super.initState();
     LocationServices().fetchLocationArea();
   }
@@ -114,29 +145,29 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
   }
 
   void validation(BuildContext context) {
-    if (ownerName.text.isEmpty &&
-        hallName.text.isEmpty &&
-        ownerContact.text.isEmpty &&
-        ownerEmail.text.isEmpty &&
-        hallAddress.text.isEmpty &&
-        hallCapacity.text.isEmpty &&
-        pricePerHead.text.isEmpty &&
-        cateringPerHead.text.isEmpty &&
+    if (ownerName.text.trim().isEmpty &&
+        hallName.text.trim().isEmpty &&
+        ownerContact.text.trim().isEmpty &&
+        ownerEmail.text.trim().isEmpty &&
+        hallAddress.text.trim().isEmpty &&
+        hallCapacity.text.trim().isEmpty &&
+        pricePerHead.text.trim().isEmpty &&
+        cateringPerHead.text.trim().isEmpty &&
         areaName.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("All Field Are Empty"),
         ),
       );
-    } else if (hallName.text.isEmpty) {
+    } else if (hallName.text.trim().isEmpty) {
       displayValidationError(context, "Hall Name");
-    } else if (areaName.text.isEmpty) {
+    } else if (areaName.text.trim().isEmpty) {
       displayValidationError(context, "Area Name");
-    } else if (ownerName.text.isEmpty) {
+    } else if (ownerName.text.trim().isEmpty) {
       displayValidationError(context, "Owner Name");
-    } else if (ownerContact.text.isEmpty) {
+    } else if (ownerContact.text.trim().isEmpty) {
       displayValidationError(context, "Owner's Contact");
-    } else if (ownerEmail.text.isEmpty) {
+    } else if (ownerEmail.text.trim().isEmpty) {
       displayValidationError(context, "Owner's Email");
     } else if (!regExp.hasMatch(ownerEmail.text)) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -144,13 +175,13 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
           content: Text("Please Try Vaild Email"),
         ),
       );
-    } else if (hallAddress.text.isEmpty) {
+    } else if (hallAddress.text.trim().isEmpty) {
       displayValidationError(context, "Hall Address");
-    } else if (hallCapacity.text.isEmpty) {
+    } else if (hallCapacity.text.trim().isEmpty) {
       displayValidationError(context, "Hall Capacity");
-    } else if (pricePerHead.text.isEmpty) {
+    } else if (pricePerHead.text.trim().isEmpty) {
       displayValidationError(context, "Price");
-    } else if (cateringPerHead.text.isEmpty) {
+    } else if (cateringPerHead.text.trim().isEmpty) {
       displayValidationError(context, "Catering Price");
     } else if (_selectedFiles.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -237,10 +268,7 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
         "hallName": hallName,
         "hall_id": halldoc.id,
         "EventPlanner": eventPlanner,
-        // "longitiude": longitude.value,
-        // "latitude": latitude.value,
         "CateringPerHead": cateringPerHead,
-        // kep for testing to fetch in place of longitude and latitude
         "HallAddress": halladdress,
         "HallCapacity": hallCapacity,
         "OwnerContact": ownerContact,
@@ -272,6 +300,97 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
     } else {
       print("Something went Wrong");
     }
+  }
+
+  Future<void> existHallvalidation(BuildContext context) async {
+    if (ownerName.text.trim().isEmpty &&
+        hallName.text.trim().isEmpty &&
+        ownerContact.text.trim().isEmpty &&
+        hallAddress.text.trim().isEmpty &&
+        hallCapacity.text.trim().isEmpty &&
+        pricePerHead.text.trim().isEmpty &&
+        cateringPerHead.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("All Field Are Empty"),
+        ),
+      );
+    } else if (hallName.text.trim().isEmpty) {
+      displayValidationError(context, "Hall Name");
+    } else if (ownerName.text.trim().isEmpty) {
+      displayValidationError(context, "Owner Name");
+    } else if (ownerContact.text.trim().isEmpty) {
+      displayValidationError(context, "Owner's Contact");
+    } else if (hallAddress.text.trim().isEmpty) {
+      displayValidationError(context, "Hall Address");
+    } else if (hallCapacity.text.trim().isEmpty) {
+      displayValidationError(context, "Hall Capacity");
+    } else if (pricePerHead.text.trim().isEmpty) {
+      displayValidationError(context, "Price");
+    } else if (cateringPerHead.text.trim().isEmpty) {
+      displayValidationError(context, "Catering Price");
+    } else if (_selectedFiles.isEmpty) {
+      // If Images are not updated, Only Text is updated
+      updateHallByAdmin(
+          listImages: arrimgsUrl,
+          halladdress: hallAddress.text.toString(),
+          ownerName: ownerName.text.toString(),
+          hallName: hallName.text.toString(),
+          ownerContact: int.tryParse(ownerContact.text) ?? 1,
+          hallCapacity: int.parse(hallCapacity.text),
+          pricePerHead: int.parse(pricePerHead.text),
+          cateringPerHead: int.parse(cateringPerHead.text),
+          eventPlanner: eventPlanner,
+          context: context);
+    } else if (_selectedFiles.isNotEmpty) {
+      // If Images are updated
+      await uploadFunction(_selectedFiles);
+      updateHallByAdmin(
+          listImages: arrimgsUrl,
+          halladdress: hallAddress.text.toString(),
+          ownerName: ownerName.text.toString(),
+          hallName: hallName.text.toString(),
+          ownerContact: int.tryParse(ownerContact.text) ?? 1,
+          hallCapacity: int.parse(hallCapacity.text),
+          pricePerHead: int.parse(pricePerHead.text),
+          cateringPerHead: int.parse(cateringPerHead.text),
+          eventPlanner: eventPlanner,
+          context: context);
+    }
+  }
+
+// Update Hall
+  Future<void> updateHallByAdmin(
+      {required List listImages,
+      required String ownerName,
+      required String hallName,
+      required String halladdress,
+      required int ownerContact,
+      required int hallCapacity,
+      required int pricePerHead,
+      required int cateringPerHead,
+      required bool eventPlanner,
+      required BuildContext context}) async {
+    await FirebaseFirestore.instance
+        .collection("admin")
+        .doc(areaid)
+        .collection("halls")
+        .doc(hallid)
+        .update({
+      "hallName": hallName,
+      "EventPlanner": eventPlanner,
+      "CateringPerHead": cateringPerHead,
+      "HallAddress": halladdress,
+      "HallCapacity": hallCapacity,
+      "OwnerContact": ownerContact,
+      "OwnerName": ownerName,
+      "PricePerHead": pricePerHead,
+      "images": listImages,
+      "updatedAt": Timestamp.now(),
+    });
+    _selectedFiles.clear();
+    print("Hall Updated");
+    Get.back();
   }
 
   @override
@@ -412,11 +531,15 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
                       SizedBox(
                         height: height * 0.01,
                       ),
-                      ReusableTextField(
-                        controller: areaName,
-                        hintText: 'Area Name',
-                        keyboardType: TextInputType.emailAddress,
-                      ),
+
+                      hallid == null
+                          ? ReusableTextField(
+                              controller: areaName,
+                              hintText: 'Area Name',
+                              keyboardType: TextInputType.emailAddress,
+                            )
+                          : const SizedBox(width: 0.0, height: 0.0),
+
                       SizedBox(
                         height: height * 0.01,
                       ),
@@ -437,6 +560,7 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
                         height: height * 0.01,
                       ),
                       ReusableTextField(
+                        readonly: hallid != null ? true : false,
                         controller: ownerEmail,
                         hintText: 'Owner Email',
                         keyboardType: TextInputType.emailAddress,
@@ -533,21 +657,85 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
                                             'Image is Selected : ${_selectedFiles.length.toString()}'),
                                   ),
                                   Expanded(
-                                    child: GridView.builder(
-                                        itemCount: _selectedFiles.length,
-                                        gridDelegate:
-                                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                                crossAxisCount: 3),
-                                        itemBuilder:
-                                            (BuildContext context, int index) {
-                                          return Padding(
-                                            padding: const EdgeInsets.all(3.0),
-                                            child: Image.file(
-                                                File(
-                                                    _selectedFiles[index].path),
-                                                fit: BoxFit.cover),
-                                          );
-                                        }),
+                                    child: hallid == null ||
+                                            _selectedFiles.isNotEmpty
+                                        ? GridView.builder(
+                                            itemCount: _selectedFiles.length,
+                                            gridDelegate:
+                                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                                    crossAxisCount: 3),
+                                            itemBuilder: (BuildContext context,
+                                                int index) {
+                                              return Padding(
+                                                padding:
+                                                    const EdgeInsets.all(3.0),
+                                                child: Image.file(
+                                                    File(_selectedFiles[index]
+                                                        .path),
+                                                    fit: BoxFit.cover),
+                                              );
+                                            })
+                                        : StreamBuilder<DocumentSnapshot>(
+                                            stream: FirebaseFirestore.instance
+                                                .collection("admin")
+                                                .doc(areaid)
+                                                .collection('halls')
+                                                .doc(hallid)
+                                                .snapshots(),
+                                            builder: (BuildContext context,
+                                                AsyncSnapshot<DocumentSnapshot>
+                                                    snapshot) {
+                                              if (snapshot.connectionState ==
+                                                  ConnectionState.waiting) {
+                                                return const Center(
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                  color: Colors.green,
+                                                ));
+                                              } else if (!snapshot.hasData ||
+                                                  !snapshot.data!.exists) {
+                                                return const Center(
+                                                  child: Text(
+                                                    "No Image",
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                );
+                                              } else {
+                                                Map<String, dynamic> data =
+                                                    snapshot.data!.data()
+                                                        as Map<String, dynamic>;
+                                                arrimgsUrl = data['images']
+                                                    .cast<String>();
+
+                                                return GridView.builder(
+                                                    itemCount:
+                                                        arrimgsUrl.length,
+                                                    gridDelegate:
+                                                        const SliverGridDelegateWithFixedCrossAxisCount(
+                                                            crossAxisCount: 3),
+                                                    itemBuilder:
+                                                        (BuildContext context,
+                                                            int index) {
+                                                      return Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(3.0),
+                                                        child: Image.network(
+                                                          arrimgsUrl[index],
+                                                          fit: BoxFit.cover,
+                                                          height:
+                                                              double.infinity,
+                                                          width:
+                                                              double.infinity,
+                                                        ),
+                                                      );
+                                                    });
+                                              }
+                                            }),
                                   )
                                 ],
                               ),
@@ -557,7 +745,13 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
                       ),
                       InkWell(
                         onTap: () async {
-                          validation(context);
+                          hallid == null
+                              ?
+                              // Create New Hall
+                              validation(context)
+                              :
+                              // Update Existing Hall
+                              existHallvalidation(context);
                         },
                         child: const ReusableTextIconButton(
                           text: "Submit",

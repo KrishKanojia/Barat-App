@@ -291,4 +291,17 @@ class LocationServices extends GetxController {
     Get.back();
     print("Hall Deleted SuccessFully");
   }
+
+  Future<void> updateAreaByAdmin(
+      {required BuildContext context,
+      required var areaImage,
+      required String areaId,
+      required String areaname}) async {
+    await FirebaseFirestore.instance.collection("admin").doc(areaId).update({
+      "areaName": areaname,
+      "areaImage": areaImage,
+      "updatedAt": Timestamp.now(),
+    });
+    Get.back();
+  }
 }

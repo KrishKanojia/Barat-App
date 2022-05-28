@@ -1,3 +1,5 @@
+import 'package:barat/screens/hallsdetailform.dart';
+import 'package:barat/services/credentialservices.dart';
 import 'package:barat/services/locationservices.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +22,7 @@ class HallsScreen extends StatefulWidget {
 class _HallsScreenState extends State<HallsScreen> {
   String? hallName;
   final locationServices = Get.find<LocationServices>();
+  final credentialServices = Get.find<CredentialServices>();
 
   var areaId = Get.arguments[0]['id'];
   String? areaName = Get.arguments[1]['AreaName'];
@@ -77,7 +80,8 @@ class _HallsScreenState extends State<HallsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ReusableBigText(
-            text: areaName.toString(),
+            text: areaName.toString().substring(0, 1).toUpperCase() +
+                areaName.toString().substring(1, areaName.toString().length),
             fontSize: 25,
           ),
           const ReusableText(
@@ -160,49 +164,79 @@ class _HallsScreenState extends State<HallsScreen> {
                                       fit: BoxFit.cover)),
                               child: Stack(
                                 children: [
-                                  Positioned(
-                                    right: 0.0,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(left: 5.0),
-                                      child: PopupMenuButton(
-                                        onSelected: (result) {
-                                          if (result == 0) {
-                                            deleteHallDialog(
-                                                areaId: areaId,
-                                                hallId: data["hall_id"]);
-                                          } else if (result == 1) {}
-                                        },
-                                        itemBuilder: (BuildContext context) =>
-                                            const [
-                                          PopupMenuItem(
-                                            value: 0,
-                                            child: Text(
-                                              'Delete',
-                                              style: TextStyle(
-                                                color: Colors.black,
-                                              ),
+                                  credentialServices.getisAdmin == true ||
+                                          credentialServices.getUserId ==
+                                              data["hallOwnerId"]
+                                      ? Positioned(
+                                          right: 0.0,
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 5.0),
+                                            child: PopupMenuButton(
+                                              onSelected: (result) {
+                                                if (result == 0) {
+                                                  Get.to(
+                                                      () =>
+                                                          const HallsDetailForm(),
+                                                      arguments: [
+                                                        {"areaid": null},
+                                                        {
+                                                          "hallid":
+                                                              data["hall_id"]
+                                                        },
+                                                      ]);
+                                                } else if (result == 1) {
+                                                  deleteHallDialog(
+                                                      areaId: areaId,
+                                                      hallId: data["hall_id"]);
+                                                }
+                                              },
+                                              itemBuilder:
+                                                  (BuildContext context) =>
+                                                      const [
+                                                PopupMenuItem(
+                                                  value: 0,
+                                                  child: Text(
+                                                    'Edit',
+                                                    style: TextStyle(
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                ),
+                                                PopupMenuItem(
+                                                  value: 1,
+                                                  child: Text(
+                                                    'Delete',
+                                                    style: TextStyle(
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ),
-                                          PopupMenuItem(
-                                            value: 1,
-                                            child: Text(
-                                              'Edit',
-                                              style: TextStyle(
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  ),
+                                        )
+                                      : const SizedBox(
+                                          width: 0.0,
+                                          height: 0.0,
+                                        ),
                                   Align(
                                     alignment: Alignment.bottomCenter,
                                     child: Container(
                                       color: whiteColor,
                                       child: ReusableBigText(
-                                        text: "${data["hallName"]}",
-                                        fontSize: 21,
+                                        text: data["hallName"]
+                                                .toString()
+                                                .substring(0, 1)
+                                                .toUpperCase() +
+                                            data["hallName"]
+                                                .toString()
+                                                .substring(
+                                                    1,
+                                                    data["hallName"]
+                                                        .toString()
+                                                        .length),
+                                        fontSize: 16,
                                       ),
                                     ),
                                   ),

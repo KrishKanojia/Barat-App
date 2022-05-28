@@ -157,7 +157,7 @@ class CredentialServices extends GetxController {
       required BuildContext context}) async {
     String errorMessage;
     var db = FirebaseFirestore.instance;
-    isLoading.value = true;
+
     try {
       UserCredential userCredential = await auth.signInWithEmailAndPassword(
           email: email.toLowerCase(), password: password);
@@ -270,6 +270,7 @@ class CredentialServices extends GetxController {
       UserCredential User = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
       FirebaseFirestore.instance.collection("User").doc(User.user!.uid).set({
+        // Change username to Lowercase
         "userName": name,
         "fullname": fullname,
         "userId": User.user!.uid,
@@ -398,14 +399,60 @@ class CredentialServices extends GetxController {
     return googleSignIn.signOut();
   }
 
-  // Future signIntoAccount(
-  //     {required String email, required String password}) async {
-  //   UserCredential userCredential =
-  //       await auth.signInWithEmailAndPassword(email: email, password: password);
+  Future<void> signInWithUsername(
+      {required String username,
+      required String password,
+      required BuildContext context}) async {
+    late String useremail;
+    isLoading.value = true;
+    String userName = username.replaceAll(' ', '');
+    print(" Username : $userName+ joe");
+    RegExp regExp = RegExp(
+        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
+    try {
+      if (!regExp.hasMatch(userName)) {
+        QuerySnapshot userdata = await FirebaseFirestore.instance
+            .collection('User')
+            .where('userName', isEqualTo: userName)
+            .get();
+        if (userdata.size > 0) {
+          userdata.docs.forEach((doc) {
+            useremail = doc.get("email");
+            print("Owner email is $useremail");
+          });
+          signIn(
+            context: context,
+            email: useremail,
+            password: password,
+          );
+        } else {
+          isLoading.value = false;
 
-  //   userUid = userCredential.user!.uid;
-
-  //   Get.off(() => const HomePage());
-  //    print(userUid);
-  // }
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              duration: Duration(seconds: 3),
+              content: Text(
+                'Invalid Username ',
+              ),
+            ),
+          );
+        }
+      } else {
+        signIn(
+          context: context,
+          email: userName,
+          password: password,
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 3),
+          content: Text(
+            e.toString(),
+          ),
+        ),
+      );
+    }
+  }
 }

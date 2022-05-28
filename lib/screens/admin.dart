@@ -32,7 +32,9 @@ class _AdminPageState extends State<AdminPage> {
       child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
         LoadingButton(
             onClick: () {
-              Get.to(() => const AdminAreaForm());
+              Get.to(() => const AdminAreaForm(), arguments: [
+                {"areaid": null},
+              ]);
             },
             color: Colors.red,
             childWidget: Row(
@@ -44,7 +46,10 @@ class _AdminPageState extends State<AdminPage> {
         SizedBox(height: 10.h),
         LoadingButton(
             onClick: () {
-              Get.to(() => const HallsDetailForm());
+              Get.to(() => const HallsDetailForm(), arguments: [
+                {"areaid": null},
+                {"hallid": null},
+              ]);
             },
             color: Colors.red,
             childWidget: Row(

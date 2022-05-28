@@ -205,7 +205,7 @@ class _BookingFormState extends State<BookingForm> {
                                   borderRadius: const BorderRadius.only(
                                       topRight: Radius.circular(25),
                                       bottomRight: Radius.circular(25)),
-                                  color: isCartService == false
+                                  color: isCartService == true
                                       ? boolColor
                                       : Colors.red,
                                 ),
@@ -271,7 +271,7 @@ class _BookingFormState extends State<BookingForm> {
                                   borderRadius: const BorderRadius.only(
                                       topRight: Radius.circular(25),
                                       bottomRight: Radius.circular(25)),
-                                  color: isEventPlanner == false
+                                  color: isEventPlanner == true
                                       ? boolColor
                                       : Colors.red,
                                 ),
@@ -325,11 +325,11 @@ class _BookingFormState extends State<BookingForm> {
                           "noOfGuests": int.parse(noOfGuests.text.toString()),
                         },
                         {"isEventPlanner": isEventPlanner},
-                        {"isCartService": isCartService},
                         {
-                          "selectedPrice":
-                              isCartService ? cateringPerHead : pricePerHead
+                          "isCartService":
+                              isCartService == true ? cateringPerHead : 0
                         },
+                        {"priceperhead": pricePerHead},
                         {"hallOwnerId": hallOwnerId},
                         {"images": images},
                         {"hallid": hallid},

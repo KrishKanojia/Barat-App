@@ -8,7 +8,7 @@ class ReusableTextField extends StatelessWidget {
   final bool obscure;
   final String hintText;
   final bool? enabled;
-
+  final bool readonly;
   const ReusableTextField({
     Key? key,
     required this.hintText,
@@ -16,6 +16,7 @@ class ReusableTextField extends StatelessWidget {
     required this.keyboardType,
     this.enabled,
     this.obscure = false,
+    this.readonly = false,
   }) : super(key: key);
 
   @override
@@ -23,6 +24,7 @@ class ReusableTextField extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
       child: TextField(
+        readOnly: readonly == true ? true : false,
         controller: controller,
         enabled: enabled ?? true,
         obscureText: obscure,

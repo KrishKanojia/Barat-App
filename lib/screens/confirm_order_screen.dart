@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:barat/screens/HomePage.dart';
+import 'package:barat/services/credentialservices.dart';
 import 'package:barat/utils/color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_stars/flutter_rating_stars.dart';
@@ -17,6 +18,8 @@ class ConfirmOrderScreen extends StatefulWidget {
 }
 
 class _ConfirmOrderScreenState extends State<ConfirmOrderScreen> {
+  final credentialServices = Get.find<CredentialServices>();
+
   sendNotificationToAdmin() async {
     try {
       Map<String, String> headerMap = {
@@ -26,7 +29,7 @@ class _ConfirmOrderScreenState extends State<ConfirmOrderScreen> {
       };
       Map notificationMap = {
         'title': 'Hall Booking Confirmation',
-        'body': 'username Book a Hall Please Check',
+        'body': '${credentialServices.getusername} Book a Hall Please Check',
       };
       Map dataMap = {
         'click-action': 'FLUTTER_NOTIFICATION_CLICK',

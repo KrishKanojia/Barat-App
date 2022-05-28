@@ -27,7 +27,7 @@ class _PriceScreenState extends State<PriceScreen> {
     super.initState();
     print("The Date is : $date, time: $time , no of guest : $noOfGuests");
     totalPriceMethod();
-    print(selectedPrice);
+    print(priceperhead);
   }
 
   final userID = Get.arguments[0]['userID'];
@@ -36,7 +36,7 @@ class _PriceScreenState extends State<PriceScreen> {
   final noOfGuests = Get.arguments[3]['noOfGuests'];
   final isEventPlanner = Get.arguments[4]['isEventPlanner'];
   final isCartService = Get.arguments[5]['isCartService'];
-  final selectedPrice = Get.arguments[6]['selectedPrice'];
+  final priceperhead = Get.arguments[6]['priceperhead'];
   final hallOwnerId = Get.arguments[7]['hallOwnerId'];
   final images = Get.arguments[8]['images'];
   final hallid = Get.arguments[9]['hallid'];
@@ -124,7 +124,12 @@ class _PriceScreenState extends State<PriceScreen> {
 
 //
   void totalPriceMethod() {
-    finalTotalPrice = noOfGuests * selectedPrice;
+    // finalTotalPrice = noOfGuests * selectedPrice;
+
+    final cateringprice = noOfGuests * isCartService;
+
+    final priceperheadprice = noOfGuests * priceperhead;
+    finalTotalPrice = cateringprice + priceperheadprice;
   }
 
   Future<void> MakePayment() async {

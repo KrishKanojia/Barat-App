@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:barat/widgets/reusableBigText.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -20,7 +21,9 @@ class AdminAreaForm extends StatefulWidget {
 }
 
 class _AdminAreaFormState extends State<AdminAreaForm> {
-  LocationServices locationServices = LocationServices();
+  final areaid = Get.arguments[0]['areaid'];
+
+  final locationServices = Get.put(LocationServices());
   final ImagePicker _imagePicker = ImagePicker();
   final List<XFile> _selectedFiles = [];
   final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
@@ -28,8 +31,31 @@ class _AdminAreaFormState extends State<AdminAreaForm> {
   int uploadItem = 0;
   bool _upLoading = false;
   var img_url;
-
+  var imagename = ' ';
   final TextEditingController areaName = TextEditingController();
+  var getareaid;
+
+  Future<void> _asyncMethod() async {
+    await FirebaseFirestore.instance
+        .collection("admin")
+        .doc(areaid)
+        .get()
+        .then((DocumentSnapshot docsnapshot) {
+      Map<String, dynamic> data = docsnapshot.data()! as Map<String, dynamic>;
+      areaName.text = data["areaName"];
+    });
+  }
+
+  @override
+  void initState() {
+    if (areaid != null) {
+      print("Area id is : $areaid");
+      _asyncMethod().whenComplete(() {
+        setState(() {});
+      });
+    }
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -93,21 +119,79 @@ class _AdminAreaFormState extends State<AdminAreaForm> {
                                             'Image is Selected : ${_selectedFiles.length.toString()}'),
                                   ),
                                   Expanded(
-                                    child: GridView.builder(
-                                        itemCount: _selectedFiles.length,
-                                        gridDelegate:
-                                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                                crossAxisCount: 3),
-                                        itemBuilder:
-                                            (BuildContext context, int index) {
-                                          return Padding(
-                                            padding: const EdgeInsets.all(3.0),
-                                            child: Image.file(
-                                                File(
-                                                    _selectedFiles[index].path),
-                                                fit: BoxFit.cover),
-                                          );
-                                        }),
+                                    child: areaid == null ||
+                                            _selectedFiles.isNotEmpty
+                                        ? GridView.builder(
+                                            itemCount: _selectedFiles.length,
+                                            gridDelegate:
+                                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                                    crossAxisCount: 3),
+                                            itemBuilder: (BuildContext context,
+                                                int index) {
+                                              return Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(3.0),
+                                                  child: Image.file(
+                                                      File(_selectedFiles[index]
+                                                          .path),
+                                                      fit: BoxFit.cover));
+                                            })
+                                        : StreamBuilder<DocumentSnapshot>(
+                                            stream: FirebaseFirestore.instance
+                                                .collection("admin")
+                                                .doc(areaid)
+                                                .snapshots(),
+                                            builder: (BuildContext context,
+                                                AsyncSnapshot<DocumentSnapshot>
+                                                    snapshot) {
+                                              if (snapshot.connectionState ==
+                                                  ConnectionState.waiting) {
+                                                return const Center(
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                  color: Colors.green,
+                                                ));
+                                              } else if (!snapshot.hasData ||
+                                                  !snapshot.data!.exists) {
+                                                return const Center(
+                                                  child: Text(
+                                                    "No Image",
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                );
+                                              } else {
+                                                Map<String, dynamic> data =
+                                                    snapshot.data!.data()
+                                                        as Map<String, dynamic>;
+                                                imagename = data["areaImage"];
+                                                return GridView.builder(
+                                                    itemCount: 1,
+                                                    gridDelegate:
+                                                        const SliverGridDelegateWithFixedCrossAxisCount(
+                                                            crossAxisCount: 3),
+                                                    itemBuilder:
+                                                        (BuildContext context,
+                                                            int index) {
+                                                      return Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(3.0),
+                                                        child: Image.network(
+                                                          data["areaImage"],
+                                                          fit: BoxFit.cover,
+                                                          height:
+                                                              double.infinity,
+                                                          width:
+                                                              double.infinity,
+                                                        ),
+                                                      );
+                                                    });
+                                              }
+                                            }),
                                   )
                                 ],
                               ),
@@ -117,20 +201,49 @@ class _AdminAreaFormState extends State<AdminAreaForm> {
                       ),
                       InkWell(
                         onTap: () async {
-                          if (_selectedFiles.isNotEmpty &&
-                              areaName.text.toString().trim().isNotEmpty) {
-                            await uploadFile(_selectedFiles.first);
-                            locationServices.postLocationByAdmin(
-                                img_url, areaName.text.toString());
-                            Get.to(() => const AdminPage());
-                          } else if (areaName.text.toString().trim().isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text("PLEASE Type Area Name")));
+                          if (areaid == null) {
+                            if (_selectedFiles.isNotEmpty &&
+                                areaName.text.toString().trim().isNotEmpty) {
+                              await uploadFile(_selectedFiles.first);
+                              locationServices.postLocationByAdmin(
+                                  img_url, areaName.text.toString());
+                              Get.to(() => const AdminPage());
+                            } else if (areaName.text
+                                .toString()
+                                .trim()
+                                .isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text("PLEASE Enter Area Name")));
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text("PLEASE Select Image")));
+                            }
                           } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text("PLEASE Select Image")));
+                            if (_selectedFiles.isNotEmpty &&
+                                areaName.text.toString().trim().isNotEmpty) {
+                              await uploadFile(_selectedFiles.first);
+                              locationServices.updateAreaByAdmin(
+                                  context: context,
+                                  areaImage: img_url,
+                                  areaId: areaid,
+                                  areaname: areaName.text.toString());
+                            } else if (areaName.text
+                                .toString()
+                                .trim()
+                                .isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text("PLEASE Enter Area Name")));
+                            } else if (_selectedFiles.isEmpty &&
+                                areaName.text.toString().trim().isNotEmpty) {
+                              locationServices.updateAreaByAdmin(
+                                  context: context,
+                                  areaImage: imagename,
+                                  areaId: areaid,
+                                  areaname: areaName.text.toString());
+                            }
                           }
                         },
                         child: const ReusableTextIconButton(

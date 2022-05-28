@@ -1,5 +1,6 @@
 import 'package:barat/Models/location_model.dart';
 import 'package:barat/screens/admin.dart';
+import 'package:barat/screens/areaForm.dart';
 import 'package:barat/screens/halls_screen.dart';
 import 'package:barat/screens/loginPage.dart';
 import 'package:barat/screens/order_confirm_list.dart';
@@ -301,11 +302,18 @@ class _HomePageState extends State<HomePage> {
                                                 child: PopupMenuButton(
                                                   onSelected: (result) {
                                                     if (result == 0) {
+                                                      Get.to(
+                                                          () =>
+                                                              const AdminAreaForm(),
+                                                          arguments: [
+                                                            {
+                                                              "areaid":
+                                                                  data["id"]
+                                                            },
+                                                          ]);
+                                                    } else if (result == 1) {
                                                       deleteAreaDialog(
                                                           areaId: data["id"]);
-                                                    } else if (result == 1) {
-                                                      Get.off(() =>
-                                                          const LoginPage());
                                                     }
                                                   },
                                                   itemBuilder:
@@ -314,7 +322,7 @@ class _HomePageState extends State<HomePage> {
                                                     PopupMenuItem(
                                                       value: 0,
                                                       child: Text(
-                                                        'Delete',
+                                                        'Edit',
                                                         style: TextStyle(
                                                           color: Colors.black,
                                                         ),
@@ -323,12 +331,12 @@ class _HomePageState extends State<HomePage> {
                                                     PopupMenuItem(
                                                       value: 1,
                                                       child: Text(
-                                                        'Edit',
+                                                        'Delete',
                                                         style: TextStyle(
                                                           color: Colors.black,
                                                         ),
                                                       ),
-                                                    )
+                                                    ),
                                                   ],
                                                 ),
                                               ),

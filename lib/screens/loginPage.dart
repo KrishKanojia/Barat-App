@@ -66,7 +66,7 @@ class _LoginPageState extends State<LoginPage> {
 
                       ReusableTextField(
                         controller: _username,
-                        hintText: 'username',
+                        hintText: 'Username or Email',
                         keyboardType: TextInputType.text,
                       ),
                       SizedBox(
@@ -74,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       ReusableTextField(
                         controller: _password,
-                        hintText: 'password',
+                        hintText: 'Password',
                         keyboardType: TextInputType.visiblePassword,
                         obscure: true,
                       ),
@@ -98,8 +98,8 @@ class _LoginPageState extends State<LoginPage> {
                             //     _username.text.toString(),
                             //     _password.text.toString());
                             if (credentialServices.getisLoading == false) {
-                              if (_username.text.toString().isEmpty &&
-                                  _password.text.toString().isEmpty) {
+                              if (_username.text.trim().toString().isEmpty &&
+                                  _password.text.trim().toString().isEmpty) {
                                 ScaffoldMessenger.of(context)
                                     .showSnackBar(const SnackBar(
                                   duration: Duration(seconds: 3),
@@ -108,9 +108,9 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                 ));
                               } else {
-                                credentialServices.signIn(
-                                  email: _username.text.toString(),
-                                  password: _password.text.toString(),
+                                credentialServices.signInWithUsername(
+                                  username: _username.text.trim().toString(),
+                                  password: _password.text.trim().toString(),
                                   context: context,
                                 );
                               }
@@ -178,17 +178,17 @@ class _LoginPageState extends State<LoginPage> {
                           child: Padding(
                             padding: const EdgeInsets.all(14.0),
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 Image.asset(
                                   'images/google_signin.png',
-                                  width: 20,
+                                  width: 18,
                                 ),
                                 const SizedBox(width: 12),
                                 Text(
                                   "Sign in with Google",
                                   style: TextStyle(
-                                      fontSize: 14.sp,
+                                      fontSize: 12.sp,
                                       fontWeight: FontWeight.bold),
                                 ),
                               ],

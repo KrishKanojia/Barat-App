@@ -223,13 +223,11 @@ class _SignUpPageState extends State<SignUpPage> {
                                         ),
                                       ],
                                     ),
-                                    child: const Padding(
-                                        padding: EdgeInsets.all(14.0),
-                                        child: Center(
-                                          child: CircularProgressIndicator(
-                                            color: Colors.white,
-                                          ),
-                                        )),
+                                    child: const Center(
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white,
+                                      ),
+                                    ),
                                   ),
                           ),
                         ),
