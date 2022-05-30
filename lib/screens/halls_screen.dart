@@ -179,7 +179,7 @@ class _HallsScreenState extends State<HallsScreen> {
                                                       () =>
                                                           const HallsDetailForm(),
                                                       arguments: [
-                                                        {"areaid": null},
+                                                        {"areaid": areaId},
                                                         {
                                                           "hallid":
                                                               data["hall_id"]

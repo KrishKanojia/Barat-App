@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:barat/screens/HomePage.dart';
 import 'package:barat/services/credentialservices.dart';
 import 'package:barat/utils/color.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_stars/flutter_rating_stars.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,7 +12,10 @@ import 'package:http/http.dart' as http;
 import '../widgets/reusableText.dart';
 
 class ConfirmOrderScreen extends StatefulWidget {
-  const ConfirmOrderScreen({Key? key}) : super(key: key);
+  String? date;
+  String? bookid;
+  ConfirmOrderScreen({Key? key, this.date = "", this.bookid = ""})
+      : super(key: key);
   static const routeName = '/confirm-order-screen';
   @override
   State<ConfirmOrderScreen> createState() => _ConfirmOrderScreenState();
@@ -19,44 +23,19 @@ class ConfirmOrderScreen extends StatefulWidget {
 
 class _ConfirmOrderScreenState extends State<ConfirmOrderScreen> {
   final credentialServices = Get.find<CredentialServices>();
-
-  sendNotificationToAdmin() async {
-    try {
-      Map<String, String> headerMap = {
-        'Content-Type': 'application/json',
-        'Authorization':
-            'key=AAAAk_eQpps:APA91bFVXedy9ykfWOLRrd5xCQs8lIHgxFuZAvEIy3pJfVJBAFVMzSRKdn18b_BZc_yrukwuV7PwA3OrwOBnyVzcXvsWKQDU9DsXnittJx3_Psh5nqrhXZZTwIyLMA_V0-JBuT0Df0mL',
-      };
-      Map notificationMap = {
-        'title': 'Hall Booking Confirmation',
-        'body': '${credentialServices.getusername} Book a Hall Please Check',
-      };
-      Map dataMap = {
-        'click-action': 'FLUTTER_NOTIFICATION_CLICK',
-        'id': '1',
-        'status': 'done',
-      };
-      Map sendNotificationMap = {
-        'notification': notificationMap,
-        'data': dataMap,
-        'priority': 'high',
-        'to': '/topics/Admin',
-      };
-      var res = await http.post(
-        Uri.parse('https://fcm.googleapis.com/fcm/send'),
-        headers: headerMap,
-        body: jsonEncode(sendNotificationMap),
-      );
-    } catch (e) {
-      print(e);
-    }
+  final TextEditingController feedbackCont = TextEditingController();
+  double rating = 0.0;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
   }
 
   @override
-  void initState() {
-    sendNotificationToAdmin();
-    // TODO: implement initState
-    super.initState();
+  void dispose() {
+    feedbackCont.dispose();
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override
@@ -92,15 +71,16 @@ class _ConfirmOrderScreenState extends State<ConfirmOrderScreen> {
                       child: ReusableText(
                           fontSize: 15,
                           text:
-                              "Congratulations, The Hall has been succesfully Booked on date ${DateTime.now().toString()},"
+                              "Congratulations, The Hall has been succesfully Booked on date ${widget.date},"
                               " Kindly Contact the hall to confirm your booking,Thank you for using the Baraat App"),
                     ),
                   ),
                   SizedBox(height: 20.h),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: TextField(
-                      decoration: InputDecoration(
+                      controller: feedbackCont,
+                      decoration: const InputDecoration(
                           border: InputBorder.none,
                           hintText: 'Enter yout feedback'),
                     ),
@@ -112,6 +92,13 @@ class _ConfirmOrderScreenState extends State<ConfirmOrderScreen> {
                       onTap: () {},
                       child: IconButton(
                         onPressed: () {
+                          FirebaseFirestore.instance
+                              .collection("bookings")
+                              .doc(widget.bookid)
+                              .update({
+                            "feedback": feedbackCont.text.toLowerCase(),
+                            "rating": rating,
+                          });
                           Get.off(() => const HomePage());
                         },
                         icon: const Icon(
@@ -136,7 +123,9 @@ class _ConfirmOrderScreenState extends State<ConfirmOrderScreen> {
         value: starRattingValue,
         onValueChanged: (v) {
           starRattingValue = v;
-          setState(() {});
+          setState(() {
+            rating = v;
+          });
         },
         starBuilder: (index, color) => Icon(
           Icons.star,

@@ -170,24 +170,25 @@ class LocationServices extends GetxController {
     }
   }
 
-  Future<void> postbookHallsByUser(
-      {required BuildContext context,
-      required String userId,
-      required String date,
-      required String time,
-      required int guestsQuantity,
-      required bool eventPlaner,
-      required bool cateringServices,
-      required int totalPayment,
-      required String hallOwnerId,
-      required List images,
-      required String hallid,
-      required String areaId,
-      required String ownername,
-      required String ownercontact,
-      required String owneremail,
-      required String halladdress,
-      required String hallname}) async {
+  Future<void> postbookHallsByUser({
+    required BuildContext context,
+    required String userId,
+    required dynamic date,
+    required String time,
+    required int guestsQuantity,
+    required bool eventPlaner,
+    required bool cateringServices,
+    required int totalPayment,
+    required String hallOwnerId,
+    required List images,
+    required String hallid,
+    required String areaId,
+    required String ownername,
+    required String ownercontact,
+    required String owneremail,
+    required String halladdress,
+    required String hallname,
+  }) async {
     final credentialServices = Get.find<CredentialServices>();
     print(
         "In postbookHallsByUser  ${credentialServices.userUid.value}, username : ${credentialServices.getusername}");
@@ -212,13 +213,15 @@ class LocationServices extends GetxController {
       "areaid": areaId,
       "images": images,
       "clientid": credentialServices.getUserId,
-      "clientname": credentialServices.getusername,
-      "clientemail": credentialServices.getuseremail,
-      "hallname": hallname,
-      "ownername": ownername,
+      "clientname": credentialServices.getusername.toLowerCase(),
+      "clientemail": credentialServices.getuseremail.toLowerCase(),
+      "hallname": hallname.toLowerCase(),
+      "ownername": ownername.toLowerCase(),
       "ownercontact": ownercontact,
-      "owneremail": owneremail,
+      "owneremail": owneremail.toLowerCase(),
       "halladdress": halladdress,
+      "feedback": "",
+      "rating": 0.0,
     });
     print("Area Uploaded SuccessFully");
 

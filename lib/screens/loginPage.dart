@@ -1,6 +1,7 @@
 import 'package:barat/screens/signUpPage.dart';
 import 'package:barat/services/credentialservices.dart';
 import 'package:barat/utils/color.dart';
+import 'package:barat/widgets/password_TextField.dart';
 import 'package:barat/widgets/reusableTextField.dart';
 import 'package:barat/widgets/reusableTextIconButton.dart';
 import 'package:barat/widgets/reusablealreadytext.dart';
@@ -19,6 +20,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final box = GetStorage();
+  bool obserText = true;
   // final CredentialServices credentialServices = CredentialServices();
   final credentialServices = Get.put(CredentialServices());
   final TextEditingController _username = TextEditingController();
@@ -72,11 +74,16 @@ class _LoginPageState extends State<LoginPage> {
                       SizedBox(
                         height: height * 0.01,
                       ),
-                      ReusableTextField(
+                      PasswordTextField(
                         controller: _password,
                         hintText: 'Password',
                         keyboardType: TextInputType.visiblePassword,
-                        obscure: true,
+                        obscure: obserText,
+                        onTap: () {
+                          setState(() {
+                            obserText = !obserText;
+                          });
+                        },
                       ),
                       SizedBox(
                         height: height * 0.02,

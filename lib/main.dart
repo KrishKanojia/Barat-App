@@ -169,7 +169,7 @@ class _MyAppState extends State<MyApp> {
           HomePage.routeName: (context) => const HomePage(),
           HallsDetailForm.routeName: (context) => const HallsDetailForm(),
           CreateHallUser.routeName: (context) => const CreateHallUser(),
-          ConfirmOrderScreen.routeName: (context) => const ConfirmOrderScreen(),
+          ConfirmOrderScreen.routeName: (context) => ConfirmOrderScreen(),
         },
       ),
     );

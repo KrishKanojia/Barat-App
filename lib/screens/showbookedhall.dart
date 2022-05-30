@@ -1,9 +1,13 @@
+import 'package:barat/screens/confirm_order_screen.dart';
 import 'package:barat/utils/color.dart';
+import 'package:barat/widgets/reusableTextIconButton.dart';
 import 'package:barat/widgets/reusable_detail_copy_text.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class ShowBookedHall extends StatefulWidget {
   const ShowBookedHall({Key? key}) : super(key: key);
@@ -22,11 +26,42 @@ class _ShowBookedHallState extends State<ShowBookedHall> {
   final clientname = Get.arguments[6]['clientname'];
   final clientemail = Get.arguments[7]['clientemail'];
   final totalPayment = Get.arguments[8]['totalPayment'];
-  final date = Get.arguments[9]['date'];
-  final time = Get.arguments[10]['time'];
-  final hallname = Get.arguments[11]['hallname'];
-  final eventplanner = Get.arguments[12]['eventplanner'];
-  final cateringServices = Get.arguments[13]['cateringServices'];
+  final DateTime date = Get.arguments[9]['date'];
+
+  final hallname = Get.arguments[10]['hallname'];
+  final eventplanner = Get.arguments[11]['eventplanner'];
+  final cateringServices = Get.arguments[12]['cateringServices'];
+  final ismyhall = Get.arguments[13]['ismyhall'];
+
+  final bookingId = Get.arguments[14]['bookingId'];
+  final feedback = Get.arguments[15]['feedback'];
+  String? bookedDate;
+  bool isHaveFeedBack = false;
+
+  Future<void> isFeedBackGiven() async {
+    await FirebaseFirestore.instance
+        .collection("bookings")
+        .doc(bookingId)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        Map<String, dynamic>? map = doc.data();
+        if (map!.containsKey('feedback')) {
+          print("Have Feedback ${map.containsKey('feedback')}");
+          setState(() {
+            isHaveFeedBack = true;
+          });
+        }
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    isFeedBackGiven();
+    bookedDate = DateFormat("yyyy-MM-dd hh:mm:ss").format(date);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -138,7 +173,7 @@ class _ShowBookedHallState extends State<ShowBookedHall> {
             ReusableDetailsCopyText(
               text1: "Booking Date",
               // text2: "${snapshot.data!.data![0].cateringPerHead}",
-              text2: "$date $time",
+              text2: "$bookedDate",
             ),
             ReusableDetailsCopyText(
               text1: "Event Planner",
@@ -150,6 +185,40 @@ class _ShowBookedHallState extends State<ShowBookedHall> {
               // text2: "${snapshot.data!.data![0].cateringPerHead}",
               text2: cateringServices == true ? "Yes" : "No",
             ),
+            ismyhall != true
+                ? date.compareTo(DateTime.now()) < 0
+                    ? feedback == ""
+                        ? InkWell(
+                            onTap: () {
+                              Get.to(() => ConfirmOrderScreen(
+                                    date: bookedDate!,
+                                    bookid: bookingId,
+                                  ));
+                            },
+                            child: Container(
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 45.0),
+                              child: const ReusableTextIconButton(
+                                text: "Give FeedBack",
+                                margin: 10,
+                              ),
+                            ),
+                          )
+                        : const SizedBox(
+                            height: 0.0,
+                            width: 0.0,
+                          )
+                    : const SizedBox(
+                        height: 0.0,
+                        width: 0.0,
+                      )
+                : const SizedBox(
+                    height: 0.0,
+                    width: 0.0,
+                  ),
+            const SizedBox(
+              height: 40,
+            )
           ]),
         ),
       ),

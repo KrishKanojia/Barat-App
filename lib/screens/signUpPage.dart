@@ -1,6 +1,7 @@
 import 'package:barat/screens/loginPage.dart';
 import 'package:barat/services/credentialservices.dart';
 import 'package:barat/utils/color.dart';
+import 'package:barat/widgets/password_TextField.dart';
 import 'package:barat/widgets/reusableBigText.dart';
 import 'package:barat/widgets/reusableTextField.dart';
 import 'package:barat/widgets/reusableTextIconButton.dart';
@@ -27,7 +28,7 @@ class _SignUpPageState extends State<SignUpPage> {
   RegExp regExp = RegExp(
       r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
   int userRoll = 1;
-
+  bool obserText = true;
   @override
   void dispose() {
     // TODO: implement dispose
@@ -174,11 +175,16 @@ class _SignUpPageState extends State<SignUpPage> {
                         SizedBox(
                           height: height * 0.01,
                         ),
-                        ReusableTextField(
+                        PasswordTextField(
                           controller: _password,
                           hintText: 'Password',
                           keyboardType: TextInputType.visiblePassword,
-                          obscure: true,
+                          obscure: obserText,
+                          onTap: () {
+                            setState(() {
+                              obserText = !obserText;
+                            });
+                          },
                         ),
                         SizedBox(
                           height: height * 0.02,
@@ -186,13 +192,6 @@ class _SignUpPageState extends State<SignUpPage> {
                         Obx(
                           () => InkWell(
                             onTap: () async {
-                              // credentialServices.signUpPost(
-                              //     _username.text,
-                              //     _fullname.text,
-                              //     _email.text,
-                              //     _phone.text,
-                              //     _password.text,
-                              //     userRoll);
                               credentialServices.getisLoading == false
                                   ? validation(context)
                                   : () {

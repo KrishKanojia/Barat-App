@@ -174,7 +174,7 @@ class CredentialServices extends GetxController {
         if (userCredential.user!.email == data["email"] &&
             password == data["password"]) {
           isAdmin.value = true;
-          // print("The Value of Admin is ${userUid.value}");
+          print("The Value of Admin is ${isAdmin.value}");
 
           // print("Username is : $username , useremail is : $useremail");
           isLoading.value = false;
@@ -267,27 +267,33 @@ class CredentialServices extends GetxController {
     isLoading.value = true;
 
     try {
-      UserCredential User = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password);
-      FirebaseFirestore.instance.collection("User").doc(User.user!.uid).set({
-        // Change username to Lowercase
-        "userName": name,
-        "fullname": fullname,
-        "userId": User.user!.uid,
-        "email": email.toLowerCase(),
-        "phoneNumber": phNo,
-        "account_created": Timestamp.now(),
-      });
+      bool isUserExist = await usernameExist(
+          context: context, username: name.replaceAll(' ', '').toLowerCase());
+      if (isUserExist == true) {
+        UserCredential User = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(email: email, password: password);
+        FirebaseFirestore.instance.collection("User").doc(User.user!.uid).set({
+          // Change username to Lowercase
+          "userName": name,
+          "fullname": fullname,
+          "userId": User.user!.uid,
+          "email": email.toLowerCase(),
+          "phoneNumber": phNo,
+          "account_created": Timestamp.now(),
+        });
 
-      if (routename == '/create-hall-user') {
+        if (routename == '/create-hall-user') {
+          isLoading.value = false;
+          Get.back();
+        } else if (routename == "/HomePage") {
+          username.value = name;
+          useremail.value = email;
+          userUid.value = User.user!.uid;
+          isLoading.value = false;
+          Get.offAll(() => const LoginPage());
+        }
+      } else {
         isLoading.value = false;
-        Get.back();
-      } else if (routename == "/HomePage") {
-        username.value = name;
-        useremail.value = email;
-        userUid.value = User.user!.uid;
-        isLoading.value = false;
-        Get.offAll(() => const LoginPage());
       }
     } on PlatformException catch (e) {
       isLoading.value = false;
@@ -399,13 +405,49 @@ class CredentialServices extends GetxController {
     return googleSignIn.signOut();
   }
 
+  Future<bool> usernameExist(
+      {required String username, required BuildContext context}) async {
+    try {
+      QuerySnapshot userdata = await FirebaseFirestore.instance
+          .collection('User')
+          .where('userName', isEqualTo: username)
+          .get();
+      if (userdata.size > 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            duration: Duration(seconds: 3),
+            content: Text(
+              'Username Exist ',
+            ),
+          ),
+        );
+        return false;
+      } else if (userdata.docs.isEmpty) {
+        print("UserData : $userdata");
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 3),
+          content: Text(
+            e.toString(),
+          ),
+        ),
+      );
+      return false;
+    }
+  }
+
   Future<void> signInWithUsername(
       {required String username,
       required String password,
       required BuildContext context}) async {
     late String useremail;
     isLoading.value = true;
-    String userName = username.replaceAll(' ', '');
+    String userName = username.replaceAll(' ', '').toLowerCase();
     print(" Username : $userName+ joe");
     RegExp regExp = RegExp(
         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');

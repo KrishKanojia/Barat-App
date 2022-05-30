@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:barat/screens/HomePage.dart';
 import 'package:barat/screens/confirm_order_screen.dart';
+import 'package:barat/services/credentialservices.dart';
 import 'package:barat/services/locationservices.dart';
 import 'package:barat/widgets/reusableBigText.dart';
 import 'package:barat/widgets/reusableTextIconButton.dart';
@@ -21,6 +23,8 @@ class PriceScreen extends StatefulWidget {
 
 class _PriceScreenState extends State<PriceScreen> {
   Map<String, dynamic>? paymentIntentData;
+  final credentialServices = Get.find<CredentialServices>();
+
   @override
   void initState() {
     // TODO: implement initState
@@ -35,7 +39,7 @@ class _PriceScreenState extends State<PriceScreen> {
   final time = Get.arguments[2]['time'];
   final noOfGuests = Get.arguments[3]['noOfGuests'];
   final isEventPlanner = Get.arguments[4]['isEventPlanner'];
-  final isCartService = Get.arguments[5]['isCartService'];
+  final CartService = Get.arguments[5]['CartService'];
   final priceperhead = Get.arguments[6]['priceperhead'];
   final hallOwnerId = Get.arguments[7]['hallOwnerId'];
   final images = Get.arguments[8]['images'];
@@ -46,7 +50,7 @@ class _PriceScreenState extends State<PriceScreen> {
   final ownercontact = Get.arguments[13]['ownercontact'];
   final owneremail = Get.arguments[14]['owneremail'];
   final halladdress = Get.arguments[15]['halladdress'];
-
+  final isCartService = Get.arguments[16]['isCartService'];
   final locationServices = Get.find<LocationServices>();
 
   var finalTotalPrice;
@@ -126,7 +130,7 @@ class _PriceScreenState extends State<PriceScreen> {
   void totalPriceMethod() {
     // finalTotalPrice = noOfGuests * selectedPrice;
 
-    final cateringprice = noOfGuests * isCartService;
+    final cateringprice = noOfGuests * CartService;
 
     final priceperheadprice = noOfGuests * priceperhead;
     finalTotalPrice = cateringprice + priceperheadprice;
@@ -148,6 +152,38 @@ class _PriceScreenState extends State<PriceScreen> {
       displayPaymentSheet();
     } catch (e) {
       print(e.toString());
+    }
+  }
+
+  sendNotificationToAdmin() async {
+    try {
+      Map<String, String> headerMap = {
+        'Content-Type': 'application/json',
+        'Authorization':
+            'key=AAAAk_eQpps:APA91bFVXedy9ykfWOLRrd5xCQs8lIHgxFuZAvEIy3pJfVJBAFVMzSRKdn18b_BZc_yrukwuV7PwA3OrwOBnyVzcXvsWKQDU9DsXnittJx3_Psh5nqrhXZZTwIyLMA_V0-JBuT0Df0mL',
+      };
+      Map notificationMap = {
+        'title': 'Hall Booking Confirmation',
+        'body': '${credentialServices.getusername} Book a Hall Please Check',
+      };
+      Map dataMap = {
+        'click-action': 'FLUTTER_NOTIFICATION_CLICK',
+        'id': '1',
+        'status': 'done',
+      };
+      Map sendNotificationMap = {
+        'notification': notificationMap,
+        'data': dataMap,
+        'priority': 'high',
+        'to': '/topics/Admin',
+      };
+      var res = await http.post(
+        Uri.parse('https://fcm.googleapis.com/fcm/send'),
+        headers: headerMap,
+        body: jsonEncode(sendNotificationMap),
+      );
+    } catch (e) {
+      print(e);
     }
   }
 
@@ -181,7 +217,8 @@ class _PriceScreenState extends State<PriceScreen> {
         owneremail: owneremail,
         halladdress: halladdress,
       );
-      Get.offAll(() => const ConfirmOrderScreen());
+      sendNotificationToAdmin();
+      Get.offAll(() => const HomePage());
     } on StripeException catch (e) {
       print('Exception/DISPLAYPAYMENTSHEET==> $e');
       showDialog(
