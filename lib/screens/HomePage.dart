@@ -120,8 +120,10 @@ class _HomePageState extends State<HomePage> {
                                   if (result == 0) {
                                     Get.to(() => const OrderConfirmList());
                                   } else if (result == 1) {
-                                    credentialServices.LogOutViaEmail();
-                                    // Get.off(() => const LoginPage());
+                                    credentialServices.getisGoogleSignedIn ==
+                                            true
+                                        ? credentialServices.SignOutGoogle()
+                                        : credentialServices.LogOutViaEmail();
                                   }
                                 },
                                 itemBuilder: (BuildContext context) => const [
@@ -146,28 +148,6 @@ class _HomePageState extends State<HomePage> {
                                 ],
                               ),
                             )
-                          // Container(
-                          //     padding:
-                          //         const EdgeInsets.symmetric(horizontal: 15),
-                          //     height: 40,
-                          //     decoration: BoxDecoration(
-                          //       color: Colors.orangeAccent[700],
-                          //       borderRadius: BorderRadius.circular(12.0),
-                          //     ),
-                          //     child: Row(
-                          //       children: const [
-                          //         Icon(
-                          //           Icons.logout,
-                          //           color: Colors.white,
-                          //         ),
-                          //         SizedBox(width: 10.0),
-                          //         Text(
-                          //           'Sign Out',
-                          //           style: TextStyle(color: Colors.white),
-                          //         )
-                          //       ],
-                          //     ),
-                          //   )
                           : SizedBox(
                               width: 20,
                               child: PopupMenuButton(
@@ -273,8 +253,6 @@ class _HomePageState extends State<HomePage> {
 
                               return InkWell(
                                 onTap: () async {
-                                  // await locationServices.getHallApiById(
-                                  //     "${snapshot.data!.data![index].id}");
                                   Get.to(() => const HallsScreen(), arguments: [
                                     {"id": data["id"]},
                                     {"AreaName": data["areaName"]},

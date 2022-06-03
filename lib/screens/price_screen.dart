@@ -23,7 +23,7 @@ class PriceScreen extends StatefulWidget {
 
 class _PriceScreenState extends State<PriceScreen> {
   Map<String, dynamic>? paymentIntentData;
-  final credentialServices = Get.find<CredentialServices>();
+  final credentialServices = Get.put(CredentialServices());
 
   @override
   void initState() {
@@ -155,7 +155,8 @@ class _PriceScreenState extends State<PriceScreen> {
     }
   }
 
-  sendNotificationToAdmin() async {
+  Future<void> sendNotificationToAdmin() async {
+    print("Getting Notification: ");
     try {
       Map<String, String> headerMap = {
         'Content-Type': 'application/json',
@@ -183,7 +184,9 @@ class _PriceScreenState extends State<PriceScreen> {
         body: jsonEncode(sendNotificationMap),
       );
     } catch (e) {
-      print(e);
+      print("The Problem is : ");
+
+      print(e.toString());
     }
   }
 
@@ -217,8 +220,10 @@ class _PriceScreenState extends State<PriceScreen> {
         owneremail: owneremail,
         halladdress: halladdress,
       );
-      sendNotificationToAdmin();
-      Get.offAll(() => const HomePage());
+
+      sendNotificationToAdmin().whenComplete(
+        () => Get.offAll(() => const HomePage()),
+      );
     } on StripeException catch (e) {
       print('Exception/DISPLAYPAYMENTSHEET==> $e');
       showDialog(

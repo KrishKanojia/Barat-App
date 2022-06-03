@@ -17,6 +17,7 @@ import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
 
 class LocationServices extends GetxController {
+  var _db = FirebaseFirestore.instance;
   Future<LocationModel> fetchLocationArea() async {
     try {
       final response = await http.get(Uri.parse(AppUrl.locationGetAreas));
@@ -37,8 +38,8 @@ class LocationServices extends GetxController {
   void postLocationByAdmin(var imageUrl, String areaname) async {
     //  ProgressDialog dialog = ProgressDialog(context: context);
     // dialog.show(max: 100, msg: "Please Wait ...");
-    var areaDoc = await FirebaseFirestore.instance.collection("admin").doc();
-    await FirebaseFirestore.instance.collection("admin").doc(areaDoc.id).set({
+    var areaDoc = await _db.collection("admin").doc();
+    await _db.collection("admin").doc(areaDoc.id).set({
       "areaName": areaname.toLowerCase(),
       "areaImage": imageUrl,
       "id": areaDoc.id,
@@ -193,12 +194,9 @@ class LocationServices extends GetxController {
     print(
         "In postbookHallsByUser  ${credentialServices.userUid.value}, username : ${credentialServices.getusername}");
     print("76 $userId");
-    var db = FirebaseFirestore.instance;
-    var bookingDoc = await db.collection("bookings").doc();
-    await FirebaseFirestore.instance
-        .collection("bookings")
-        .doc(bookingDoc.id)
-        .set({
+
+    var bookingDoc = await _db.collection("bookings").doc();
+    await _db.collection("bookings").doc(bookingDoc.id).set({
       "bookingId": bookingDoc.id,
       // "userId": userId,
       "Date": date,
@@ -225,29 +223,6 @@ class LocationServices extends GetxController {
     });
     print("Area Uploaded SuccessFully");
 
-    // var headers = {'Content-Type': 'application/json'};
-    // var request = http.Request('POST', Uri.parse(AppUrl.postbookHallsByUser));
-    // request.body = json.encode({
-    //   "userId": userId,
-    //   "Date": date,
-    //   "Time": time,
-    //   "GuestsQuantity": guestsQuantity,
-    //   "EventPlaner": eventPlaner,
-    //   "CateringServices": cateringServices,
-    //   "TotalPaynment": totalPayment,
-    //   "hallOwnerId": hallOwnerId
-    // });
-    //   request.headers.addAll(headers);
-
-    //   http.StreamedResponse response = await request.send();
-
-    //   if (response.statusCode == 200) {
-    //     print(await response.stream.bytesToString());
-    //   } else {
-    //     print(response.reasonPhrase);
-    //   }
-    // }
-
     Future<HallOwnerModel> getHallOwner() async {
       final response = await http.get(Uri.parse(AppUrl.GetHallOwner));
       if (response.statusCode == 200) {
@@ -264,8 +239,7 @@ class LocationServices extends GetxController {
     required BuildContext context,
     required String areaId,
   }) async {
-    var db = FirebaseFirestore.instance;
-    await db
+    await _db
         .collection('admin')
         .doc(areaId)
         .collection("halls")
@@ -275,7 +249,7 @@ class LocationServices extends GetxController {
         documentSnapshot.reference.delete();
       }
     });
-    await db.collection('admin').doc(areaId).delete();
+    await _db.collection('admin').doc(areaId).delete();
     Get.back();
     print("Area Deleted SuccessFully");
   }
@@ -284,8 +258,7 @@ class LocationServices extends GetxController {
       {required BuildContext context,
       required String hallId,
       required String areaId}) async {
-    var db = FirebaseFirestore.instance;
-    await db
+    await _db
         .collection('admin')
         .doc(areaId)
         .collection("halls")
@@ -300,11 +273,27 @@ class LocationServices extends GetxController {
       required var areaImage,
       required String areaId,
       required String areaname}) async {
-    await FirebaseFirestore.instance.collection("admin").doc(areaId).update({
+    await _db.collection("admin").doc(areaId).update({
       "areaName": areaname,
       "areaImage": areaImage,
       "updatedAt": Timestamp.now(),
     });
     Get.back();
+  }
+
+  Future<void> manualBooking(
+      {required BuildContext context,
+      required String hallid,
+      required String areaid,
+      required String hallownerid,
+      required DateTime date}) async {
+    var bookingDoc = await _db.collection("reserved_halls").doc();
+    await _db.collection("reserved_halls").doc(bookingDoc.id).set({
+      "bookingId": bookingDoc.id,
+      "areaid": areaid,
+      "hallid": hallid,
+      "hallOwnerId": hallownerid,
+      "Date": date,
+    });
   }
 }

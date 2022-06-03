@@ -6,6 +6,7 @@ import 'package:barat/widgets/reusableBigText.dart';
 import 'package:barat/widgets/reusableTextField.dart';
 import 'package:barat/widgets/reusableTextIconButton.dart';
 import 'package:barat/widgets/reusablealreadytext.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -29,10 +30,13 @@ class _SignUpPageState extends State<SignUpPage> {
       r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
   int userRoll = 1;
   bool obserText = true;
+  // User? user;
+  // final auth = FirebaseAuth.instance;
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+    // _username.clear
     _username.dispose();
     _fullname.dispose();
     _phone.dispose();
@@ -89,15 +93,35 @@ class _SignUpPageState extends State<SignUpPage> {
         ),
       );
     } else {
-      credentialServices.registerAccount(
-          context: context,
-          email: _email.text.toString(),
-          fullname: _fullname.text.toString(),
-          password: _password.text.toString(),
-          phNo: _phone.text.toString(),
-          name: _username.text.toString(),
-          routename: "/HomePage");
+      try {
+        await credentialServices.registerAccount(
+            context: context,
+            email: _email.text.toString(),
+            fullname: _fullname.text.trim().toString().toLowerCase(),
+            password: _password.text.toString(),
+            phNo: _phone.text.toString(),
+            name: _username.text.trim().toString().toLowerCase(),
+            routename: "/signup");
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Please Try Vaild Email ${e.toString()}"),
+          ),
+        );
+      }
     }
+  }
+
+  // Future<void> checkEmailVerified() async {
+  //   user = auth.currentUser;
+  // }
+
+  @override
+  void initState() {
+    // user = auth.currentUser;
+    // user!.sendEmailVerification();
+
+    super.initState();
   }
 
   @override

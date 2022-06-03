@@ -45,9 +45,22 @@ class _BookingFormState extends State<BookingForm> {
   bool isload = false;
   DateTime? _initalDate;
   DateTime dateCheck = DateTime.now();
+  var _db = FirebaseFirestore.instance;
   Future<void> getPredictedDate() async {
-    await FirebaseFirestore.instance
+    await _db
         .collection("bookings")
+        .where("hallid", isEqualTo: hallid)
+        .get()
+        .then((QuerySnapshot snasphot) {
+      if (snasphot.docs.isNotEmpty && snasphot.size > 0) {
+        snasphot.docs.forEach((element) {
+          // print("The Dates are : ${element.get("Date").toDate()}");
+          dates.add(element.get("Date").toDate());
+        });
+      }
+    });
+    await _db
+        .collection("reserved_halls")
         .where("hallid", isEqualTo: hallid)
         .get()
         .then((QuerySnapshot snasphot) {
@@ -417,77 +430,4 @@ class _BookingFormState extends State<BookingForm> {
       ),
     );
   }
-
-//   DateTime selectedDate = DateTime.now();
-//   DateTime? initialData;
-
-//   bool defineSelectable(DateTime val) {
-//     DateTime now = DateTime.now();
-// //make it return true on initialDate
-//     if (val.compareTo(initialData!) == 0) {
-//       return true;
-//     }
-// // disabled all days before today
-//     if (val.isBefore(now)) {
-//       return false;
-//     }
-// // disabled all days except Friday
-//     switch (val.weekday) {
-//       case DateTime.friday:
-//         return true;
-//         break;
-//       default:
-//         return false;
-//     }
-//   }
-
-//   int daysToAdd(int todayIndex, int targetIndex) {
-//     print('todayIndex $todayIndex');
-//     print('targetIndex $targetIndex');
-//     if (todayIndex < targetIndex) {
-//       // jump to target day in same week
-//       return targetIndex - todayIndex;
-//     } else if (todayIndex > targetIndex) {
-//       // must jump to next week
-//       return 7 + targetIndex - todayIndex;
-//     } else {
-//       return 0; // date is matched
-//     }
-//   }
-
-//   DateTime defineInitialDate() {
-//     DateTime now = DateTime.now();
-//     int dayOffset = daysToAdd(now.weekday, DateTime.friday);
-//     print('dayOffset: $dayOffset');
-//     return now.add(Duration(days: dayOffset));
-//   }
-
-//   Future<Null> _selectDate(BuildContext context) async {
-//     initialData = defineInitialDate();
-//     print('defineInitialDate: ${initialData}');
-//     print('defineSelectable: $defineSelectable');
-//     final DateTime? picked = await showDatePicker(
-//         context: context,
-//         initialDate: initialData,
-//         selectableDayPredicate: defineSelectable,
-//         firstDate: DateTime(2018, 12),
-//         lastDate: DateTime(2020, 12));
-//     if (picked != null && picked != selectedDate) selectedDate = picked;
-// //var formatter = DateFormat('EEEE, dd-MMMM-yyyy');
-// //String formatted = formatter.format(selectedDate);
-//     print('Select Date: $selectedDate');
-// //_askGiveProvider.meetingSink(formatted);
-// //addEventBloc.eventDateSink(formatted);
-//   }
-//
-// if (date.toString().isEmpty || time.toString().isEmpty) {
-// } else if (date.toString().isEmpty) {
-// Get.snackbar(date.toString(), "Please filled up date ");
-// } else if (time.toString().isEmpty) {
-// Get.snackbar(time.toString(), "Please filled up time ");
-// } else if (noOfGuests.text == null) {
-// Get.snackbar(
-// noOfGuests.text, "Please filled up noOfGuests ");
-// }
-// }
 }

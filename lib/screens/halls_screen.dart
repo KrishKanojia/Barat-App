@@ -1,4 +1,5 @@
 import 'package:barat/screens/hallsdetailform.dart';
+import 'package:barat/screens/manual_booking.dart';
 import 'package:barat/services/credentialservices.dart';
 import 'package:barat/services/locationservices.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -63,6 +64,13 @@ class _HallsScreenState extends State<HallsScreen> {
                   onPressed: () => Get.back()),
             ]);
       },
+    );
+  }
+
+  PopupMenuItem<int> _buildMenuItem(String option, int value) {
+    return PopupMenuItem<int>(
+      value: value,
+      child: Text(option),
     );
   }
 
@@ -173,53 +181,98 @@ class _HallsScreenState extends State<HallsScreen> {
                                             padding: const EdgeInsets.only(
                                                 left: 5.0),
                                             child: PopupMenuButton(
-                                              onSelected: (result) {
-                                                if (result == 0) {
-                                                  Get.to(
-                                                      () =>
-                                                          const HallsDetailForm(),
-                                                      arguments: [
-                                                        {"areaid": areaId},
-                                                        {
-                                                          "hallid":
-                                                              data["hall_id"]
-                                                        },
-                                                      ]);
-                                                } else if (result == 1) {
-                                                  deleteHallDialog(
-                                                      areaId: areaId,
-                                                      hallId: data["hall_id"]);
-                                                }
-                                              },
-                                              itemBuilder:
-                                                  (BuildContext context) =>
-                                                      const [
-                                                PopupMenuItem(
-                                                  value: 0,
-                                                  child: Text(
-                                                    'Edit',
-                                                    style: TextStyle(
-                                                      color: Colors.black,
-                                                    ),
-                                                  ),
-                                                ),
-                                                PopupMenuItem(
-                                                  value: 1,
-                                                  child: Text(
-                                                    'Delete',
-                                                    style: TextStyle(
-                                                      color: Colors.black,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
+                                                onSelected: (result) {
+                                              if (result == 0) {
+                                                Get.to(
+                                                    () =>
+                                                        const HallsDetailForm(),
+                                                    arguments: [
+                                                      {"areaid": areaId},
+                                                      {
+                                                        "hallid":
+                                                            data["hall_id"]
+                                                      },
+                                                    ]);
+                                              } else if (result == 1) {
+                                                deleteHallDialog(
+                                                    areaId: areaId,
+                                                    hallId: data["hall_id"]);
+                                              } else if (result == 2) {
+                                                Get.to(
+                                                    () => const ManaulBooking(),
+                                                    arguments: [
+                                                      {
+                                                        "hallid":
+                                                            data["hall_id"]
+                                                      },
+                                                      {
+                                                        "areaid": areaId,
+                                                      },
+                                                      {
+                                                        "hallownerid":
+                                                            data["hallOwnerId"],
+                                                      }
+                                                    ]);
+                                                print("We are in this section");
+                                              }
+                                            }, itemBuilder:
+                                                    (BuildContext context) {
+                                              print(
+                                                  "The Value of Hall Owner is ${data["hallOwnerId"]} && ${credentialServices.getUserId}");
+                                              return credentialServices
+                                                          .getUserId ==
+                                                      data["hallOwnerId"]
+                                                  ? <PopupMenuItem<int>>[
+                                                      _buildMenuItem("Edit", 0),
+                                                      _buildMenuItem(
+                                                          "Delete", 1),
+                                                      _buildMenuItem(
+                                                          "Manual Booking", 2),
+                                                    ]
+                                                  : <PopupMenuItem<int>>[
+                                                      _buildMenuItem("Edit", 0),
+                                                      _buildMenuItem(
+                                                          "Delete", 1),
+                                                    ];
+                                            }),
                                           ),
                                         )
                                       : const SizedBox(
                                           width: 0.0,
                                           height: 0.0,
                                         ),
+                                  // const PopupMenuItem(
+                                  //   value: 0,
+                                  //   child: Text(
+                                  //     'Edit',
+                                  //     style: TextStyle(
+                                  //       color: Colors.black,
+                                  //     ),
+                                  //   ),
+                                  // ),
+                                  // const PopupMenuItem(
+                                  //   value: 1,
+                                  //   child: Text(
+                                  //     'Delete',
+                                  //     style: TextStyle(
+                                  //       color: Colors.black,
+                                  //     ),
+                                  //   ),
+                                  // ),
+                                  // credentialServices.getUserId ==
+                                  //         data["hallOwnerId"]
+                                  //     ? PopupMenuItem(
+                                  //         value: 2,
+                                  //         child: const Text(
+                                  //           'Manual Booking',
+                                  //           style: TextStyle(
+                                  //             color: Colors.black,
+                                  //           ),
+                                  //         ),
+                                  //       )
+                                  //     : PopupMenuItem(
+                                  //         value: 2,
+                                  //         child: Offstage()),
                                   Align(
                                     alignment: Alignment.bottomCenter,
                                     child: Container(

@@ -1,4 +1,6 @@
+import 'package:barat/screens/forget_password.dart';
 import 'package:barat/screens/signUpPage.dart';
+import 'package:barat/screens/verification_screen.dart';
 import 'package:barat/services/credentialservices.dart';
 import 'package:barat/utils/color.dart';
 import 'package:barat/widgets/password_TextField.dart';
@@ -86,6 +88,30 @@ class _LoginPageState extends State<LoginPage> {
                         },
                       ),
                       SizedBox(
+                        height: height * 0.01,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          height: 20,
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                InkWell(
+                                  onTap: () => Get.to(() => ForgetPassword()),
+                                  child: const Text(
+                                    "Forget Password?",
+                                    style: TextStyle(
+                                      color: secondaryColor,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                )
+                              ]),
+                        ),
+                      ),
+                      SizedBox(
                         height: height * 0.02,
                       ),
                       Obx(
@@ -116,7 +142,10 @@ class _LoginPageState extends State<LoginPage> {
                                 ));
                               } else {
                                 credentialServices.signInWithUsername(
-                                  username: _username.text.trim().toString(),
+                                  username: _username.text
+                                      .trim()
+                                      .toString()
+                                      .toLowerCase(),
                                   password: _password.text.trim().toString(),
                                   context: context,
                                 );
@@ -163,7 +192,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       InkWell(
                         onTap: () {
-                          credentialServices.signinWithGoogle();
+                          credentialServices.signInWithGoogle();
                         },
                         child: Container(
                           width: width,
@@ -202,41 +231,12 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                         ),
-                        // Container(
-                        //   margin: const EdgeInsets.symmetric(horizontal: 45.0),
-                        //   decoration: BoxDecoration(
-                        //     color: Colors.white,
-                        //     borderRadius: BorderRadiusDirectional.circular(10),
-                        //     boxShadow: [
-                        //       BoxShadow(
-                        //         color: Colors.grey.withOpacity(0.5),
-                        //         spreadRadius: 2,
-                        //         blurRadius: 7,
-                        //         offset: const Offset(
-                        //             0, 3), // changes position of shadow
-                        //       ),
-                        //     ],
-                        //   ),
-                        //   child: Padding(
-                        //     padding: const EdgeInsets.symmetric(
-                        //         horizontal: 15, vertical: 12.0),
-                        //     child: Wrap(
-                        //       crossAxisAlignment: WrapCrossAlignment.center,
-                        //       children: [
-                        //         Image.asset(
-                        //           'images/google_signin.png',
-                        //           width: 20,
-                        //         ),
-                        //         const SizedBox(width: 12),
-                        //         const Text('Sign in with Google'),
-                        //       ],
-                        //     ),
-                        //   ),
-                        // ),
                       ),
                       ReusableAlreadyText(
                         text: 'Signup',
-                        onClick: () => Get.off(() => const SignUpPage()),
+                        onClick: () =>
+                            // Get.off(() => const VerificationScreen())
+                            Get.off(() => const SignUpPage()),
                       ),
                     ],
                   )),
@@ -247,23 +247,3 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
-
-
-
-// InkWell(
-//   onTap: () {},
-//   child: Ink(
-//     color: Color(0xFF397AF3),
-//     child: Padding(
-//       padding: EdgeInsets.all(6),
-//       child: Wrap(
-//         crossAxisAlignment: WrapCrossAlignment.center,
-//         children: [
-//           Icon(Icons.android), // <-- Use 'Image.asset(...)' here
-//           SizedBox(width: 12),
-//           Text('Sign in with Google'),
-//         ],
-//       ),
-//     ),
-//   ),
-// )

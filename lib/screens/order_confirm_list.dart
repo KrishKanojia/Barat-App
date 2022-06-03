@@ -33,7 +33,6 @@ class _OrderConfirmListState extends State<OrderConfirmList> {
   Widget myBookings(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 30.0),
         Flexible(
           child: Obx(() => StreamBuilder<QuerySnapshot>(
                 stream: credentialServices.getisAdmin == true
@@ -65,168 +64,149 @@ class _OrderConfirmListState extends State<OrderConfirmList> {
                       ),
                     );
                   } else {
-                    return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                        child: ListView(
-                          children: snapshot.data!.docs
-                              .map((DocumentSnapshot docSnaps) {
-                            Map<String, dynamic> data =
-                                docSnaps.data()! as Map<String, dynamic>;
-                            Timestamp time = data["Date"];
+                    return ListView(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10.0, vertical: 20.0),
+                      children:
+                          snapshot.data!.docs.map((DocumentSnapshot docSnaps) {
+                        Map<String, dynamic> data =
+                            docSnaps.data()! as Map<String, dynamic>;
+                        Timestamp time = data["Date"];
 
-                            return Obx(
-                              () => data["clientid"] ==
-                                          credentialServices.getUserId ||
-                                      credentialServices.getisAdmin == true
-                                  ? InkWell(
-                                      onTap: () {
-                                        Get.to(() => const ShowBookedHall(),
-                                            arguments: [
-                                              {"ListImage": data["images"]},
-                                              // {"userId": data.toString()},
-                                              {
-                                                "ownername": data["ownername"]
-                                                    .toUpperCase(),
-                                              },
-                                              {
-                                                "ownercontact":
-                                                    data["ownercontact"]
-                                              },
-                                              {
-                                                "owneremail": data["owneremail"]
-                                              },
-                                              {
-                                                "halladdress":
-                                                    data["halladdress"]
-                                              },
-                                              {
-                                                "guestsQuantity":
-                                                    data["GuestsQuantity"]
-                                              },
-                                              {
-                                                "clientname": data["clientname"]
-                                                    .toUpperCase()
-                                              },
-                                              {
-                                                "clientemail":
-                                                    data["clientemail"]
-                                              },
-                                              {
-                                                "totalPayment":
-                                                    data["TotalPaynment"]
-                                              },
+                        return Obx(
+                          () => data["clientid"] ==
+                                      credentialServices.getUserId ||
+                                  credentialServices.getisAdmin == true
+                              ? InkWell(
+                                  onTap: () {
+                                    Get.to(() => const ShowBookedHall(),
+                                        arguments: [
+                                          {"ListImage": data["images"]},
+                                          // {"userId": data.toString()},
+                                          {
+                                            "ownername":
+                                                data["ownername"].toUpperCase(),
+                                          },
+                                          {
+                                            "ownercontact": data["ownercontact"]
+                                          },
+                                          {"owneremail": data["owneremail"]},
+                                          {"halladdress": data["halladdress"]},
+                                          {
+                                            "guestsQuantity":
+                                                data["GuestsQuantity"]
+                                          },
+                                          {
+                                            "clientname":
+                                                data["clientname"].toUpperCase()
+                                          },
+                                          {"clientemail": data["clientemail"]},
+                                          {
+                                            "totalPayment":
+                                                data["TotalPaynment"]
+                                          },
 
-                                              {"date": data["Date"].toDate()},
+                                          {"date": data["Date"].toDate()},
 
-                                              {"hallname": data["hallname"]},
-                                              {
-                                                "eventplanner":
-                                                    data["EventPlaner"]
-                                              },
-                                              {
-                                                "cateringServices":
-                                                    data["CateringServices"]
-                                              },
-                                              {"ismyhall": false},
+                                          {"hallname": data["hallname"]},
+                                          {"eventplanner": data["EventPlaner"]},
+                                          {
+                                            "cateringServices":
+                                                data["CateringServices"]
+                                          },
+                                          {"ismyhall": false},
 
-                                              {"bookingId": data["bookingId"]},
+                                          {"bookingId": data["bookingId"]},
 
-                                              {"feedback": data["feedback"]}
-                                            ]);
-                                      },
-                                      child: Container(
-                                        height: 65,
-                                        margin: const EdgeInsets.symmetric(
-                                            vertical: 5, horizontal: 10),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          // color: Colors.green,
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              offset: const Offset(0, 10),
-                                              blurRadius: 50,
-                                              color: background1Color
-                                                  .withOpacity(0.23),
-                                            ),
-                                          ],
+                                          {"feedback": data["feedback"]}
+                                        ]);
+                                  },
+                                  child: Container(
+                                    height: 65,
+                                    margin: const EdgeInsets.symmetric(
+                                        vertical: 5, horizontal: 10),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      // color: Colors.green,
+                                      borderRadius: BorderRadius.circular(20),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          offset: const Offset(0, 10),
+                                          blurRadius: 50,
+                                          color: background1Color
+                                              .withOpacity(0.23),
                                         ),
-                                        child: Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: Wrap(
-                                            children: [
-                                              ListTile(
-                                                  dense: true,
-                                                  isThreeLine: true,
-                                                  contentPadding:
-                                                      const EdgeInsets
-                                                          .symmetric(
-                                                    horizontal: 5.0,
-                                                    vertical: 0.0,
-                                                  ),
-                                                  leading: CircleAvatar(
-                                                    maxRadius: 19,
-                                                    backgroundColor:
-                                                        background1Color,
-                                                    child: CircleAvatar(
-                                                      backgroundColor:
-                                                          Colors.grey[100],
-                                                      maxRadius: 18,
-                                                      child: Text(
-                                                        data["ownername"]
-                                                            .toString()
-                                                            .substring(0, 1)
-                                                            .toUpperCase(),
-                                                        style: const TextStyle(
-                                                          fontSize: 20,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  title: Text(
-                                                    "Owner Name:  ${data["ownername"].toUpperCase()}",
+                                      ],
+                                    ),
+                                    child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Wrap(
+                                        children: [
+                                          ListTile(
+                                              dense: true,
+                                              isThreeLine: true,
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                horizontal: 5.0,
+                                                vertical: 0.0,
+                                              ),
+                                              leading: CircleAvatar(
+                                                maxRadius: 19,
+                                                backgroundColor:
+                                                    background1Color,
+                                                child: CircleAvatar(
+                                                  backgroundColor:
+                                                      Colors.grey[100],
+                                                  maxRadius: 18,
+                                                  child: Text(
+                                                    data["ownername"]
+                                                        .toString()
+                                                        .substring(0, 1)
+                                                        .toUpperCase(),
                                                     style: const TextStyle(
-                                                      color: Colors.black,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 13,
+                                                      fontSize: 20,
                                                     ),
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
                                                   ),
-                                                  subtitle: Text(
-                                                    "Hall Name : ${data["hallname"]}\nDate : ${getTime(data["bookingtime"].toDate())}",
-                                                    style: const TextStyle(
-                                                      fontSize: 12,
-                                                    ),
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                              title: Text(
+                                                "Owner Name:  ${data["ownername"].toUpperCase()}",
+                                                style: const TextStyle(
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 13,
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              subtitle: Text(
+                                                "Hall Name : ${data["hallname"]}\nDate : ${getTime(data["bookingtime"].toDate())}",
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              trailing: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: const [
+                                                  Padding(
+                                                    padding: EdgeInsets.only(
+                                                        right: 8.0,
+                                                        bottom: 9.0),
+                                                    child: Icon(Icons
+                                                        .arrow_forward_ios_outlined),
                                                   ),
-                                                  trailing: Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: const [
-                                                      Padding(
-                                                        padding:
-                                                            EdgeInsets.only(
-                                                                right: 8.0,
-                                                                bottom: 9.0),
-                                                        child: Icon(Icons
-                                                            .arrow_forward_ios_outlined),
-                                                      ),
-                                                    ],
-                                                  )),
-                                            ],
-                                          ),
-                                        ),
+                                                ],
+                                              )),
+                                        ],
                                       ),
-                                    )
-                                  : const SizedBox(width: 0.0, height: 0.0),
-                            );
-                          }).toList(),
-                        ));
+                                    ),
+                                  ),
+                                )
+                              : const SizedBox(width: 0.0, height: 0.0),
+                        );
+                      }).toList(),
+                    );
                   }
                 },
               )),
@@ -238,7 +218,6 @@ class _OrderConfirmListState extends State<OrderConfirmList> {
   Widget myHallsBooked(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 30.0),
         Flexible(
           child: Obx(() => StreamBuilder<QuerySnapshot>(
                 stream: credentialServices.getisAdmin == true
@@ -268,167 +247,146 @@ class _OrderConfirmListState extends State<OrderConfirmList> {
                       ),
                     );
                   } else {
-                    return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                        child: ListView(
-                          children: snapshot.data!.docs
-                              .map((DocumentSnapshot docSnaps) {
-                            Map<String, dynamic> data =
-                                docSnaps.data()! as Map<String, dynamic>;
-                            print(
-                                "The Value of Admin in Order Confrim Page is ${credentialServices.getisAdmin}");
+                    return ListView(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10.0, vertical: 20.0),
+                      children:
+                          snapshot.data!.docs.map((DocumentSnapshot docSnaps) {
+                        Map<String, dynamic> data =
+                            docSnaps.data()! as Map<String, dynamic>;
+                        print(
+                            "The Value of Admin in Order Confrim Page is ${credentialServices.getisAdmin}");
 
-                            return Obx(
-                              () => data["hallOwnerId"] ==
-                                          credentialServices.getUserId ||
-                                      credentialServices.getisAdmin == true
-                                  ? InkWell(
-                                      onTap: () {
-                                        Get.to(() => const ShowBookedHall(),
-                                            arguments: [
-                                              {"ListImage": data["images"]},
-                                              // {"userId": data.toString()},
-                                              {
-                                                "ownername": data["ownername"]
-                                                    .toUpperCase(),
-                                              },
-                                              {
-                                                "ownercontact":
-                                                    data["ownercontact"]
-                                              },
-                                              {
-                                                "owneremail": data["owneremail"]
-                                              },
-                                              {
-                                                "halladdress":
-                                                    data["halladdress"]
-                                              },
-                                              {
-                                                "guestsQuantity":
-                                                    data["GuestsQuantity"]
-                                              },
-                                              {
-                                                "clientname": data["clientname"]
-                                              },
-                                              {
-                                                "clientemail":
-                                                    data["clientemail"]
-                                              },
-                                              {
-                                                "totalPayment":
-                                                    data["TotalPaynment"]
-                                              },
+                        return Obx(
+                          () => data["hallOwnerId"] ==
+                                      credentialServices.getUserId ||
+                                  credentialServices.getisAdmin == true
+                              ? InkWell(
+                                  onTap: () {
+                                    Get.to(() => const ShowBookedHall(),
+                                        arguments: [
+                                          {"ListImage": data["images"]},
+                                          // {"userId": data.toString()},
+                                          {
+                                            "ownername":
+                                                data["ownername"].toUpperCase(),
+                                          },
+                                          {
+                                            "ownercontact": data["ownercontact"]
+                                          },
+                                          {"owneremail": data["owneremail"]},
+                                          {"halladdress": data["halladdress"]},
+                                          {
+                                            "guestsQuantity":
+                                                data["GuestsQuantity"]
+                                          },
+                                          {"clientname": data["clientname"]},
+                                          {"clientemail": data["clientemail"]},
+                                          {
+                                            "totalPayment":
+                                                data["TotalPaynment"]
+                                          },
 
-                                              {
-                                                "date": data["Date"].toDate(),
-                                              },
-                                              {"hallname": data["hallname"]},
-                                              {
-                                                "eventplanner":
-                                                    data["EventPlaner"]
-                                              },
-                                              {
-                                                "cateringServices":
-                                                    data["CateringServices"]
-                                              },
-                                              {"ismyhall": true},
+                                          {
+                                            "date": data["Date"].toDate(),
+                                          },
+                                          {"hallname": data["hallname"]},
+                                          {"eventplanner": data["EventPlaner"]},
+                                          {
+                                            "cateringServices":
+                                                data["CateringServices"]
+                                          },
+                                          {"ismyhall": true},
 
-                                              {"bookingId": data["bookingId"]},
-                                              {"feedback": data["feedback"]}
-                                            ]);
-                                      },
-                                      child: Container(
-                                        height: 65,
-                                        margin: const EdgeInsets.symmetric(
-                                            vertical: 5, horizontal: 10),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          // color: Colors.green,
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              offset: const Offset(0, 10),
-                                              blurRadius: 50,
-                                              color: background1Color
-                                                  .withOpacity(0.23),
-                                            ),
-                                          ],
+                                          {"bookingId": data["bookingId"]},
+                                          {"feedback": data["feedback"]}
+                                        ]);
+                                  },
+                                  child: Container(
+                                    height: 65,
+                                    margin: const EdgeInsets.symmetric(
+                                        vertical: 5, horizontal: 10),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      // color: Colors.green,
+                                      borderRadius: BorderRadius.circular(20),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          offset: const Offset(0, 10),
+                                          blurRadius: 50,
+                                          color: background1Color
+                                              .withOpacity(0.23),
                                         ),
-                                        child: Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: Wrap(
-                                            children: [
-                                              ListTile(
-                                                  dense: true,
-                                                  isThreeLine: true,
-                                                  contentPadding:
-                                                      const EdgeInsets
-                                                          .symmetric(
-                                                    horizontal: 5.0,
-                                                    vertical: 0.0,
-                                                  ),
-                                                  leading: CircleAvatar(
-                                                    maxRadius: 19,
-                                                    backgroundColor:
-                                                        background1Color,
-                                                    child: CircleAvatar(
-                                                      backgroundColor:
-                                                          Colors.grey[100],
-                                                      maxRadius: 18,
-                                                      child: Text(
-                                                        data["clientname"]
-                                                            .toString()
-                                                            .substring(0, 1)
-                                                            .toUpperCase(),
-                                                        style: const TextStyle(
-                                                          fontSize: 20,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  title: Text(
-                                                    "Client Name: ${data["clientname"].toUpperCase()}",
+                                      ],
+                                    ),
+                                    child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Wrap(
+                                        children: [
+                                          ListTile(
+                                              dense: true,
+                                              isThreeLine: true,
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                horizontal: 5.0,
+                                                vertical: 0.0,
+                                              ),
+                                              leading: CircleAvatar(
+                                                maxRadius: 19,
+                                                backgroundColor:
+                                                    background1Color,
+                                                child: CircleAvatar(
+                                                  backgroundColor:
+                                                      Colors.grey[100],
+                                                  maxRadius: 18,
+                                                  child: Text(
+                                                    data["clientname"]
+                                                        .toString()
+                                                        .substring(0, 1)
+                                                        .toUpperCase(),
                                                     style: const TextStyle(
-                                                      color: Colors.black,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 13,
+                                                      fontSize: 20,
                                                     ),
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
                                                   ),
-                                                  subtitle: Text(
-                                                    "Hall Name : ${data["hallname"]}\nDate : ${getTime(data["Date"].toDate())}",
-                                                    style: const TextStyle(
-                                                      fontSize: 12,
-                                                    ),
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                              title: Text(
+                                                "Client Name: ${data["clientname"].toUpperCase()}",
+                                                style: const TextStyle(
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 13,
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              subtitle: Text(
+                                                "Hall Name : ${data["hallname"]}\nDate : ${getTime(data["Date"].toDate())}",
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              trailing: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: const [
+                                                  Padding(
+                                                    padding: EdgeInsets.only(
+                                                        right: 8.0,
+                                                        bottom: 9.0),
+                                                    child: Icon(Icons
+                                                        .arrow_forward_ios_outlined),
                                                   ),
-                                                  trailing: Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: const [
-                                                      Padding(
-                                                        padding:
-                                                            EdgeInsets.only(
-                                                                right: 8.0,
-                                                                bottom: 9.0),
-                                                        child: Icon(Icons
-                                                            .arrow_forward_ios_outlined),
-                                                      ),
-                                                    ],
-                                                  )),
-                                            ],
-                                          ),
-                                        ),
-                                      ))
-                                  : const SizedBox(width: 0.0, height: 0.0),
-                            );
-                          }).toList(),
-                        ));
+                                                ],
+                                              )),
+                                        ],
+                                      ),
+                                    ),
+                                  ))
+                              : const SizedBox(width: 0.0, height: 0.0),
+                        );
+                      }).toList(),
+                    );
                   }
                 },
               )),
@@ -444,14 +402,18 @@ class _OrderConfirmListState extends State<OrderConfirmList> {
       child: Scaffold(
         backgroundColor: background1Color,
         appBar: AppBar(
-          bottom: const TabBar(tabs: [
+          bottom: TabBar(tabs: [
             Tab(
-              text: "My Bookings",
-              icon: Icon(Icons.bookmark_added),
+              text: credentialServices.getisAdmin == true
+                  ? "User Hall Booking"
+                  : "My Bookings",
+              icon: const Icon(Icons.bookmark_added),
             ),
             Tab(
-              text: "My Halls Booked",
-              icon: Icon(Icons.villa_sharp),
+              text: credentialServices.getisAdmin == true
+                  ? "Owner Hall Booked"
+                  : "My Halls Booked",
+              icon: const Icon(Icons.villa_sharp),
             ),
           ]),
         ),

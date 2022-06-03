@@ -4,6 +4,7 @@ import 'package:barat/Models/user_model.dart';
 import 'package:barat/screens/admin.dart';
 import 'package:barat/screens/loginPage.dart';
 import 'package:barat/screens/order_confirm_list.dart';
+import 'package:barat/screens/verification_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -16,129 +17,11 @@ import 'package:google_sign_in/google_sign_in.dart';
 import '../screens/HomePage.dart';
 
 class CredentialServices extends GetxController {
-  // static var client = http.Client();
-
-  // final box = GetStorage();
-  // void signUpPost(String userName, String fullName, String userEmail,
-  //     String phoneNumber, String password, int userRoll) async {
-  //   // try {
-  //   //   var response = await http.post(
-  //   //       Uri.parse('https://reqres.in/api/register'),
-  //   //       body: {'email': email, 'password': password});
-  //   //   if (response.statusCode == 200) {
-  //   //     print(response.body.toString());
-  //   //     Get.off(() => const HomePage());
-  //   //     print('account created Succesfully');
-  //   //   } else {
-  //   //     print("Account is not Created");
-  //   //   }
-  //   // } catch (e) {
-  //   //   print(e.toString());
-  //   // }
-
-  //   try {
-  //     var headers = {'Content-Type': 'application/json'};
-  //     var request = http.Request(
-  //         'POST', Uri.parse('http://192.168.20.28:2000/api/user/Register'));
-  //     request.body = json.encode({
-  //       "UserName": userName,
-  //       "FullName": fullName,
-  //       "UserEmail": userEmail,
-  //       "phoneNumber": phoneNumber,
-  //       "password": password,
-  //       "userRoll": userRoll
-  //     });
-  //     request.headers.addAll(headers);
-
-  //     http.StreamedResponse response = await request.send();
-
-  //     if (response.statusCode == 200) {
-  //       box.write('responseSignUp', response.toString());
-  //       print(await response.stream.bytesToString());
-  //       userRoll == 1
-  //           ? Get.off(() => const HomePage())
-  //           : Get.to(() => const OrderConfirmList());
-  //     } else {
-  //       print(response.reasonPhrase);
-  //     }
-  //   } catch (e) {
-  //     print(e.toString());
-  //   }
-  // }
-
-  // Future<UserModel?> loginPost(String userName, String password) async {
-  //   // try {
-  //   //   var response = await http.post(Uri.parse('https://reqres.in/api/login'),
-  //   //       body: {'email': email, 'password': password});
-  //   //   if (response.statusCode == 200) {
-  //   //     print(response.body.toString());
-  //   //     Get.off(() => const HomePage());
-  //   //     print('account created Succesfully');
-  //   //   } else {
-  //   //     print("Account is not Created");
-  //   //   }
-  //   // } catch (e) {
-  //   //   print(e.toString());
-  //   // }
-
-  //   try {
-  //     // var headers = {'Content-Type': 'application/json'};
-  //     // var request = http.Request(
-  //     //     'POST', Uri.parse('http://192.168.20.28:2000/api/user/login'));
-  //     // request.body = json.encode({"UserName": userName, "password": password});
-  //     // request.headers.addAll(headers);
-  //     //
-  //     // // http.StreamedResponse response = await request.send();
-  //     // http.StreamedResponse response = await request.send();
-  //     //
-  //     // if (response.statusCode == 200) {
-  //     //   // print(await response.stream.bytesToString());
-  //     //   box.write('responseLogin', response.toString());
-  //     //   print(await response.stream.bytesToString());
-  //     //   Get.off(() => const HomePage());
-  //     // } else {
-  //     //   print(response.reasonPhrase);
-  //     // }
-
-  //     // -----------------------------------------------------------------------
-  //     var url = 'http://192.168.20.28:2000/api/user/login';
-  //     Map data = {
-  //       "UserName": userName,
-  //       "password": password,
-  //     };
-  //     //encode Map to JSON
-  //     var body = json.encode(data);
-
-  //     var response = await client.post(Uri.parse(url),
-  //         headers: {"Content-Type": "application/json"}, body: body);
-
-  //     if (response.statusCode == 200) {
-  //       var jsonString = jsonDecode(response.body);
-  //       print(jsonString['data']['userRoll']);
-  //       var userRole = await jsonString['data']['userRoll'];
-  //       userRole == 0
-  //           ? Get.off(() => const AdminPage())
-  //           : userRole == 2
-  //               ? Get.off(() => const OrderConfirmList())
-  //               : Get.off(() => const HomePage());
-
-  //       // var eee = json.decode(jsonString);
-  //       // return UserModel(jsonString);
-  //       // return jsonString;
-  //     } else {
-  //       //show error message
-  //       return null;
-  //     }
-  //     // -----------------------------------------------------------------------
-  //   } catch (e) {
-  //     print(e.toString());
-  //   }
-  //   return null;
-  // }
-
   FirebaseAuth auth = FirebaseAuth.instance;
   GoogleSignIn googleSignIn = GoogleSignIn();
 
+  var isGoogleSignedIn = false.obs;
+  bool get getisGoogleSignedIn => isGoogleSignedIn.value;
   var isLoading = false.obs;
   bool get getisLoading => isLoading.value;
   var userUid = ' '.obs;
@@ -150,7 +33,8 @@ class CredentialServices extends GetxController {
   String adminUid = "mqDeynQAVabEqKSfwGqIVjQmUfC2";
   var isAdmin = false.obs;
   bool get getisAdmin => isAdmin.value;
-
+  var isEmailVerified = false.obs;
+  bool get getisEmailVerified => isEmailVerified.value;
   Future signIn(
       {required String email,
       required String password,
@@ -197,21 +81,40 @@ class CredentialServices extends GetxController {
           // useremail = data["email"];
           isAdmin.value = false;
           isLoading.value = false;
-
+          isGoogleSignedIn.value = false;
           Get.off(() => const HomePage());
         }
       });
     } on FirebaseAuthException catch (e) {
       isLoading.value = false;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          duration: const Duration(seconds: 3),
-          content: Text(
-            '${e.message}',
+      if (e.code == 'user-not-found') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            duration: Duration(seconds: 3),
+            content: Text(
+              'No user found for that email.',
+            ),
           ),
-        ),
-      );
+        );
+      } else if (e.code == 'wrong-password') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            duration: Duration(seconds: 3),
+            content: Text(
+              'Wrong password provided for that user.',
+            ),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            duration: const Duration(seconds: 3),
+            content: Text(
+              '${e.message}',
+            ),
+          ),
+        );
+      }
     } catch (error) {
       switch (error.toString()) {
         case "ERROR_INVALID_EMAIL":
@@ -244,7 +147,6 @@ class CredentialServices extends GetxController {
           errorMessage = "An undefined Error happened.";
       }
       isLoading.value = false;
-      print("Is this is Error $errorMessage");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           duration: const Duration(seconds: 3),
@@ -256,7 +158,56 @@ class CredentialServices extends GetxController {
     }
   }
 
-  Future registerAccount(
+  Future sendVerificationEmail(context) async {
+    try {
+      final user = FirebaseAuth.instance.currentUser!;
+      await user.sendEmailVerification();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e.toString(),
+          ),
+        ),
+      );
+    }
+  }
+
+  Future<void> saveNewUserData(
+      {required String name,
+      required String fullname,
+      required String phNo,
+      required String email,
+      required String password,
+      required BuildContext context,
+      required String routename,
+      required UserCredential user}) async {
+    await FirebaseFirestore.instance
+        .collection("User")
+        .doc(user.user!.uid)
+        .set({
+      // Change username to Lowercase
+      "userName": name,
+      "fullname": fullname,
+      "userId": user.user!.uid,
+      "email": email,
+      "phoneNumber": phNo,
+      "account_created": Timestamp.now(),
+    });
+    print("Save to Database");
+    if (routename == '/create-hall-user') {
+      isLoading.value = false;
+      Get.offAll(() => const HomePage());
+    } else if (routename == "/signup") {
+      username.value = name;
+      useremail.value = email;
+      userUid.value = user.user!.uid;
+      isLoading.value = false;
+      Get.offAll(() => const LoginPage());
+    }
+  }
+
+  Future<void> registerAccount(
       {required String name,
       required String fullname,
       required String phNo,
@@ -265,33 +216,23 @@ class CredentialServices extends GetxController {
       required BuildContext context,
       required String routename}) async {
     isLoading.value = true;
+    bool isEmailVerified = false;
 
     try {
-      bool isUserExist = await usernameExist(
-          context: context, username: name.replaceAll(' ', '').toLowerCase());
+      bool isUserExist = await usernameExist(context: context, username: name);
       if (isUserExist == true) {
-        UserCredential User = await FirebaseAuth.instance
+        UserCredential user = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: email, password: password);
-        FirebaseFirestore.instance.collection("User").doc(User.user!.uid).set({
-          // Change username to Lowercase
-          "userName": name,
-          "fullname": fullname,
-          "userId": User.user!.uid,
-          "email": email.toLowerCase(),
-          "phoneNumber": phNo,
-          "account_created": Timestamp.now(),
-        });
-
-        if (routename == '/create-hall-user') {
-          isLoading.value = false;
-          Get.back();
-        } else if (routename == "/HomePage") {
-          username.value = name;
-          useremail.value = email;
-          userUid.value = User.user!.uid;
-          isLoading.value = false;
-          Get.offAll(() => const LoginPage());
-        }
+        isLoading.value = false;
+        Get.to(() => const VerificationScreen(), arguments: [
+          {"name": name},
+          {"fullname": fullname},
+          {"phNo": phNo},
+          {"email": email},
+          {"password": password},
+          {"routename": routename},
+          {"usercredential": user},
+        ]);
       } else {
         isLoading.value = false;
       }
@@ -306,6 +247,7 @@ class CredentialServices extends GetxController {
       );
     } on FirebaseAuthException catch (e) {
       isLoading.value = false;
+
       if (e.code == 'weak-password') {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -316,7 +258,6 @@ class CredentialServices extends GetxController {
           ),
         );
       } else if (e.code == 'email-already-in-use') {
-        isLoading.value = false;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             duration: Duration(seconds: 3),
@@ -325,7 +266,6 @@ class CredentialServices extends GetxController {
             ),
           ),
         );
-        print('The account already exists for that email.');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -351,58 +291,107 @@ class CredentialServices extends GetxController {
 
   Future LogOutViaEmail() async {
     await auth.signOut();
+
     Get.off(() => const LoginPage());
   }
 
-  Future signinWithGoogle() async {
-    print("In Google Auth");
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-    // Obtain the auth details from the request.
-    final GoogleSignInAuthentication googleAuth =
-        await googleUser!.authentication;
-    // Create a new credential.
-    final OAuthCredential googleCredential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-    // Sign in to Firebase with the Google [UserCredential].
-    final UserCredential googleUserCredential =
-        await FirebaseAuth.instance.signInWithCredential(googleCredential);
+  Future signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleSignInAccount =
+          await googleSignIn.signIn();
+      final GoogleSignInAuthentication googleSignInAuthentication =
+          await googleSignInAccount!.authentication;
 
-    // final GoogleSignInAccount? googleSignInAccount =
-    //     await googleSignIn.signIn();
-    // final GoogleSignInAuthentication googleSignInAuthentication =
-    //     await googleSignInAccount!.authentication;
+      final AuthCredential authCredential = GoogleAuthProvider.credential(
+        accessToken: googleSignInAuthentication.accessToken,
+        idToken: googleSignInAuthentication.idToken,
+      );
 
-    // final AuthCredential authCredential = GoogleAuthProvider.credential(
-    //   accessToken: googleSignInAuthentication.accessToken,
-    //   idToken: googleSignInAuthentication.idToken,
-    // );
+      final UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(authCredential);
 
-    // final UserCredential userCredential =
-    //     await FirebaseAuth.instance.signInWithCredential(authCredential);
+      final User? googleuser = userCredential.user;
+      assert(googleuser!.uid != null);
+      isGoogleSignedIn.value = true;
+      userUid.value = googleuser!.uid;
+      username.value = googleuser.displayName!;
+      useremail.value = googleuser.email!;
+      print(
+          "Google Sign In => ${userUid.value}, user name : ${username.value}, email: ${useremail.value} ");
+      // assert(user!.uid != null);
+      FirebaseFirestore.instance.collection("User").doc(googleuser.uid).set({
+        "userName": googleuser.displayName.toString().toLowerCase(),
+        "fullname": googleuser.displayName.toString().toLowerCase(),
+        "userId": googleuser.uid,
+        "email": googleuser.email!.toLowerCase(),
+        "phoneNumber": googleuser.phoneNumber ?? "00000000000",
+        "account_created": Timestamp.now(),
+      });
 
-    final User? user = googleUserCredential.user;
-
-    assert(user!.uid != null);
-    FirebaseFirestore.instance.collection("User").doc(user!.uid).set({
-      "userName": user.displayName,
-      "fullname": user.displayName,
-      "userId": user.uid,
-      "email": user.email!.toLowerCase(),
-      "phoneNumber": user.phoneNumber,
-      "account_created": Timestamp.now(),
-    });
-    userUid.value = user.uid;
-    username.value = user.displayName!;
-    useremail.value = user.email!;
-    print(
-        "Google Sign In => ${userUid.value}, user name : ${username.value}, email: ${useremail.value} ");
-    Get.off(() => const HomePage());
+      print(
+          "Google Sign In => ${userUid.value}, user name : ${username.value}, email: ${useremail.value} ");
+      Get.off(() => const HomePage());
+      print("Google Sign In => $userUid");
+    } catch (e) {
+      print("This is Error ${e.toString()}");
+    }
   }
 
+  // Future signinWithGoogleError() async {
+  //   try {
+  //     print("In Google Auth");
+  //     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+  //     // Obtain the auth details from the request.
+  //     final GoogleSignInAuthentication googleAuth =
+  //         await googleUser!.authentication;
+  //     // Create a new credential.
+  //     final OAuthCredential googleCredential = GoogleAuthProvider.credential(
+  //       accessToken: googleAuth.accessToken,
+  //       idToken: googleAuth.idToken,
+  //     );
+  //     // Sign in to Firebase with the Google [UserCredential].
+  //     final UserCredential googleUserCredential =
+  //         await FirebaseAuth.instance.signInWithCredential(googleCredential);
+
+  //     // final GoogleSignInAccount? googleSignInAccount =
+  //     //     await googleSignIn.signIn();
+  //     // final GoogleSignInAuthentication googleSignInAuthentication =
+  //     //     await googleSignInAccount!.authentication;
+
+  //     // final AuthCredential authCredential = GoogleAuthProvider.credential(
+  //     //   accessToken: googleSignInAuthentication.accessToken,
+  //     //   idToken: googleSignInAuthentication.idToken,
+  //     // );
+
+  //     // final UserCredential userCredential =
+  //     //     await FirebaseAuth.instance.signInWithCredential(authCredential);
+
+  //     final User? user = googleUserCredential.user;
+  //     print(
+  //         "Google Sign In => ${userUid.value}, user name : ${username.value}, email: ${useremail.value} ");
+  //     // assert(user!.uid != null);
+  //     FirebaseFirestore.instance.collection("User").doc(user!.uid).set({
+  //       "userName": user.displayName,
+  //       "fullname": user.displayName,
+  //       "userId": user.uid,
+  //       "email": user.email!.toLowerCase(),
+  //       "phoneNumber": user.phoneNumber ,
+  //       "account_created": Timestamp.now(),
+  //     });
+  //     userUid.value = user.uid;
+  //     username.value = user.displayName!;
+  //     useremail.value = user.email!;
+  //     print(
+  //         "Google Sign In => ${userUid.value}, user name : ${username.value}, email: ${useremail.value} ");
+  //     Get.off(() => const HomePage());
+  //   } catch (e) {
+  //     print("This is Eroor ${e.toString()}");
+  //   }
+  // }
+
   Future SignOutGoogle() async {
-    return googleSignIn.signOut();
+    await googleSignIn.signOut();
+    Get.off(() => const LoginPage());
   }
 
   Future<bool> usernameExist(
@@ -447,15 +436,15 @@ class CredentialServices extends GetxController {
       required BuildContext context}) async {
     late String useremail;
     isLoading.value = true;
-    String userName = username.replaceAll(' ', '').toLowerCase();
-    print(" Username : $userName+ joe");
+    // String userName = username.replaceAll(' ', '').toLowerCase();
     RegExp regExp = RegExp(
         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
+
     try {
-      if (!regExp.hasMatch(userName)) {
+      if (!regExp.hasMatch(username)) {
         QuerySnapshot userdata = await FirebaseFirestore.instance
             .collection('User')
-            .where('userName', isEqualTo: userName)
+            .where('userName', isEqualTo: username)
             .get();
         if (userdata.size > 0) {
           userdata.docs.forEach((doc) {
@@ -482,7 +471,7 @@ class CredentialServices extends GetxController {
       } else {
         signIn(
           context: context,
-          email: userName,
+          email: username,
           password: password,
         );
       }

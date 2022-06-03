@@ -25,6 +25,7 @@ class _ConfirmOrderScreenState extends State<ConfirmOrderScreen> {
   final credentialServices = Get.find<CredentialServices>();
   final TextEditingController feedbackCont = TextEditingController();
   double rating = 0.0;
+
   @override
   void initState() {
     // TODO: implement initState
