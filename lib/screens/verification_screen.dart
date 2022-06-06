@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:async/async.dart';
+import 'package:barat/screens/HomePage.dart';
 import 'package:barat/screens/loginPage.dart';
 import 'package:barat/services/credentialservices.dart';
 import 'package:barat/utils/color.dart';
@@ -8,20 +10,27 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class VerificationScreen extends StatefulWidget {
-  const VerificationScreen({Key? key}) : super(key: key);
-
+  final name;
+  final fullname;
+  final phNo;
+  final email;
+  final password;
+  final routename;
+  final usercredential;
+  VerificationScreen({
+    this.name = " ",
+    this.fullname = " ",
+    this.phNo = " ",
+    required this.email,
+    required this.password,
+    required this.routename,
+    required this.usercredential,
+  });
   @override
   State<VerificationScreen> createState() => _VerificationScreenState();
 }
 
 class _VerificationScreenState extends State<VerificationScreen> {
-  final name = Get.arguments[0]['name'];
-  final fullname = Get.arguments[1]['fullname'];
-  final phNo = Get.arguments[2]['phNo'];
-  final email = Get.arguments[3]['email'];
-  final password = Get.arguments[4]['password'];
-  final routename = Get.arguments[5]['routename'];
-  final UserCredential usercredential = Get.arguments[6]['usercredential'];
   bool isEmaiLVerified = false;
   bool canResendEmail = false;
   Timer? timer;
@@ -29,28 +38,37 @@ class _VerificationScreenState extends State<VerificationScreen> {
 
   Future _sendVerificationEmail() async {
     try {
-      final User? userAuth = usercredential.user;
+      final User? userAuth = widget.usercredential.user;
       // final user = FirebaseAuth.instance.userAuth;
       await userAuth!.sendEmailVerification();
       setState(() => canResendEmail = false);
-      await Future.delayed(const Duration(seconds: 5));
-      setState(() => canResendEmail = true);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Verification Email Sent "),
         ),
       );
+      await Future.delayed(const Duration(seconds: 5), () {
+        setState(() => canResendEmail = true);
+      });
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 5),
+          content: Text(" ${e.message}"),
+        ),
+      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(e.toString()),
+          duration: const Duration(seconds: 5),
+          content: Text("Dont Send Message ${e.toString()}"),
         ),
       );
     }
   }
 
   Future _checkEmailVerified() async {
-    await FirebaseAuth.instance.currentUser!.reload();
+    await FirebaseAuth.instance.currentUser?.reload();
     setState(() {
       isEmaiLVerified = FirebaseAuth.instance.currentUser!.emailVerified;
     });
@@ -62,20 +80,28 @@ class _VerificationScreenState extends State<VerificationScreen> {
           content: Text("Email has been Verified"),
         ),
       );
-      credentialServices.saveNewUserData(
-        context: context,
-        name: name,
-        fullname: fullname,
-        phNo: phNo,
-        email: email,
-        password: password,
-        routename: routename,
-        user: usercredential,
-      );
+      if (widget.routename == '/signin') {
+        credentialServices.userUid.value = widget.usercredential.user!.uid;
+        Get.offAll(() => const HomePage());
+      } else {
+        credentialServices.saveNewUserData(
+          context: context,
+          name: widget.name,
+          fullname: widget.fullname,
+          phNo: widget.phNo,
+          email: widget.email,
+          password: widget.password,
+          routename: widget.routename,
+          user: widget.usercredential,
+        );
+      }
 
       timer?.cancel();
     }
   }
+
+  @override
+  // TODO: implement mounted
 
   @override
   void initState() {
@@ -91,7 +117,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
   }
 
   @override
-  void dispose() {
+  void dispose() async {
     timer?.cancel();
     super.dispose();
   }
@@ -126,7 +152,10 @@ class _VerificationScreenState extends State<VerificationScreen> {
                     style: TextStyle(fontSize: 24.0),
                   ),
                   onPressed: () {
-                    canResendEmail == true ? _sendVerificationEmail() : () {};
+                    print("Resend 1 {$canResendEmail}");
+                    canResendEmail == true
+                        ? {_sendVerificationEmail()}
+                        : print("Send $canResendEmail");
                   },
                 ),
               ),

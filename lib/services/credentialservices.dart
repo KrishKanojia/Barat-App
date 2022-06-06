@@ -35,6 +35,7 @@ class CredentialServices extends GetxController {
   bool get getisAdmin => isAdmin.value;
   var isEmailVerified = false.obs;
   bool get getisEmailVerified => isEmailVerified.value;
+
   Future signIn(
       {required String email,
       required String password,
@@ -46,45 +47,57 @@ class CredentialServices extends GetxController {
       UserCredential userCredential = await auth.signInWithEmailAndPassword(
           email: email.toLowerCase(), password: password);
 
-      userUid.value = userCredential.user!.uid;
+      bool isEmaiLVerified = FirebaseAuth.instance.currentUser!.emailVerified;
+      if (!isEmaiLVerified) {
+        isLoading.value = false;
+        Get.to(
+          () => VerificationScreen(
+            email: email,
+            password: password,
+            usercredential: userCredential,
+            routename: "/signin",
+          ),
+        );
+      } else {
+        userUid.value = userCredential.user!.uid;
 
-      await db
-          .collection('admincredentials')
-          .doc('mqDeynQAVabEqKSfwGqIVjQmUfC2')
-          .get()
-          .then((DocumentSnapshot DocumentSnapshot) async {
-        Map<String, dynamic> data =
-            DocumentSnapshot.data()! as Map<String, dynamic>;
-        if (userCredential.user!.email == data["email"] &&
-            password == data["password"]) {
-          isAdmin.value = true;
-          print("The Value of Admin is ${isAdmin.value}");
+        await db
+            .collection('admincredentials')
+            .doc('mqDeynQAVabEqKSfwGqIVjQmUfC2')
+            .get()
+            .then((DocumentSnapshot DocumentSnapshot) async {
+          Map<String, dynamic> data =
+              DocumentSnapshot.data()! as Map<String, dynamic>;
+          if (userCredential.user!.email == data["email"] &&
+              password == data["password"]) {
+            isAdmin.value = true;
+            print("The Value of Admin is ${isAdmin.value}");
 
-          // print("Username is : $username , useremail is : $useremail");
-          isLoading.value = false;
-          username.value = data["name"];
-          useremail.value = data["email"];
-          Get.off(() => const AdminPage());
-        } else {
-          isAdmin.value = false;
-          await db
-              .collection("User")
-              .doc(userUid.value)
-              .get()
-              .then((docSnasphot) {
-            Map<String, dynamic> data =
-                docSnasphot.data()! as Map<String, dynamic>;
-            username.value = data["userName"];
+            isLoading.value = false;
+            username.value = data["name"];
             useremail.value = data["email"];
-          });
-          // username = data["userName"];
-          // useremail = data["email"];
-          isAdmin.value = false;
-          isLoading.value = false;
-          isGoogleSignedIn.value = false;
-          Get.off(() => const HomePage());
-        }
-      });
+            Get.off(() => const AdminPage());
+          } else {
+            isAdmin.value = false;
+            await db
+                .collection("User")
+                .doc(userUid.value)
+                .get()
+                .then((docSnasphot) {
+              Map<String, dynamic> data =
+                  docSnasphot.data()! as Map<String, dynamic>;
+              username.value = data["userName"];
+              useremail.value = data["email"];
+            });
+            // username = data["userName"];
+            // useremail = data["email"];
+            isAdmin.value = false;
+            isLoading.value = false;
+            isGoogleSignedIn.value = false;
+            Get.off(() => const HomePage());
+          }
+        });
+      }
     } on FirebaseAuthException catch (e) {
       isLoading.value = false;
       if (e.code == 'user-not-found') {
@@ -158,21 +171,6 @@ class CredentialServices extends GetxController {
     }
   }
 
-  Future sendVerificationEmail(context) async {
-    try {
-      final user = FirebaseAuth.instance.currentUser!;
-      await user.sendEmailVerification();
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            e.toString(),
-          ),
-        ),
-      );
-    }
-  }
-
   Future<void> saveNewUserData(
       {required String name,
       required String fullname,
@@ -224,15 +222,16 @@ class CredentialServices extends GetxController {
         UserCredential user = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: email, password: password);
         isLoading.value = false;
-        Get.to(() => const VerificationScreen(), arguments: [
-          {"name": name},
-          {"fullname": fullname},
-          {"phNo": phNo},
-          {"email": email},
-          {"password": password},
-          {"routename": routename},
-          {"usercredential": user},
-        ]);
+        Get.to(
+          () => VerificationScreen(
+              name: name,
+              fullname: fullname,
+              phNo: phNo,
+              email: email,
+              password: password,
+              routename: routename,
+              usercredential: user),
+        );
       } else {
         isLoading.value = false;
       }
@@ -412,7 +411,6 @@ class CredentialServices extends GetxController {
         );
         return false;
       } else if (userdata.docs.isEmpty) {
-        print("UserData : $userdata");
         return true;
       } else {
         return false;
@@ -451,6 +449,7 @@ class CredentialServices extends GetxController {
             useremail = doc.get("email");
             print("Owner email is $useremail");
           });
+
           signIn(
             context: context,
             email: useremail,

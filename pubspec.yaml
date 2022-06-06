@@ -57,7 +57,7 @@ dependencies:
   location: 
   search_map_place_updated:
   intl:
-  
+  async: 
 dev_dependencies:
   flutter_test:
     sdk: flutter
