@@ -35,6 +35,8 @@ class _ShowBookedHallState extends State<ShowBookedHall> {
 
   final bookingId = Get.arguments[14]['bookingId'];
   final feedback = Get.arguments[15]['feedback'];
+  final event = Get.arguments[16]['event'];
+
   String? bookedDate;
   bool isHaveFeedBack = false;
 
@@ -174,6 +176,11 @@ class _ShowBookedHallState extends State<ShowBookedHall> {
               text1: "Booking Date",
               // text2: "${snapshot.data!.data![0].cateringPerHead}",
               text2: "$bookedDate",
+            ),
+            ReusableDetailsCopyText(
+              text1: "Event Type",
+              // text2: "${snapshot.data!.data![0].cateringPerHead}",
+              text2: "$event",
             ),
             ReusableDetailsCopyText(
               text1: "Event Planner",

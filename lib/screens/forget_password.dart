@@ -96,17 +96,17 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                     height: size.height * 0.02,
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
                     child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                          minimumSize: const Size.fromHeight(50)),
+                          minimumSize: const Size.fromHeight(40)),
                       icon: const Icon(
                         Icons.email,
                         size: 32,
                       ),
                       label: const Text(
                         "Reset Password",
-                        style: TextStyle(fontSize: 24.0),
+                        style: TextStyle(fontSize: 20.0),
                       ),
                       onPressed: () {
                         if (_email.text.trim().toString().isEmpty ||

@@ -99,7 +99,8 @@ class _LoginPageState extends State<LoginPage> {
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 InkWell(
-                                  onTap: () => Get.to(() => ForgetPassword()),
+                                  onTap: () =>
+                                      Get.to(() => const ForgetPassword()),
                                   child: const Text(
                                     "Forget Password?",
                                     style: TextStyle(

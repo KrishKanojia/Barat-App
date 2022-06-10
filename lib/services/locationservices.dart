@@ -189,6 +189,7 @@ class LocationServices extends GetxController {
     required String owneremail,
     required String halladdress,
     required String hallname,
+    required String event,
   }) async {
     final credentialServices = Get.find<CredentialServices>();
     print(
@@ -220,6 +221,7 @@ class LocationServices extends GetxController {
       "halladdress": halladdress,
       "feedback": "",
       "rating": 0.0,
+      "event": event,
     });
     print("Area Uploaded SuccessFully");
 

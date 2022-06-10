@@ -50,6 +50,7 @@ class CredentialServices extends GetxController {
       bool isEmaiLVerified = FirebaseAuth.instance.currentUser!.emailVerified;
       if (!isEmaiLVerified) {
         isLoading.value = false;
+
         Get.to(
           () => VerificationScreen(
             email: email,
@@ -192,17 +193,17 @@ class CredentialServices extends GetxController {
       "phoneNumber": phNo,
       "account_created": Timestamp.now(),
     });
-    print("Save to Database");
-    if (routename == '/create-hall-user') {
-      isLoading.value = false;
-      Get.offAll(() => const HomePage());
-    } else if (routename == "/signup") {
-      username.value = name;
-      useremail.value = email;
-      userUid.value = user.user!.uid;
-      isLoading.value = false;
-      Get.offAll(() => const LoginPage());
-    }
+    // print("Save to Database");
+    // if (routename == '/create-hall-user') {
+    //   isLoading.value = false;
+    //   Get.offAll(() => const HomePage());
+    // } else if (routename == "/signup") {
+    //   username.value = name;
+    //   useremail.value = email;
+    //   userUid.value = user.user!.uid;
+    //   isLoading.value = false;
+    //   Get.offAll(() => const LoginPage());
+    // }
   }
 
   Future<void> registerAccount(
@@ -221,6 +222,15 @@ class CredentialServices extends GetxController {
       if (isUserExist == true) {
         UserCredential user = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: email, password: password);
+        await saveNewUserData(
+            context: context,
+            email: email,
+            name: name,
+            fullname: fullname,
+            password: password,
+            phNo: phNo,
+            routename: routename,
+            user: user);
         isLoading.value = false;
         Get.to(
           () => VerificationScreen(

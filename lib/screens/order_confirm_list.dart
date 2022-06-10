@@ -118,7 +118,8 @@ class _OrderConfirmListState extends State<OrderConfirmList> {
 
                                           {"bookingId": data["bookingId"]},
 
-                                          {"feedback": data["feedback"]}
+                                          {"feedback": data["feedback"]},
+                                          {"event": data["event"]}
                                         ]);
                                   },
                                   child: Container(

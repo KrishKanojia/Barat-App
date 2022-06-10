@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:async/async.dart';
 import 'package:barat/screens/HomePage.dart';
+import 'package:barat/screens/admin.dart';
 import 'package:barat/screens/loginPage.dart';
 import 'package:barat/services/credentialservices.dart';
 import 'package:barat/utils/color.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -68,41 +70,45 @@ class _VerificationScreenState extends State<VerificationScreen> {
   }
 
   Future _checkEmailVerified() async {
-    await FirebaseAuth.instance.currentUser?.reload();
-    setState(() {
-      isEmaiLVerified = FirebaseAuth.instance.currentUser!.emailVerified;
-    });
+    try {
+      await FirebaseAuth.instance.currentUser?.reload();
+      setState(() {
+        isEmaiLVerified = FirebaseAuth.instance.currentUser!.emailVerified;
+      });
 
-    if (isEmaiLVerified) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          duration: Duration(seconds: 5),
-          content: Text("Email has been Verified"),
-        ),
-      );
-      if (widget.routename == '/signin') {
-        credentialServices.userUid.value = widget.usercredential.user!.uid;
-        Get.offAll(() => const HomePage());
-      } else {
-        credentialServices.saveNewUserData(
-          context: context,
-          name: widget.name,
-          fullname: widget.fullname,
-          phNo: widget.phNo,
-          email: widget.email,
-          password: widget.password,
-          routename: widget.routename,
-          user: widget.usercredential,
+      if (isEmaiLVerified) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            duration: Duration(seconds: 5),
+            content: Text("Email has been Verified"),
+          ),
         );
-      }
+        if (widget.routename == '/signin') {
+          credentialServices.userUid.value = widget.usercredential.user!.uid;
+          credentialServices.username.value =
+              FirebaseAuth.instance.currentUser!.displayName!;
+          credentialServices.useremail.value = widget.email;
+          Get.offAll(() => const HomePage());
+        } else if (widget.routename == "/signup") {
+          Get.offAll(() => const LoginPage());
+        } else if (widget.routename == '/create-hall-user') {
+          Get.off(() => const AdminPage());
+        }
 
-      timer?.cancel();
+        timer?.cancel();
+      }
+    } catch (e) {
+      //  ScaffoldMessenger.of(context).showSnackBar(
+      //    SnackBar(
+      //     duration:const Duration(seconds: 5),
+      //     content: Text(e.toString()),
+      //   ),
+      // );
+      print(e.toString());
     }
   }
 
   @override
-  // TODO: implement mounted
-
   @override
   void initState() {
     isEmaiLVerified = FirebaseAuth.instance.currentUser!.emailVerified;
@@ -120,6 +126,13 @@ class _VerificationScreenState extends State<VerificationScreen> {
   void dispose() async {
     timer?.cancel();
     super.dispose();
+  }
+
+  @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
   }
 
   @override
@@ -164,8 +177,15 @@ class _VerificationScreenState extends State<VerificationScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 50.0),
                 child: InkWell(
                   onTap: () {
-                    FirebaseAuth.instance.signOut();
-                    Get.back();
+                    if (widget.routename == '/signin') {
+                      FirebaseAuth.instance.signOut();
+                      Get.back();
+                    } else if (widget.routename == "/signup") {
+                      FirebaseAuth.instance.signOut();
+                      Get.offAll(() => const LoginPage());
+                    } else if (widget.routename == '/create-hall-user') {
+                      Get.off(() => const AdminPage());
+                    }
                   },
                   child: const Text(
                     "Cancel",

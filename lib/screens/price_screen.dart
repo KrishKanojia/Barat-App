@@ -51,6 +51,8 @@ class _PriceScreenState extends State<PriceScreen> {
   final owneremail = Get.arguments[14]['owneremail'];
   final halladdress = Get.arguments[15]['halladdress'];
   final isCartService = Get.arguments[16]['isCartService'];
+  final event = Get.arguments[17]['event'];
+
   final locationServices = Get.find<LocationServices>();
 
   var finalTotalPrice;
@@ -219,6 +221,7 @@ class _PriceScreenState extends State<PriceScreen> {
         ownercontact: ownercontact.toString(),
         owneremail: owneremail,
         halladdress: halladdress,
+        event: event,
       );
 
       sendNotificationToAdmin().whenComplete(

@@ -110,8 +110,7 @@ class _HomePageState extends State<HomePage> {
                   Obx(
                     () => InkWell(
                       onTap: () {},
-                      child: credentialServices.userUid.value !=
-                              credentialServices.adminUid
+                      child: credentialServices.getisAdmin != true
                           ? SizedBox(
                               width: 20.0,
                               child: PopupMenuButton(

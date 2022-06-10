@@ -34,8 +34,8 @@ class _BookingFormState extends State<BookingForm> {
   final halladdress = Get.arguments[11]['halladdress'];
 
   final TextEditingController noOfGuests = TextEditingController();
+  final locationServices = Get.find<LocationServices>();
 
-  LocationServices locationServices = LocationServices();
   String? date;
   String? time;
   bool isCartService = false;
@@ -46,6 +46,7 @@ class _BookingFormState extends State<BookingForm> {
   DateTime? _initalDate;
   DateTime dateCheck = DateTime.now();
   var _db = FirebaseFirestore.instance;
+
   Future<void> getPredictedDate() async {
     await _db
         .collection("bookings")
@@ -100,16 +101,167 @@ class _BookingFormState extends State<BookingForm> {
     return dates.map(sanitizeDateTime).toSet();
   }
 
+  int _groupValue = 0;
+  TextEditingController otherController = TextEditingController();
+  var event = "Wedding";
+  bool isOther = false;
+  Widget _myRadioButton(
+      {required String title,
+      required int value,
+      required Function(int?)? onChanged}) {
+    return RadioListTile(
+      value: value,
+      groupValue: _groupValue,
+      onChanged: onChanged,
+      title: Text(title),
+    );
+  }
+
+  itemUnits() {
+    Size size = MediaQuery.of(context).size;
+
+    return showModalBottomSheet(
+        backgroundColor: Colors.transparent,
+        isScrollControlled: true,
+        context: context,
+        builder: (context) {
+          return StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+            return Wrap(
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom),
+                  child: Container(
+                    width: size.width,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 10,
+                    ),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(15),
+                        topRight: Radius.circular(15),
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              "Select Event",
+                              style: TextStyle(fontFamily: "Poppins"),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              icon: const Icon(Icons.close),
+                            )
+                          ],
+                        ),
+                        _myRadioButton(
+                            title: "Wedding",
+                            value: 0,
+                            onChanged: (newValue) {
+                              setState(() {
+                                isOther = false;
+                                _groupValue = newValue!;
+                                event = "Wedding";
+                                print(event);
+                              });
+                            }),
+                        _myRadioButton(
+                            title: "Valima",
+                            value: 1,
+                            onChanged: (newValue) {
+                              setState(() {
+                                isOther = false;
+                                _groupValue = newValue!;
+                                event = "Valima";
+                                print(event);
+                              });
+                            }),
+                        _myRadioButton(
+                            title: "Mehendi",
+                            value: 2,
+                            onChanged: (newValue) {
+                              setState(() {
+                                isOther = false;
+                                _groupValue = newValue!;
+                                event = "Mehendi";
+                                print(event);
+                              });
+                            }),
+                        _myRadioButton(
+                            title: "Birthday",
+                            value: 3,
+                            onChanged: (newValue) {
+                              setState(() {
+                                isOther = false;
+                                _groupValue = newValue!;
+                                event = "Birthday";
+                                print(event);
+                              });
+                            }),
+                        Row(
+                          children: [
+                            Flexible(
+                              fit: FlexFit.loose,
+                              child: _myRadioButton(
+                                  title: "Other",
+                                  value: 4,
+                                  onChanged: (newValue) {
+                                    setState(() {
+                                      isOther = true;
+                                      _groupValue = newValue!;
+                                    });
+                                  }),
+                            ),
+                            isOther == true
+                                ? Flexible(
+                                    flex: 1,
+                                    fit: FlexFit.loose,
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 10.0),
+                                      child: TextField(
+                                        controller: otherController,
+                                        onChanged: (value) {
+                                          event = value;
+                                          print(event);
+                                        },
+                                        decoration: const InputDecoration(
+                                          hintText: 'Enter a search term',
+                                        ),
+                                      ),
+                                    ))
+                                : const SizedBox(
+                                    height: 0.0,
+                                    width: 0.0,
+                                  ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            );
+          });
+        });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    noOfGuests.text = "";
-    print("41 $userID");
-    print("42 $pricePerHead");
-    print("43 $cateringPerHead");
-    print("44 $hallid");
-    print("45 $areaid");
+
     getPredictedDate();
   }
 
@@ -118,6 +270,7 @@ class _BookingFormState extends State<BookingForm> {
     // TODO: implement dispose
     super.dispose();
     noOfGuests.dispose();
+    otherController.dispose();
   }
 
   @override
@@ -125,22 +278,23 @@ class _BookingFormState extends State<BookingForm> {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Container(
-            height: 600.h,
-            padding: EdgeInsets.only(top: 25.0.h, left: 10.0.w, right: 10.0.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Center(
-                  child: ReusableBigText(
-                    text: "Booking Form",
-                    fontSize: 40,
-                    fontWeight: FontWeight.normal,
-                  ),
-                ),
-                SizedBox(height: 10.h),
-                isload == true
-                    ? DateTimePicker(
+          child: isload == true
+              ? Container(
+                  height: 600.h,
+                  padding:
+                      EdgeInsets.only(top: 25.0.h, left: 10.0.w, right: 10.0.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Center(
+                        child: ReusableBigText(
+                          text: "Booking Form",
+                          fontSize: 40,
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
+                      SizedBox(height: 10.h),
+                      DateTimePicker(
                         selectableDayPredicate: (DateTime val) {
                           String sanitized = sanitizeDateTime(val);
                           return !unselectableDates.contains(sanitized);
@@ -174,258 +328,303 @@ class _BookingFormState extends State<BookingForm> {
                           return null;
                         },
                         onSaved: (val) => setState(() => date = val ?? ''),
-                      )
-                    : const SizedBox(
-                        height: 0.0,
-                        width: 0.0,
                       ),
-                SizedBox(height: 10.h),
-                DateTimePicker(
-                  decoration: const InputDecoration(
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          style: BorderStyle.solid,
-                          color: Colors.black,
-                          width: 2.0),
-                    ),
-                    border: OutlineInputBorder(),
-                    labelText: 'Time',
-                  ),
-                  type: DateTimePickerType.time,
-                  //timePickerEntryModeInput: true,
-                  //controller: _controller4,
-                  initialValue: '', //_initialValue,
-                  icon: const Icon(Icons.access_time),
-                  timeLabelText: "Time",
-                  // use24HourFormat: false,
-                  onChanged: (val) => setState(() {
-                    print(time);
-                    time = val;
-                  }),
-                  validator: (val) {
-                    setState(() => time = val ?? '');
-                    return null;
-                  },
-                  onSaved: (val) => setState(() => time = val ?? ''),
-                ),
-                SizedBox(height: 10.h),
-                TextField(
-                  controller: noOfGuests,
-                  onChanged: (val) => setState(() {
-                    print((val));
-                  }),
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    focusColor: Colors.black,
-                    fillColor: Colors.black,
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          style: BorderStyle.solid,
-                          color: Colors.black,
-                          width: 2.0),
-                    ),
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          style: BorderStyle.solid,
-                          color: Colors.white,
-                          width: 2.0),
-                    ),
-                    labelText: 'No of Guests',
-                  ),
-                ),
-                SizedBox(height: 10.h),
-                SizedBox(
-                  width: double.infinity,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      ReusableBigText(
-                        text: 'Catering Service',
-                        fontSize: 18,
-                        color: Colors.black.withOpacity(0.8),
-                      ),
-                      Row(
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              setState(() {
-                                isCartService = true;
-                              });
-                            },
-                            child: Container(
-                                height: 50.h,
-                                width: 80.w,
-                                decoration: BoxDecoration(
-                                  borderRadius: const BorderRadius.only(
-                                      topLeft: Radius.circular(25),
-                                      bottomLeft: Radius.circular(25)),
-                                  color: isCartService == true
-                                      ? boolColor
-                                      : Colors.red,
-                                ),
-                                child: const Center(child: Text('Yes'))),
+                      SizedBox(height: 10.h),
+                      DateTimePicker(
+                        decoration: const InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                style: BorderStyle.solid,
+                                color: Colors.black,
+                                width: 2.0),
                           ),
-                          InkWell(
-                            onTap: () {
-                              setState(() {
-                                isCartService = false;
-                              });
-                            },
-                            child: Container(
-                                height: 50.h,
-                                width: 80.w,
-                                decoration: BoxDecoration(
-                                  borderRadius: const BorderRadius.only(
-                                      topRight: Radius.circular(25),
-                                      bottomRight: Radius.circular(25)),
-                                  color: isCartService == true
-                                      ? boolColor
-                                      : Colors.red,
-                                ),
-                                child: const Center(child: Text('No'))),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 8.h),
-                Center(
-                  child: isCartService == true
-                      ? ReusableText(
-                          text:
-                              "Catering Service is selected for ${noOfGuests.text.isEmpty ? '0' : noOfGuests.text.toString()} person",
-                          fontSize: 12,
-                        )
-                      : const Text(''),
-                ),
-                SizedBox(height: 10.h),
-                SizedBox(
-                  width: double.infinity,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      ReusableBigText(
-                        text: 'Event Planner Service',
-                        fontSize: 18,
-                        color: Colors.black.withOpacity(0.8),
-                      ),
-                      Row(
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              setState(() {
-                                isEventPlanner = true;
-                              });
-                            },
-                            child: Container(
-                                height: 50.h,
-                                width: 80.w,
-                                decoration: BoxDecoration(
-                                  borderRadius: const BorderRadius.only(
-                                      topLeft: Radius.circular(25),
-                                      bottomLeft: Radius.circular(25)),
-                                  color: isEventPlanner == true
-                                      ? boolColor
-                                      : Colors.red,
-                                ),
-                                child: const Center(child: Text('Yes'))),
-                          ),
-                          InkWell(
-                            onTap: () {
-                              setState(() {
-                                isEventPlanner = false;
-                              });
-                            },
-                            child: Container(
-                                height: 50.h,
-                                width: 80.w,
-                                decoration: BoxDecoration(
-                                  borderRadius: const BorderRadius.only(
-                                      topRight: Radius.circular(25),
-                                      bottomRight: Radius.circular(25)),
-                                  color: isEventPlanner == true
-                                      ? boolColor
-                                      : Colors.red,
-                                ),
-                                child: const Center(child: Text('No'))),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 8.h),
-                Center(
-                  child: isEventPlanner == true
-                      ? const ReusableText(
-                          text: "Contact the owner/manager of the hall",
-                          fontSize: 12,
-                        )
-                      : const Text(''),
-                ),
-                SizedBox(height: 20.h),
-                InkWell(
-                  onTap: () {
-                    if (date == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text("Enter Date"),
-                          duration: Duration(seconds: 3),
+                          border: OutlineInputBorder(),
+                          labelText: 'Time',
                         ),
-                      );
-                    } else if (time == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text("Enter Time"),
-                          duration: Duration(seconds: 3),
+                        type: DateTimePickerType.time,
+                        //timePickerEntryModeInput: true,
+                        //controller: _controller4,
+                        initialValue: '', //_initialValue,
+                        icon: const Icon(Icons.access_time),
+                        timeLabelText: "Time",
+                        // use24HourFormat: false,
+                        onChanged: (val) => setState(() {
+                          print(time);
+                          time = val;
+                        }),
+                        validator: (val) {
+                          setState(() => time = val ?? '');
+                          return null;
+                        },
+                        onSaved: (val) => setState(() => time = val ?? ''),
+                      ),
+                      SizedBox(height: 10.h),
+                      TextField(
+                        controller: noOfGuests,
+                        onChanged: (val) => setState(() {
+                          print((val));
+                        }),
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          focusColor: Colors.black,
+                          fillColor: Colors.black,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                style: BorderStyle.solid,
+                                color: Colors.black,
+                                width: 2.0),
+                          ),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                style: BorderStyle.solid,
+                                color: Colors.white,
+                                width: 2.0),
+                          ),
+                          labelText: 'No of Guests',
                         ),
-                      );
-                    } else if (noOfGuests.text.isEmpty ||
-                        int.parse(noOfGuests.text.toString()) <= 0) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text("Enter No of Guests"),
-                          duration: Duration(seconds: 3),
-                        ),
-                      );
-                    } else {
-                      DateTime dt = DateTime.parse('$date $time');
+                      ),
+                      SizedBox(height: 10.h),
+                      GestureDetector(
+                        onTap: () {
+                          itemUnits();
+                        },
+                        child: AbsorbPointer(
+                          child: Container(
+                            decoration:
+                                BoxDecoration(border: Border.all(width: 2.0)),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 12.0),
+                            child: Stack(
+                              alignment: Alignment.bottomRight,
+                              children: [
+                                TextFormField(
+                                  // enabled: false,
+                                  readOnly: true,
 
-                      Get.to(() => const PriceScreen(), arguments: [
-                        {"userID": userID},
-                        {"date": dt},
-                        {"time": time!},
-                        {
-                          "noOfGuests": int.parse(noOfGuests.text.toString()),
+                                  decoration: InputDecoration(
+                                    floatingLabelBehavior:
+                                        FloatingLabelBehavior.always,
+                                    labelText: 'Unit',
+                                    hintText: event,
+                                    border: InputBorder.none,
+                                    focusedBorder: InputBorder.none,
+                                    // hintStyle: TextStyle(
+                                    //     fontSize: 20.0, color: Colors.redAccent),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 10.0),
+                                  child: Transform.rotate(
+                                    angle: 20.4,
+                                    child: const Icon(
+                                        Icons.arrow_forward_ios_rounded),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10.h),
+                      SizedBox(
+                        width: double.infinity,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            ReusableBigText(
+                              text: 'Catering Service',
+                              fontSize: 18,
+                              color: Colors.black.withOpacity(0.8),
+                            ),
+                            Row(
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      isCartService = true;
+                                    });
+                                  },
+                                  child: Container(
+                                      height: 50.h,
+                                      width: 80.w,
+                                      decoration: BoxDecoration(
+                                        borderRadius: const BorderRadius.only(
+                                            topLeft: Radius.circular(25),
+                                            bottomLeft: Radius.circular(25)),
+                                        color: isCartService == true
+                                            ? boolColor
+                                            : Colors.red,
+                                      ),
+                                      child: const Center(child: Text('Yes'))),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      isCartService = false;
+                                    });
+                                  },
+                                  child: Container(
+                                      height: 50.h,
+                                      width: 80.w,
+                                      decoration: BoxDecoration(
+                                        borderRadius: const BorderRadius.only(
+                                            topRight: Radius.circular(25),
+                                            bottomRight: Radius.circular(25)),
+                                        color: isCartService == true
+                                            ? boolColor
+                                            : Colors.red,
+                                      ),
+                                      child: const Center(child: Text('No'))),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 8.h),
+                      Center(
+                        child: isCartService == true
+                            ? ReusableText(
+                                text:
+                                    "Catering Service is selected for ${noOfGuests.text.isEmpty ? '0' : noOfGuests.text.toString()} person",
+                                fontSize: 12,
+                              )
+                            : const Text(''),
+                      ),
+                      SizedBox(height: 10.h),
+                      SizedBox(
+                        width: double.infinity,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            ReusableBigText(
+                              text: 'Event Planner Service',
+                              fontSize: 18,
+                              color: Colors.black.withOpacity(0.8),
+                            ),
+                            Row(
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      isEventPlanner = true;
+                                    });
+                                  },
+                                  child: Container(
+                                      height: 50.h,
+                                      width: 80.w,
+                                      decoration: BoxDecoration(
+                                        borderRadius: const BorderRadius.only(
+                                            topLeft: Radius.circular(25),
+                                            bottomLeft: Radius.circular(25)),
+                                        color: isEventPlanner == true
+                                            ? boolColor
+                                            : Colors.red,
+                                      ),
+                                      child: const Center(child: Text('Yes'))),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      isEventPlanner = false;
+                                    });
+                                  },
+                                  child: Container(
+                                      height: 50.h,
+                                      width: 80.w,
+                                      decoration: BoxDecoration(
+                                        borderRadius: const BorderRadius.only(
+                                            topRight: Radius.circular(25),
+                                            bottomRight: Radius.circular(25)),
+                                        color: isEventPlanner == true
+                                            ? boolColor
+                                            : Colors.red,
+                                      ),
+                                      child: const Center(child: Text('No'))),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 8.h),
+                      Center(
+                        child: isEventPlanner == true
+                            ? const ReusableText(
+                                text: "Contact the owner/manager of the hall",
+                                fontSize: 12,
+                              )
+                            : const Text(''),
+                      ),
+                      SizedBox(height: 20.h),
+                      InkWell(
+                        onTap: () {
+                          if (date == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("Enter Date"),
+                                duration: Duration(seconds: 3),
+                              ),
+                            );
+                          } else if (time == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("Enter Time"),
+                                duration: Duration(seconds: 3),
+                              ),
+                            );
+                          } else if (noOfGuests.text.isEmpty ||
+                              int.parse(noOfGuests.text.toString()) <= 0) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("Enter No of Guests"),
+                                duration: Duration(seconds: 3),
+                              ),
+                            );
+                          } else {
+                            DateTime dt = DateTime.parse('$date $time');
+
+                            Get.to(() => const PriceScreen(), arguments: [
+                              {"userID": userID},
+                              {"date": dt},
+                              {"time": time!},
+                              {
+                                "noOfGuests":
+                                    int.parse(noOfGuests.text.toString()),
+                              },
+                              {"isEventPlanner": isEventPlanner},
+                              {
+                                "CartService":
+                                    isCartService == true ? cateringPerHead : 0
+                              },
+                              {"priceperhead": pricePerHead},
+                              {"hallOwnerId": hallOwnerId},
+                              {"images": images},
+                              {"hallid": hallid},
+                              {"areaid": areaid},
+                              {"hallname": hallname},
+                              {"ownername": ownername},
+                              {"ownercontact": ownercontact},
+                              {"owneremail": owneremail},
+                              {"halladdress": halladdress},
+                              {"isCartService": isCartService},
+                              {"event": event},
+                            ]);
+                          }
                         },
-                        {"isEventPlanner": isEventPlanner},
-                        {
-                          "CartService":
-                              isCartService == true ? cateringPerHead : 0
-                        },
-                        {"priceperhead": pricePerHead},
-                        {"hallOwnerId": hallOwnerId},
-                        {"images": images},
-                        {"hallid": hallid},
-                        {"areaid": areaid},
-                        {"hallname": hallname},
-                        {"ownername": ownername},
-                        {"ownercontact": ownercontact},
-                        {"owneremail": owneremail},
-                        {"halladdress": halladdress},
-                        {"isCartService": isCartService},
-                      ]);
-                    }
-                  },
-                  child: const ReusableTextIconButton(
-                    text: "Show Expenses",
-                    margin: 10,
+                        child: const ReusableTextIconButton(
+                          text: "Show Expenses",
+                          margin: 10,
+                        ),
+                      ),
+                    ],
                   ),
+                )
+              : SizedBox(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  child: const Center(child: CircularProgressIndicator()),
                 ),
-              ],
-            ),
-          ),
         ),
       ),
     );

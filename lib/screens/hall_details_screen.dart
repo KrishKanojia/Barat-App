@@ -2,7 +2,9 @@ import 'package:barat/screens/booking_form.dart';
 import 'package:barat/services/locationservices.dart';
 import 'package:barat/widgets/reusable_detail_copy_text.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_stars/flutter_rating_stars.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
@@ -36,16 +38,56 @@ class _HallDetailScreenState extends State<HallDetailScreen> {
   final hallid = Get.arguments[10]['hallid'];
   final areaid = Get.arguments[11]['areaid'];
   final hallname = Get.arguments[12]['hallname'];
-  // final guestqty = Get.arguments[13]['guestqty'];
-  // final totAmount = Get.arguments[14]['totAmount'];
-  // final clientname = Get.arguments[15]['clientname'];
-  // final date = Get.arguments[16]['date'];
+
+  Widget _ratting() {
+    return Center(
+      child: RatingStars(
+        value: rating,
+        starBuilder: (index, color) => Icon(
+          Icons.star,
+          size: 20,
+          color: color,
+        ),
+        starCount: 5,
+        starSize: 18,
+        maxValue: 5,
+        maxValueVisibility: false,
+        valueLabelVisibility: false,
+        animationDuration: const Duration(milliseconds: 300),
+        starOffColor: Colors.black.withOpacity(0.6),
+        starColor: Colors.yellow,
+      ),
+    );
+  }
+
+  bool isload = false;
+  double rating = 0.0;
+  Future<void> checkRating() async {
+    int countRating = 0;
+    double singleratings = 0.0;
+    await FirebaseFirestore.instance
+        .collection("bookings")
+        .where("hallid", isEqualTo: hallid)
+        .get()
+        .then((snapshot) {
+      if (snapshot.size > 0 && snapshot.docs.isNotEmpty) {
+        countRating = snapshot.docs.length;
+        snapshot.docs.forEach((docSnap) {
+          Map<String, dynamic> data = docSnap.data() as Map<String, dynamic>;
+          singleratings += double.parse(data["rating"].toString());
+        });
+        setState(() {
+          rating = singleratings / countRating;
+          isload = true;
+        });
+      }
+    });
+  }
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    // print(
-    //     '31,$userID $ownerName $ownerContact hall id :  $hallid, area id : $areaid ');
+    checkRating();
     print("Onwer contact : $ownerContact");
   }
 
@@ -201,53 +243,142 @@ class _HallDetailScreenState extends State<HallDetailScreen> {
                               width: 0.0,
                               height: 0.0,
                             ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20.0,
-                          vertical: 10.0,
-                        ),
-                        width: size.width,
-                        child: Column(
-                          children: [
-                            Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      isload == true
+                          ? Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20.0),
+                              child: Row(
                                 children: [
-                                  const Icon(
-                                    Icons.person_pin,
-                                    size: 25,
+                                  const Text(
+                                    "Rating",
+                                    style: TextStyle(
+                                      overflow: TextOverflow.ellipsis,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15.0,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Text(
+                                    "${rating.toStringAsFixed(1)}/5",
+                                    style: const TextStyle(
+                                      overflow: TextOverflow.ellipsis,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15.0,
+                                    ),
                                   ),
                                   const SizedBox(
-                                    width: 20,
+                                    width: 10,
                                   ),
-                                  const Text("Ali Ahmed Shah Khan Mallah",
-                                      style: const TextStyle(fontSize: 15)),
-                                ]),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Container(
-                              padding: const EdgeInsets.all(15.0),
-                              width: size.width,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.grey,
-                                  style: BorderStyle.solid,
-                                  width: 0.0,
-                                ),
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(10.0),
-                                  bottomLeft: Radius.circular(10.0),
-                                ),
+                                  Wrap(
+                                    children: [
+                                      _ratting(),
+                                    ],
+                                  )
+                                ],
                               ),
-                              child: Text(
-                                "What is meaning of dummy text?Dummy text refers to the bits of content that are used to fill a website mock-up. This text helps web designers better envision how the website will look as a finished product. It is important to understand that dummy text has no meaning whatsoever",
-                                softWrap: true,
-                                style: const TextStyle(fontSize: 13),
-                              ),
+                            )
+                          : const SizedBox(
+                              height: 0.0,
+                              width: 0.0,
                             ),
-                          ],
-                        ),
-                      )
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection("bookings")
+                            .where("hallid", isEqualTo: hallid)
+                            .snapshots(),
+                        builder:
+                            (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                                child: CircularProgressIndicator.adaptive());
+                          } else if (!snapshot.hasData ||
+                              snapshot.data!.size == 0) {
+                            return const SizedBox(
+                              width: 0.0,
+                              height: 0.0,
+                            );
+                          } else {
+                            return ListView(
+                              shrinkWrap: true,
+                              children: snapshot.data!.docs
+                                  .map((DocumentSnapshot documentSnapshot) {
+                                Map<String, dynamic> data = documentSnapshot
+                                    .data()! as Map<String, dynamic>;
+
+                                return data["feedback"] != ""
+                                    ? Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 20.0,
+                                          vertical: 10.0,
+                                        ),
+                                        width: size.width,
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                children: [
+                                                  const Icon(
+                                                    Icons.person_pin,
+                                                    size: 30,
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                  Text("${data["clientname"]}",
+                                                      style: const TextStyle(
+                                                          fontSize: 15)),
+                                                ]),
+                                            const SizedBox(
+                                              height: 8,
+                                            ),
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.all(15.0),
+                                              width: size.width,
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                  color: Colors.grey,
+                                                  style: BorderStyle.solid,
+                                                  width: 0.0,
+                                                ),
+                                                borderRadius:
+                                                    const BorderRadius.only(
+                                                  topLeft:
+                                                      Radius.circular(10.0),
+                                                  bottomLeft:
+                                                      Radius.circular(10.0),
+                                                ),
+                                              ),
+                                              child: Text(
+                                                "${data["feedback"]}",
+                                                softWrap: true,
+                                                style: const TextStyle(
+                                                    fontSize: 15),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    : const SizedBox(
+                                        width: 0.0,
+                                        height: 0.0,
+                                      );
+                              }).toList(),
+                            );
+                          }
+                        },
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
                     ],
                   ),
                 ),
