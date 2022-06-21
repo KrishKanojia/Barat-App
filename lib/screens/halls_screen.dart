@@ -1,8 +1,10 @@
+import 'package:barat/Models/hall_model.dart';
 import 'package:barat/screens/hallsdetailform.dart';
 import 'package:barat/screens/manual_booking.dart';
 import 'package:barat/services/credentialservices.dart';
 import 'package:barat/services/locationservices.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -139,177 +141,186 @@ class _HallsScreenState extends State<HallsScreen> {
                           Map<String, dynamic> data =
                               documentSnapshot.data()! as Map<String, dynamic>;
                           return InkWell(
-                            onTap: () {
-                              Get.to(
-                                  () => HallDetailScreen(
-                                      routename: "Halls screen"),
-                                  arguments: [
-                                    {"ListImage": data["images"]},
-                                    {"userId": data.toString()},
-                                    {"ownerName": data["OwnerName"]},
-                                    {"ownerContact": data["OwnerContact"]},
-                                    {"ownerEmail": data["OwnerEmail"]},
-                                    {"hallAddress": data["HallAddress"]},
-                                    {"hallCapacity": data["HallCapacity"]},
-                                    {"pricePerHead": data["PricePerHead"]},
-                                    {
-                                      "cateringPerHead": data["CateringPerHead"]
-                                    },
-                                    {"hallOwnerId": data["hallOwnerId"]},
-                                    {"hallid": data["hall_id"]},
-                                    {"areaid": areaId},
-                                    {"hallname": data["hallName"]}
-                                  ]);
-                            },
-                            child: Container(
-                              padding: EdgeInsets.only(bottom: 15.h),
-                              decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadiusDirectional.circular(20.r),
-                                  color: Colors.red,
-                                  image: DecorationImage(
-                                      image: NetworkImage(data["images"][0]),
-                                      fit: BoxFit.cover)),
-                              child: Stack(
-                                children: [
-                                  credentialServices.getisAdmin == true ||
-                                          credentialServices.getUserId ==
-                                              data["hallOwnerId"]
-                                      ? Positioned(
-                                          right: 0.0,
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 5.0),
-                                            child: PopupMenuButton(
-                                                onSelected: (result) {
-                                              if (result == 0) {
-                                                Get.to(
-                                                    () =>
-                                                        const HallsDetailForm(),
-                                                    arguments: [
-                                                      {"areaid": areaId},
-                                                      {
-                                                        "hallid":
-                                                            data["hall_id"]
-                                                      },
-                                                    ]);
-                                              } else if (result == 1) {
-                                                deleteHallDialog(
-                                                    areaId: areaId,
-                                                    hallId: data["hall_id"]);
-                                              } else if (result == 2) {
-                                                Get.to(
-                                                    () => const ManaulBooking(),
-                                                    arguments: [
-                                                      {
-                                                        "hallid":
-                                                            data["hall_id"]
-                                                      },
-                                                      {
-                                                        "areaid": areaId,
-                                                      },
-                                                      {
-                                                        "hallownerid":
-                                                            data["hallOwnerId"],
-                                                      }
-                                                    ]);
-                                                print("We are in this section");
-                                              }
-                                            }, itemBuilder:
-                                                    (BuildContext context) {
-                                              print(
-                                                  "The Value of Hall Owner is ${data["hallOwnerId"]} && ${credentialServices.getUserId}");
+                              onTap: () {
+                                HallModel hallModel = HallModel.fromMap(data);
+                                Get.to(
+                                    () => HallDetailScreen(
+                                        routename: "Halls screen"),
+                                    arguments: [
+                                      {"hallmodel": hallModel},
+                                      {"areaid": areaId},
+                                      // {"ListImage": data["images"]},
+                                      // {"userId": data.toString()},
+                                      // {"ownerName": data["OwnerName"]},
+                                      // {"ownerContact": data["OwnerContact"]},
+                                      // {"ownerEmail": data["OwnerEmail"]},
+                                      // {"hallAddress": data["HallAddress"]},
+                                      // {"hallCapacity": data["HallCapacity"]},
+                                      // {"pricePerHead": data["PricePerHead"]},
+                                      // {
+                                      //   "cateringPerHead": data["CateringPerHead"]
+                                      // },
+                                      // {"hallOwnerId": data["hallOwnerId"]},
+                                      // {"hallid": data["hall_id"]},
+
+                                      // {"hallname": data["hallName"]}
+                                    ]);
+                              },
+                              child: Container(
+                                padding: EdgeInsets.only(bottom: 15.h),
+                                decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadiusDirectional.circular(20.r),
+                                    color: Colors.red,
+                                    image: DecorationImage(
+                                        image: NetworkImage(data["images"][0]),
+                                        fit: BoxFit.cover)),
+                                child: Stack(
+                                  children: [
+                                    StreamBuilder(
+                                        stream: FirebaseAuth.instance
+                                            .authStateChanges(),
+                                        builder: (context, snapshot) {
+                                          print(
+                                              "Check isAdmin ${credentialServices.getisAdmin} ");
+                                          if (snapshot.connectionState ==
+                                              ConnectionState.active) {
+                                            if (FirebaseAuth
+                                                    .instance.currentUser !=
+                                                null) {
                                               return credentialServices
-                                                          .getUserId ==
-                                                      data["hallOwnerId"]
-                                                  ? <PopupMenuItem<int>>[
-                                                      _buildMenuItem("Edit", 0),
-                                                      _buildMenuItem(
-                                                          "Delete", 1),
-                                                      _buildMenuItem(
-                                                          "Manual Booking", 2),
-                                                    ]
-                                                  : <PopupMenuItem<int>>[
-                                                      _buildMenuItem("Edit", 0),
-                                                      _buildMenuItem(
-                                                          "Delete", 1),
-                                                    ];
-                                            }),
-                                          ),
-                                        )
-                                      : const SizedBox(
-                                          width: 0.0,
-                                          height: 0.0,
+                                                              .getisAdmin ==
+                                                          true ||
+                                                      credentialServices
+                                                              .getUserId ==
+                                                          data["hallOwnerId"]
+                                                  ? Positioned(
+                                                      right: 0.0,
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                left: 5.0),
+                                                        child: PopupMenuButton(
+                                                            onSelected:
+                                                                (result) {
+                                                          if (result == 0) {
+                                                            Get.to(
+                                                                () =>
+                                                                    const HallsDetailForm(),
+                                                                arguments: [
+                                                                  {
+                                                                    "areaid":
+                                                                        areaId
+                                                                  },
+                                                                  {
+                                                                    "hallid": data[
+                                                                        "hall_id"]
+                                                                  },
+                                                                ]);
+                                                          } else if (result ==
+                                                              1) {
+                                                            deleteHallDialog(
+                                                                areaId: areaId,
+                                                                hallId: data[
+                                                                    "hall_id"]);
+                                                          } else if (result ==
+                                                              2) {
+                                                            Get.to(
+                                                                () =>
+                                                                    const ManaulBooking(),
+                                                                arguments: [
+                                                                  {
+                                                                    "hallid": data[
+                                                                        "hall_id"]
+                                                                  },
+                                                                  {
+                                                                    "areaid":
+                                                                        areaId,
+                                                                  },
+                                                                  {
+                                                                    "hallownerid":
+                                                                        data[
+                                                                            "hallOwnerId"],
+                                                                  }
+                                                                ]);
+                                                            print(
+                                                                "We are in this section");
+                                                          }
+                                                        }, itemBuilder:
+                                                                (BuildContext
+                                                                    context) {
+                                                          print(
+                                                              "The Value of Hall Owner is ${data["hallOwnerId"]} && ${credentialServices.getUserId}");
+                                                          return credentialServices
+                                                                      .getUserId ==
+                                                                  data[
+                                                                      "hallOwnerId"]
+                                                              ? <
+                                                                  PopupMenuItem<
+                                                                      int>>[
+                                                                  _buildMenuItem(
+                                                                      "Edit",
+                                                                      0),
+                                                                  _buildMenuItem(
+                                                                      "Delete",
+                                                                      1),
+                                                                  _buildMenuItem(
+                                                                      "Manual Booking",
+                                                                      2),
+                                                                ]
+                                                              : <
+                                                                  PopupMenuItem<
+                                                                      int>>[
+                                                                  _buildMenuItem(
+                                                                      "Edit",
+                                                                      0),
+                                                                  _buildMenuItem(
+                                                                      "Delete",
+                                                                      1),
+                                                                ];
+                                                        }),
+                                                      ),
+                                                    )
+                                                  : const SizedBox(
+                                                      width: 0.0,
+                                                      height: 0.0,
+                                                    );
+                                            }
+                                            return const SizedBox(
+                                              width: 0.0,
+                                              height: 0.0,
+                                            );
+                                          }
+                                          return const SizedBox(
+                                            width: 0.0,
+                                            height: 0.0,
+                                          );
+                                        }),
+                                    Align(
+                                      alignment: Alignment.bottomCenter,
+                                      child: Container(
+                                        color: whiteColor,
+                                        child: ReusableBigText(
+                                          text: data["hallName"]
+                                                  .toString()
+                                                  .substring(0, 1)
+                                                  .toUpperCase() +
+                                              data["hallName"]
+                                                  .toString()
+                                                  .substring(
+                                                      1,
+                                                      data["hallName"]
+                                                          .toString()
+                                                          .length),
+                                          fontSize: 16,
                                         ),
-                                  // const PopupMenuItem(
-                                  //   value: 0,
-                                  //   child: Text(
-                                  //     'Edit',
-                                  //     style: TextStyle(
-                                  //       color: Colors.black,
-                                  //     ),
-                                  //   ),
-                                  // ),
-                                  // const PopupMenuItem(
-                                  //   value: 1,
-                                  //   child: Text(
-                                  //     'Delete',
-                                  //     style: TextStyle(
-                                  //       color: Colors.black,
-                                  //     ),
-                                  //   ),
-                                  // ),
-                                  // credentialServices.getUserId ==
-                                  //         data["hallOwnerId"]
-                                  //     ? PopupMenuItem(
-                                  //         value: 2,
-                                  //         child: const Text(
-                                  //           'Manual Booking',
-                                  //           style: TextStyle(
-                                  //             color: Colors.black,
-                                  //           ),
-                                  //         ),
-                                  //       )
-                                  //     : PopupMenuItem(
-                                  //         value: 2,
-                                  //         child: Offstage()),
-                                  Align(
-                                    alignment: Alignment.bottomCenter,
-                                    child: Container(
-                                      color: whiteColor,
-                                      child: ReusableBigText(
-                                        text: data["hallName"]
-                                                .toString()
-                                                .substring(0, 1)
-                                                .toUpperCase() +
-                                            data["hallName"]
-                                                .toString()
-                                                .substring(
-                                                    1,
-                                                    data["hallName"]
-                                                        .toString()
-                                                        .length),
-                                        fontSize: 16,
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
+                                  ],
+                                ),
+                              ));
                         }).toList(),
-                        // itemCount: snapshot.data!.data!.length,
-                        // gridDelegate:
-                        //     SliverGridDelegateWithMaxCrossAxisExtent(
-                        //         maxCrossAxisExtent: 160.h,
-                        //         mainAxisExtent: 230.w,
-                        //         crossAxisSpacing: 25.0.h,
-                        //         mainAxisSpacing: 10.0.w,
-                        //         childAspectRatio: 0.7),
-                        // itemBuilder: (context, index) {
-                        // hallName = snapshot.data!.data[index].;
-
-                        // }
                       );
                     }
                   }))

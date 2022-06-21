@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:barat/Models/hall_model.dart';
 import 'package:barat/screens/HomePage.dart';
 import 'package:barat/screens/confirm_order_screen.dart';
 import 'package:barat/services/credentialservices.dart';
@@ -31,27 +32,18 @@ class _PriceScreenState extends State<PriceScreen> {
     super.initState();
     print("The Date is : $date, time: $time , no of guest : $noOfGuests");
     totalPriceMethod();
-    print(priceperhead);
+    print(hallmodel.pricePerHead);
   }
 
-  final userID = Get.arguments[0]['userID'];
+  final areaid = Get.arguments[0]['areaid'];
   final date = Get.arguments[1]['date'];
   final time = Get.arguments[2]['time'];
   final noOfGuests = Get.arguments[3]['noOfGuests'];
   final isEventPlanner = Get.arguments[4]['isEventPlanner'];
-  final CartService = Get.arguments[5]['CartService'];
-  final priceperhead = Get.arguments[6]['priceperhead'];
-  final hallOwnerId = Get.arguments[7]['hallOwnerId'];
-  final images = Get.arguments[8]['images'];
-  final hallid = Get.arguments[9]['hallid'];
-  final areaid = Get.arguments[10]['areaid'];
-  final hallname = Get.arguments[11]['hallname'];
-  final ownername = Get.arguments[12]['ownername'];
-  final ownercontact = Get.arguments[13]['ownercontact'];
-  final owneremail = Get.arguments[14]['owneremail'];
-  final halladdress = Get.arguments[15]['halladdress'];
-  final isCartService = Get.arguments[16]['isCartService'];
-  final event = Get.arguments[17]['event'];
+  final event = Get.arguments[5]['event'];
+  final CartService = Get.arguments[6]['CartService'];
+  final isCartService = Get.arguments[7]['isCartService'];
+  HallModel hallmodel = Get.arguments[8]['hallmodel'];
 
   final locationServices = Get.find<LocationServices>();
 
@@ -134,7 +126,7 @@ class _PriceScreenState extends State<PriceScreen> {
 
     final cateringprice = noOfGuests * CartService;
 
-    final priceperheadprice = noOfGuests * priceperhead;
+    final priceperheadprice = noOfGuests * hallmodel.pricePerHead;
     finalTotalPrice = cateringprice + priceperheadprice;
   }
 
@@ -205,22 +197,22 @@ class _PriceScreenState extends State<PriceScreen> {
           .showSnackBar(const SnackBar(content: Text('Paid Succesfully')));
       await locationServices.postbookHallsByUser(
         context: context,
-        userId: userID,
+        userId: hallmodel.userID,
         date: date!,
         time: time!,
         guestsQuantity: noOfGuests,
         eventPlaner: isEventPlanner,
         cateringServices: isCartService,
         totalPayment: finalTotalPrice,
-        hallOwnerId: hallOwnerId,
+        hallOwnerId: hallmodel.hallOwnerId,
         areaId: areaid,
-        hallid: hallid,
-        images: images,
-        hallname: hallname,
-        ownername: ownername,
-        ownercontact: ownercontact.toString(),
-        owneremail: owneremail,
-        halladdress: halladdress,
+        hallid: hallmodel.hallid,
+        images: hallmodel.images,
+        hallname: hallmodel.hallname,
+        ownername: hallmodel.ownerName,
+        ownercontact: hallmodel.ownerContact.toString(),
+        owneremail: hallmodel.ownerEmail,
+        halladdress: hallmodel.hallAddress,
         event: event,
       );
 

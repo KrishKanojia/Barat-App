@@ -77,7 +77,8 @@ class CredentialServices extends GetxController {
             isLoading.value = false;
             username.value = data["name"];
             useremail.value = data["email"];
-            Get.off(() => const AdminPage());
+
+            Get.offAll(() => const AdminPage());
           } else {
             isAdmin.value = false;
             await db
@@ -95,6 +96,7 @@ class CredentialServices extends GetxController {
             isAdmin.value = false;
             isLoading.value = false;
             isGoogleSignedIn.value = false;
+
             Get.off(() => const HomePage());
           }
         });
@@ -301,7 +303,7 @@ class CredentialServices extends GetxController {
   Future LogOutViaEmail() async {
     await auth.signOut();
 
-    Get.off(() => const LoginPage());
+    // Get.off(() => const LoginPage());
   }
 
   Future signInWithGoogle() async {
@@ -346,61 +348,9 @@ class CredentialServices extends GetxController {
     }
   }
 
-  // Future signinWithGoogleError() async {
-  //   try {
-  //     print("In Google Auth");
-  //     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-  //     // Obtain the auth details from the request.
-  //     final GoogleSignInAuthentication googleAuth =
-  //         await googleUser!.authentication;
-  //     // Create a new credential.
-  //     final OAuthCredential googleCredential = GoogleAuthProvider.credential(
-  //       accessToken: googleAuth.accessToken,
-  //       idToken: googleAuth.idToken,
-  //     );
-  //     // Sign in to Firebase with the Google [UserCredential].
-  //     final UserCredential googleUserCredential =
-  //         await FirebaseAuth.instance.signInWithCredential(googleCredential);
-
-  //     // final GoogleSignInAccount? googleSignInAccount =
-  //     //     await googleSignIn.signIn();
-  //     // final GoogleSignInAuthentication googleSignInAuthentication =
-  //     //     await googleSignInAccount!.authentication;
-
-  //     // final AuthCredential authCredential = GoogleAuthProvider.credential(
-  //     //   accessToken: googleSignInAuthentication.accessToken,
-  //     //   idToken: googleSignInAuthentication.idToken,
-  //     // );
-
-  //     // final UserCredential userCredential =
-  //     //     await FirebaseAuth.instance.signInWithCredential(authCredential);
-
-  //     final User? user = googleUserCredential.user;
-  //     print(
-  //         "Google Sign In => ${userUid.value}, user name : ${username.value}, email: ${useremail.value} ");
-  //     // assert(user!.uid != null);
-  //     FirebaseFirestore.instance.collection("User").doc(user!.uid).set({
-  //       "userName": user.displayName,
-  //       "fullname": user.displayName,
-  //       "userId": user.uid,
-  //       "email": user.email!.toLowerCase(),
-  //       "phoneNumber": user.phoneNumber ,
-  //       "account_created": Timestamp.now(),
-  //     });
-  //     userUid.value = user.uid;
-  //     username.value = user.displayName!;
-  //     useremail.value = user.email!;
-  //     print(
-  //         "Google Sign In => ${userUid.value}, user name : ${username.value}, email: ${useremail.value} ");
-  //     Get.off(() => const HomePage());
-  //   } catch (e) {
-  //     print("This is Eroor ${e.toString()}");
-  //   }
-  // }
-
   Future SignOutGoogle() async {
     await googleSignIn.signOut();
-    Get.off(() => const LoginPage());
+    // Get.off(() => const LoginPage());
   }
 
   Future<bool> usernameExist(

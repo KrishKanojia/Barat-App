@@ -1,3 +1,4 @@
+import 'package:barat/Models/booked_hall_model.dart';
 import 'package:barat/screens/confirm_order_screen.dart';
 import 'package:barat/utils/color.dart';
 import 'package:barat/widgets/reusableTextIconButton.dart';
@@ -17,33 +18,15 @@ class ShowBookedHall extends StatefulWidget {
 }
 
 class _ShowBookedHallState extends State<ShowBookedHall> {
-  List images = Get.arguments[0]['ListImage'];
-  final ownerName = Get.arguments[1]['ownername'];
-  final ownerContact = Get.arguments[2]['ownercontact'];
-  final ownerEmail = Get.arguments[3]['owneremail'];
-  final hallAddress = Get.arguments[4]['halladdress'];
-  final guestsQuantity = Get.arguments[5]['guestsQuantity'];
-  final clientname = Get.arguments[6]['clientname'];
-  final clientemail = Get.arguments[7]['clientemail'];
-  final totalPayment = Get.arguments[8]['totalPayment'];
-  final DateTime date = Get.arguments[9]['date'];
-
-  final hallname = Get.arguments[10]['hallname'];
-  final eventplanner = Get.arguments[11]['eventplanner'];
-  final cateringServices = Get.arguments[12]['cateringServices'];
-  final ismyhall = Get.arguments[13]['ismyhall'];
-
-  final bookingId = Get.arguments[14]['bookingId'];
-  final feedback = Get.arguments[15]['feedback'];
-  final event = Get.arguments[16]['event'];
-
+  BookedHallModel bookedHallModel = Get.arguments[0]['bookedHallModel'];
+  final ismyhall = Get.arguments[1]['ismyhall'];
   String? bookedDate;
   bool isHaveFeedBack = false;
 
   Future<void> isFeedBackGiven() async {
     await FirebaseFirestore.instance
         .collection("bookings")
-        .doc(bookingId)
+        .doc(bookedHallModel.bookingId)
         .get()
         .then((doc) {
       if (doc.exists) {
@@ -61,7 +44,7 @@ class _ShowBookedHallState extends State<ShowBookedHall> {
   @override
   void initState() {
     isFeedBackGiven();
-    bookedDate = DateFormat("yyyy-MM-dd hh:mm:ss").format(date);
+    bookedDate = DateFormat("yyyy-MM-dd hh:mm:ss").format(bookedHallModel.date);
     super.initState();
   }
 
@@ -74,7 +57,7 @@ class _ShowBookedHallState extends State<ShowBookedHall> {
         height: 230,
         color: Colors.black,
         child: CarouselSlider.builder(
-          itemCount: images.length,
+          itemCount: bookedHallModel.listimages!.length,
           itemBuilder:
               (BuildContext context, int itemIndex, int pageViewIndex) =>
                   Container(
@@ -82,7 +65,8 @@ class _ShowBookedHallState extends State<ShowBookedHall> {
             // margin: EdgeInsets.symmetric(horizontal: 10),
             decoration: BoxDecoration(
                 image: DecorationImage(
-                    image: NetworkImage("${images[itemIndex]}"),
+                    image: NetworkImage(
+                        "${bookedHallModel.listimages![itemIndex]}"),
                     fit: BoxFit.contain)),
             child: Padding(
               padding: EdgeInsets.only(bottom: 25.0.h),
@@ -91,7 +75,8 @@ class _ShowBookedHallState extends State<ShowBookedHall> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Row(
-                      children: List.generate(images.length, (indexDots) {
+                      children: List.generate(
+                          bookedHallModel.listimages!.length, (indexDots) {
                     return Container(
                       margin: const EdgeInsets.only(left: 5),
                       height: 8,
@@ -128,48 +113,48 @@ class _ShowBookedHallState extends State<ShowBookedHall> {
             ),
             ReusableDetailsCopyText(
               text1: "Owner/Manger",
-              text2: "$ownerName",
+              text2: "${bookedHallModel.ownerName}",
 
               // text2: "${snapshot.data!.data![0].ownerName}",
             ),
             ReusableDetailsCopyText(
               text1: "Contact",
-              text2: "$ownerContact",
+              text2: "${bookedHallModel.ownerContact}",
 
               // text2: "${snapshot.data!.data![0].ownerContact}",
             ),
             ReusableDetailsCopyText(
               text1: "Email",
-              text2: "$ownerEmail",
+              text2: "${bookedHallModel.ownerEmail}",
 
               // text2: "${snapshot.data!.data![0].ownerEmail}",
             ),
             ReusableDetailsCopyText(
               text1: "Client Name",
-              text2: "$clientname",
+              text2: "${bookedHallModel.clientname}",
 
               // text2: "${snapshot.data!.data![0].ownerEmail}",
             ),
             ReusableDetailsCopyText(
               text1: "Client Email",
-              text2: "$clientemail",
+              text2: "${bookedHallModel.clientemail}",
 
               // text2: "${snapshot.data!.data![0].ownerEmail}",
             ),
             ReusableDetailsCopyText(
               text1: "Address",
-              text2: "$hallAddress",
+              text2: "${bookedHallModel.hallAddress}",
 
               // text2: "${snapshot.data!.data![0].hallAddress}",
             ),
             ReusableDetailsCopyText(
               text1: "Guest Quantity",
-              text2: "$guestsQuantity",
+              text2: "${bookedHallModel.guestsQuantity}",
               // text2: "${snapshot.data!.data![0].hallCapacity}",
             ),
             ReusableDetailsCopyText(
               text1: "Total Amount",
-              text2: "$totalPayment",
+              text2: "${bookedHallModel.totalPayment}",
               // text2: "${snapshot.data!.data![0].pricePerHead}",
             ),
             ReusableDetailsCopyText(
@@ -180,26 +165,26 @@ class _ShowBookedHallState extends State<ShowBookedHall> {
             ReusableDetailsCopyText(
               text1: "Event Type",
               // text2: "${snapshot.data!.data![0].cateringPerHead}",
-              text2: "$event",
+              text2: "${bookedHallModel.event}",
             ),
             ReusableDetailsCopyText(
               text1: "Event Planner",
               // text2: "${snapshot.data!.data![0].cateringPerHead}",
-              text2: eventplanner == true ? "Yes" : "No",
+              text2: bookedHallModel.eventplanner == true ? "Yes" : "No",
             ),
             ReusableDetailsCopyText(
               text1: "Catering Services",
               // text2: "${snapshot.data!.data![0].cateringPerHead}",
-              text2: cateringServices == true ? "Yes" : "No",
+              text2: bookedHallModel.cateringServices == true ? "Yes" : "No",
             ),
             ismyhall != true
-                ? date.compareTo(DateTime.now()) < 0
-                    ? feedback == ""
+                ? bookedHallModel.date.compareTo(DateTime.now()) < 0
+                    ? bookedHallModel.feedback == ""
                         ? InkWell(
                             onTap: () {
                               Get.to(() => ConfirmOrderScreen(
                                     date: bookedDate!,
-                                    bookid: bookingId,
+                                    bookid: bookedHallModel.bookingId,
                                   ));
                             },
                             child: Container(

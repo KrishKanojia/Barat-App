@@ -39,7 +39,7 @@ dependencies:
   flutter_screenutil: 
   cloud_firestore: 
   firebase_storage: 
-  image_picker: 
+  image_picker: ^0.8.5+3
   carousel_slider: 
   date_time_picker: 
   flutter_stripe: 

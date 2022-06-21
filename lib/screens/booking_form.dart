@@ -1,3 +1,4 @@
+import 'package:barat/Models/hall_model.dart';
 import 'package:barat/screens/price_screen.dart';
 import 'package:barat/utils/color.dart';
 import 'package:barat/widgets/reusableBigText.dart';
@@ -20,18 +21,8 @@ class BookingForm extends StatefulWidget {
 }
 
 class _BookingFormState extends State<BookingForm> {
-  final userID = Get.arguments[0]['userID'];
-  final pricePerHead = Get.arguments[1]['pricePerHead'];
-  final cateringPerHead = Get.arguments[2]['cateringPerHead'];
-  final hallOwnerId = Get.arguments[3]['hallOwnerId'];
-  final hallid = Get.arguments[4]['hallid'];
-  final areaid = Get.arguments[5]['areaid'];
-  final images = Get.arguments[6]['images'];
-  final hallname = Get.arguments[7]['hallname'];
-  final ownername = Get.arguments[8]['ownername'];
-  final ownercontact = Get.arguments[9]['ownercontact'];
-  final owneremail = Get.arguments[10]['owneremail'];
-  final halladdress = Get.arguments[11]['halladdress'];
+  HallModel hallmodel = Get.arguments[0]['hallmodel'];
+  final areaid = Get.arguments[1]['areaid'];
 
   final TextEditingController noOfGuests = TextEditingController();
   final locationServices = Get.find<LocationServices>();
@@ -50,7 +41,7 @@ class _BookingFormState extends State<BookingForm> {
   Future<void> getPredictedDate() async {
     await _db
         .collection("bookings")
-        .where("hallid", isEqualTo: hallid)
+        .where("hallid", isEqualTo: hallmodel.hallid)
         .get()
         .then((QuerySnapshot snasphot) {
       if (snasphot.docs.isNotEmpty && snasphot.size > 0) {
@@ -62,7 +53,7 @@ class _BookingFormState extends State<BookingForm> {
     });
     await _db
         .collection("reserved_halls")
-        .where("hallid", isEqualTo: hallid)
+        .where("hallid", isEqualTo: hallmodel.hallid)
         .get()
         .then((QuerySnapshot snasphot) {
       if (snasphot.docs.isNotEmpty && snasphot.size > 0) {
@@ -585,7 +576,7 @@ class _BookingFormState extends State<BookingForm> {
                             DateTime dt = DateTime.parse('$date $time');
 
                             Get.to(() => const PriceScreen(), arguments: [
-                              {"userID": userID},
+                              {"areaid": areaid},
                               {"date": dt},
                               {"time": time!},
                               {
@@ -593,22 +584,14 @@ class _BookingFormState extends State<BookingForm> {
                                     int.parse(noOfGuests.text.toString()),
                               },
                               {"isEventPlanner": isEventPlanner},
-                              {
-                                "CartService":
-                                    isCartService == true ? cateringPerHead : 0
-                              },
-                              {"priceperhead": pricePerHead},
-                              {"hallOwnerId": hallOwnerId},
-                              {"images": images},
-                              {"hallid": hallid},
-                              {"areaid": areaid},
-                              {"hallname": hallname},
-                              {"ownername": ownername},
-                              {"ownercontact": ownercontact},
-                              {"owneremail": owneremail},
-                              {"halladdress": halladdress},
-                              {"isCartService": isCartService},
                               {"event": event},
+                              {
+                                "CartService": isCartService == true
+                                    ? hallmodel.cateringPerHead
+                                    : 0
+                              },
+                              {"isCartService": isCartService},
+                              {"hallmodel": hallmodel}
                             ]);
                           }
                         },

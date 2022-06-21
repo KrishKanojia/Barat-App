@@ -739,7 +739,11 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
 
     try {
       final List<XFile>? imgs = await _imagePicker.pickMultiImage(
-          imageQuality: 50, maxWidth: 400, maxHeight: 400);
+        imageQuality: 50,
+        maxWidth: 400,
+        maxHeight: 400,
+      );
+
       if (imgs!.isNotEmpty) {
         _selectedFiles.addAll(imgs);
       }

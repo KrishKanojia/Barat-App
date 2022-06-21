@@ -6,6 +6,7 @@ class ReusableTextIconButton extends StatelessWidget {
   final String text;
   final double margin;
   final Color color;
+
   // final Function onClick;
 
   const ReusableTextIconButton(

@@ -1,3 +1,4 @@
+import 'package:barat/Models/booked_hall_model.dart';
 import 'package:barat/screens/showbookedhall.dart';
 import 'package:barat/services/credentialservices.dart';
 import 'package:barat/services/locationservices.dart';
@@ -17,6 +18,7 @@ class OrderConfirmList extends StatefulWidget {
 class _OrderConfirmListState extends State<OrderConfirmList> {
   final locationServices = Get.put(LocationServices());
   final credentialServices = Get.find<CredentialServices>();
+
   @override
   void initState() {
     // TODO: implement initState
@@ -73,53 +75,58 @@ class _OrderConfirmListState extends State<OrderConfirmList> {
                             docSnaps.data()! as Map<String, dynamic>;
                         Timestamp time = data["Date"];
 
+                        // bookedHallModelList!.add(data);
                         return Obx(
                           () => data["clientid"] ==
                                       credentialServices.getUserId ||
                                   credentialServices.getisAdmin == true
                               ? InkWell(
                                   onTap: () {
+                                    var bookedModel =
+                                        BookedHallModel.fromMap(data);
                                     Get.to(() => const ShowBookedHall(),
                                         arguments: [
-                                          {"ListImage": data["images"]},
-                                          // {"userId": data.toString()},
-                                          {
-                                            "ownername":
-                                                data["ownername"].toUpperCase(),
-                                          },
-                                          {
-                                            "ownercontact": data["ownercontact"]
-                                          },
-                                          {"owneremail": data["owneremail"]},
-                                          {"halladdress": data["halladdress"]},
-                                          {
-                                            "guestsQuantity":
-                                                data["GuestsQuantity"]
-                                          },
-                                          {
-                                            "clientname":
-                                                data["clientname"].toUpperCase()
-                                          },
-                                          {"clientemail": data["clientemail"]},
-                                          {
-                                            "totalPayment":
-                                                data["TotalPaynment"]
-                                          },
+                                          {"bookedHallModel": bookedModel},
+                                          {"ismyhall": false}
+                                          // {"ListImage": data["images"]},
+                                          // // {"userId": data.toString()},
+                                          // {
+                                          //   "ownername":
+                                          //       data["ownername"].toUpperCase(),
+                                          // },
+                                          // {
+                                          //   "ownercontact": data["ownercontact"]
+                                          // },
+                                          // {"owneremail": data["owneremail"]},
+                                          // {"halladdress": data["halladdress"]},
+                                          // {
+                                          //   "guestsQuantity":
+                                          //       data["GuestsQuantity"]
+                                          // },
+                                          // {
+                                          //   "clientname":
+                                          //       data["clientname"].toUpperCase()
+                                          // },
+                                          // {"clientemail": data["clientemail"]},
+                                          // {
+                                          //   "totalPayment":
+                                          //       data["TotalPaynment"]
+                                          // },
 
-                                          {"date": data["Date"].toDate()},
+                                          // {"date": data["Date"].toDate()},
 
-                                          {"hallname": data["hallname"]},
-                                          {"eventplanner": data["EventPlaner"]},
-                                          {
-                                            "cateringServices":
-                                                data["CateringServices"]
-                                          },
-                                          {"ismyhall": false},
+                                          // {"hallname": data["hallname"]},
+                                          // {"eventplanner": data["EventPlaner"]},
+                                          // {
+                                          //   "cateringServices":
+                                          //       data["CateringServices"]
+                                          // },
+                                          // {"ismyhall": false},
 
-                                          {"bookingId": data["bookingId"]},
+                                          // {"bookingId": data["bookingId"]},
 
-                                          {"feedback": data["feedback"]},
-                                          {"event": data["event"]}
+                                          // {"feedback": data["feedback"]},
+                                          // {"event": data["event"]}
                                         ]);
                                   },
                                   child: Container(
@@ -264,43 +271,48 @@ class _OrderConfirmListState extends State<OrderConfirmList> {
                                   credentialServices.getisAdmin == true
                               ? InkWell(
                                   onTap: () {
+                                    var bookedModel =
+                                        BookedHallModel.fromMap(docSnaps);
                                     Get.to(() => const ShowBookedHall(),
                                         arguments: [
-                                          {"ListImage": data["images"]},
-                                          // {"userId": data.toString()},
-                                          {
-                                            "ownername":
-                                                data["ownername"].toUpperCase(),
-                                          },
-                                          {
-                                            "ownercontact": data["ownercontact"]
-                                          },
-                                          {"owneremail": data["owneremail"]},
-                                          {"halladdress": data["halladdress"]},
-                                          {
-                                            "guestsQuantity":
-                                                data["GuestsQuantity"]
-                                          },
-                                          {"clientname": data["clientname"]},
-                                          {"clientemail": data["clientemail"]},
-                                          {
-                                            "totalPayment":
-                                                data["TotalPaynment"]
-                                          },
+                                          {"bookedHallModel": bookedModel},
 
-                                          {
-                                            "date": data["Date"].toDate(),
-                                          },
-                                          {"hallname": data["hallname"]},
-                                          {"eventplanner": data["EventPlaner"]},
-                                          {
-                                            "cateringServices":
-                                                data["CateringServices"]
-                                          },
                                           {"ismyhall": true},
+                                          // {"ListImage": data["images"]},
+                                          // // {"userId": data.toString()},
+                                          // {
+                                          //   "ownername":
+                                          //       data["ownername"].toUpperCase(),
+                                          // },
+                                          // {
+                                          //   "ownercontact": data["ownercontact"]
+                                          // },
+                                          // {"owneremail": data["owneremail"]},
+                                          // {"halladdress": data["halladdress"]},
+                                          // {
+                                          //   "guestsQuantity":
+                                          //       data["GuestsQuantity"]
+                                          // },
+                                          // {"clientname": data["clientname"]},
+                                          // {"clientemail": data["clientemail"]},
+                                          // {
+                                          //   "totalPayment":
+                                          //       data["TotalPaynment"]
+                                          // },
 
-                                          {"bookingId": data["bookingId"]},
-                                          {"feedback": data["feedback"]}
+                                          // {
+                                          //   "date": data["Date"].toDate(),
+                                          // },
+                                          // {"hallname": data["hallname"]},
+                                          // {"eventplanner": data["EventPlaner"]},
+                                          // {
+                                          //   "cateringServices":
+                                          //       data["CateringServices"]
+                                          // },
+
+                                          // {"bookingId": data["bookingId"]},
+                                          // {"feedback": data["feedback"]},
+                                          // {"event": data["event"]}
                                         ]);
                                   },
                                   child: Container(

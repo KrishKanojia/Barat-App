@@ -1,13 +1,17 @@
 import 'package:barat/screens/booking_form.dart';
+import 'package:barat/screens/loginPage.dart';
+import 'package:barat/screens/signUpPage.dart';
 import 'package:barat/services/locationservices.dart';
 import 'package:barat/widgets/reusable_detail_copy_text.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_stars/flutter_rating_stars.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
+import '../Models/hall_model.dart';
 import '../utils/color.dart';
 
 class HallDetailScreen extends StatefulWidget {
@@ -25,19 +29,8 @@ class _HallDetailScreenState extends State<HallDetailScreen> {
   //   'welcome-three.png',
   // ];
   LocationServices locationServices = LocationServices();
-  List images = Get.arguments[0]['ListImage'];
-  final userID = Get.arguments[1]['userId'];
-  final ownerName = Get.arguments[2]['ownerName'];
-  final ownerContact = Get.arguments[3]['ownerContact'];
-  final ownerEmail = Get.arguments[4]['ownerEmail'];
-  final hallAddress = Get.arguments[5]['hallAddress'];
-  final hallCapacity = Get.arguments[6]['hallCapacity'];
-  final pricePerHead = Get.arguments[7]['pricePerHead'];
-  final cateringPerHead = Get.arguments[8]['cateringPerHead'];
-  final hallOwnerId = Get.arguments[9]['hallOwnerId'];
-  final hallid = Get.arguments[10]['hallid'];
-  final areaid = Get.arguments[11]['areaid'];
-  final hallname = Get.arguments[12]['hallname'];
+  HallModel hallmodel = Get.arguments[0]['hallmodel'];
+  final areaid = Get.arguments[1]['areaid'];
 
   Widget _ratting() {
     return Center(
@@ -67,7 +60,7 @@ class _HallDetailScreenState extends State<HallDetailScreen> {
     double singleratings = 0.0;
     await FirebaseFirestore.instance
         .collection("bookings")
-        .where("hallid", isEqualTo: hallid)
+        .where("hallid", isEqualTo: hallmodel.hallid)
         .get()
         .then((snapshot) {
       if (snapshot.size > 0 && snapshot.docs.isNotEmpty) {
@@ -84,11 +77,42 @@ class _HallDetailScreenState extends State<HallDetailScreen> {
     });
   }
 
+  showAlertDialog(BuildContext ctx) {
+    Widget signup = TextButton(
+      child: const Text("Sign Up"),
+      onPressed: () {
+        Get.to(() => const SignUpPage());
+      },
+    );
+    Widget signin = TextButton(
+      child: const Text("Sign In"),
+      onPressed: () {
+        Get.to(() => const LoginPage());
+      },
+    );
+    AlertDialog alert = AlertDialog(
+      title: const Text("Warning"),
+      content: const Text("Login or SignUp First"),
+      actions: [
+        signup,
+        signin,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
     checkRating();
-    print("Onwer contact : $ownerContact");
+    print("Onwer contact : ${hallmodel.ownerContact}");
   }
 
   @override
@@ -102,7 +126,7 @@ class _HallDetailScreenState extends State<HallDetailScreen> {
               height: 230,
               color: Colors.black,
               child: CarouselSlider.builder(
-                itemCount: images.length,
+                itemCount: hallmodel.images!.length,
                 itemBuilder:
                     (BuildContext context, int itemIndex, int pageViewIndex) =>
                         Container(
@@ -110,7 +134,8 @@ class _HallDetailScreenState extends State<HallDetailScreen> {
                   // margin: EdgeInsets.symmetric(horizontal: 10),
                   decoration: BoxDecoration(
                       image: DecorationImage(
-                          image: NetworkImage("${images[itemIndex]}"),
+                          image:
+                              NetworkImage("${hallmodel.images![itemIndex]}"),
                           fit: BoxFit.contain)),
                   child: Padding(
                     padding: EdgeInsets.only(bottom: 25.0.h),
@@ -119,7 +144,8 @@ class _HallDetailScreenState extends State<HallDetailScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Row(
-                            children: List.generate(images.length, (indexDots) {
+                            children: List.generate(hallmodel.images!.length,
+                                (indexDots) {
                           return Container(
                             margin: const EdgeInsets.only(left: 5),
                             height: 8,
@@ -159,42 +185,42 @@ class _HallDetailScreenState extends State<HallDetailScreen> {
                       ),
                       ReusableDetailsCopyText(
                         text1: "Owner/Manger",
-                        text2: "$ownerName",
+                        text2: "${hallmodel.ownerName}",
 
                         // text2: "${snapshot.data!.data![0].ownerName}",
                       ),
                       ReusableDetailsCopyText(
                         text1: "Contact",
-                        text2: "$ownerContact",
+                        text2: "${hallmodel.ownerContact}",
 
                         // text2: "${snapshot.data!.data![0].ownerContact}",
                       ),
                       ReusableDetailsCopyText(
                         text1: "Email",
-                        text2: "$ownerEmail",
+                        text2: "${hallmodel.ownerEmail}",
 
                         // text2: "${snapshot.data!.data![0].ownerEmail}",
                       ),
                       ReusableDetailsCopyText(
                         text1: "Address",
-                        text2: "$hallAddress",
+                        text2: "${hallmodel.hallAddress}",
 
                         // text2: "${snapshot.data!.data![0].hallAddress}",
                       ),
                       ReusableDetailsCopyText(
                         text1: "Capacity per Hall",
-                        text2: "$hallCapacity",
+                        text2: "${hallmodel.hallCapacity}",
                         // text2: "${snapshot.data!.data![0].hallCapacity}",
                       ),
                       ReusableDetailsCopyText(
                         text1: "Rate per head",
-                        text2: "$pricePerHead",
+                        text2: "${hallmodel.pricePerHead}",
                         // text2: "${snapshot.data!.data![0].pricePerHead}",
                       ),
                       ReusableDetailsCopyText(
                         text1: "Catering Service per head",
                         // text2: "${snapshot.data!.data![0].cateringPerHead}",
-                        text2: "$cateringPerHead",
+                        text2: "${hallmodel.cateringPerHead}",
                       ),
                       ReusableDetailsCopyText(
                         text1: "Event planner services",
@@ -206,20 +232,29 @@ class _HallDetailScreenState extends State<HallDetailScreen> {
                               width: 110.w,
                               child: ElevatedButton(
                                 onPressed: () {
-                                  Get.to(() => const BookingForm(), arguments: [
-                                    {"userID": userID},
-                                    {"pricePerHead": pricePerHead},
-                                    {"cateringPerHead": cateringPerHead},
-                                    {"hallOwnerId": hallOwnerId},
-                                    {"hallid": hallid},
-                                    {"areaid": areaid},
-                                    {"images": images},
-                                    {"hallname": hallname},
-                                    {"ownername": ownerName},
-                                    {"ownercontact": ownerContact},
-                                    {"owneremail": ownerEmail},
-                                    {"halladdress": hallAddress},
-                                  ]);
+                                  if (FirebaseAuth.instance.currentUser !=
+                                      null) {
+                                    Get.to(() => const BookingForm(),
+                                        arguments: [
+                                          {'hallmodel': hallmodel},
+                                          {"areaid": areaid},
+
+                                          // {"userID": userID},
+                                          // {"pricePerHead": pricePerHead},
+                                          // {"cateringPerHead": cateringPerHead},
+                                          // {"hallOwnerId": hallOwnerId},
+                                          // {"hallid": hallid},
+
+                                          // {"images": images},
+                                          // {"hallname": hallname},
+                                          // {"ownername": ownerName},
+                                          // {"ownercontact": ownerContact},
+                                          // {"owneremail": ownerEmail},
+                                          // {"halladdress": hallAddress},
+                                        ]);
+                                  } else {
+                                    showAlertDialog(context);
+                                  }
                                 },
                                 child: Text(
                                   "Book Now",
@@ -290,7 +325,7 @@ class _HallDetailScreenState extends State<HallDetailScreen> {
                       StreamBuilder<QuerySnapshot>(
                         stream: FirebaseFirestore.instance
                             .collection("bookings")
-                            .where("hallid", isEqualTo: hallid)
+                            .where("hallid", isEqualTo: hallmodel.hallid)
                             .snapshots(),
                         builder:
                             (context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -390,104 +425,3 @@ class _HallDetailScreenState extends State<HallDetailScreen> {
     );
   }
 }
-
-//
-// Expanded(
-// child: FutureBuilder(
-// future: locationServices.getHallApiById(userID),
-// builder: (context, AsyncSnapshot<GetHallsByID?> snapshot) {
-// if (!snapshot.hasData) {
-// return SizedBox(
-// child: CircularProgressIndicator(),
-// );
-// } else {
-// return ListView.builder(
-// // physics: NeverScrollableScrollPhysics(),
-// shrinkWrap: true,
-// itemCount: snapshot.data!.data!.length,
-// itemBuilder: (BuildContext context, index) {
-// return Container(
-// height: 550.h,
-// child: Column(children: <Widget>[
-// const Text(
-// "DETAILS",
-// style: TextStyle(
-// fontSize: 22, fontWeight: FontWeight.bold),
-// ),
-// ReusableDetailsCopyText(
-// text1: "Owner/Manger",
-// text2: "${snapshot.data!.data![index].ownerName}",
-// ),
-// ReusableDetailsCopyText(
-// text1: "Contact",
-// text2:
-// "${snapshot.data!.data![index].ownerContact}",
-// ),
-// ReusableDetailsCopyText(
-// text1: "Email",
-// text2: "${snapshot.data!.data![index].ownerEmail}",
-// ),
-// ReusableDetailsCopyText(
-// text1: "Address",
-// text2: "${snapshot.data!.data![index].hallAddress}",
-// ),
-// ReusableDetailsCopyText(
-// text1: "Capacity per Hall",
-// text2:
-// "${snapshot.data!.data![index].hallCapacity}",
-// ),
-// ReusableDetailsCopyText(
-// text1: "Rate per head",
-// text2:
-// "${snapshot.data!.data![index].pricePerHead}",
-// ),
-// ReusableDetailsCopyText(
-// text1: "Catering Service per head",
-// text2:
-// "${snapshot.data!.data![index].cateringPerHead}",
-// ),
-// ReusableDetailsCopyText(
-// text1: "Event planner services",
-// text2: "Contact Owner/Manager",
-// ),
-// SizedBox(
-// height: 50.h,
-// width: 110.w,
-// child: ElevatedButton(
-// onPressed: () {
-// Get.to(() => BookingForm(), arguments: [
-// {"userID": userID},
-// {
-// "pricePerHead":
-// snapshot.data!.data![index].pricePerHead
-// },
-// {
-// "cateringPerHead": snapshot
-//     .data!.data![index].cateringPerHead
-// },
-// ]);
-// },
-// child: Text(
-// "Book Now",
-// style: TextStyle(
-// fontSize: 17.sp,
-// color: whiteColor,
-// ),
-// ),
-// style: ElevatedButton.styleFrom(
-// shadowColor: Colors.blueGrey,
-// primary: secondaryColor,
-// elevation: 9,
-// shape: RoundedRectangleBorder(
-// borderRadius: BorderRadius.circular(12),
-// // <-- Radius
-// ),
-// ),
-// ),
-// )
-// ]),
-// );
-// });
-// }
-// }),
-// )

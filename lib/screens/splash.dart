@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:barat/screens/HomePage.dart';
 import 'package:barat/screens/loginPage.dart';
 import 'package:barat/utils/color.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,7 @@ class _SplashScreenState extends State<SplashScreen> {
       () => Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (BuildContext context) => const LoginPage(),
+          builder: (BuildContext context) => const HomePage(),
         ),
       ),
     );
