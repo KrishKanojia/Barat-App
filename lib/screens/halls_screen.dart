@@ -149,21 +149,6 @@ class _HallsScreenState extends State<HallsScreen> {
                                     arguments: [
                                       {"hallmodel": hallModel},
                                       {"areaid": areaId},
-                                      // {"ListImage": data["images"]},
-                                      // {"userId": data.toString()},
-                                      // {"ownerName": data["OwnerName"]},
-                                      // {"ownerContact": data["OwnerContact"]},
-                                      // {"ownerEmail": data["OwnerEmail"]},
-                                      // {"hallAddress": data["HallAddress"]},
-                                      // {"hallCapacity": data["HallCapacity"]},
-                                      // {"pricePerHead": data["PricePerHead"]},
-                                      // {
-                                      //   "cateringPerHead": data["CateringPerHead"]
-                                      // },
-                                      // {"hallOwnerId": data["hallOwnerId"]},
-                                      // {"hallid": data["hall_id"]},
-
-                                      // {"hallname": data["hallName"]}
                                     ]);
                               },
                               child: Container(

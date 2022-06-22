@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:barat/Models/location_model.dart';
 import 'package:barat/screens/admin.dart';
 import 'package:barat/screens/areaForm.dart';
@@ -10,6 +12,7 @@ import 'package:barat/widgets/reusableBigText.dart';
 import 'package:barat/widgets/reusableText.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutterfire_ui/auth.dart';
@@ -27,11 +30,44 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final box = GetStorage();
+  GetStorage getStorage = GetStorage('myData');
   final locationServices = Get.put(LocationServices());
   // final CredentialServices credentialServices = CredentialServices();
-  final credentialServices = Get.put(CredentialServices());
+  final credentialServices = Get.find<CredentialServices>();
   final getHall = FirebaseFirestore.instance.collection("admin");
+
+  Future<void> checkAuthCredential() async {
+    credentialServices.userUid.value = await getStorage.read('user') ?? ' ';
+    credentialServices.isAdmin.value =
+        await getStorage.read('isAdmin') ?? false;
+    credentialServices.isGoogleSignedIn.value =
+        getStorage.read('isGoogle') ?? false;
+
+    if (credentialServices.userUid.value != ' ') {
+      credentialServices.username.value = await getStorage.read('name');
+      credentialServices.useremail.value = await getStorage.read('email');
+      getToken();
+      print("User is not null");
+    }
+  }
+
+  Future<void> saveToken(String token) async {
+    await FirebaseFirestore.instance
+        .collection("usertokens")
+        .doc(credentialServices.userUid.value)
+        .set({
+      'token': token,
+      'username': credentialServices.username.value,
+      'useremail': credentialServices.useremail.value,
+    });
+  }
+
+  void getToken() async {
+    await FirebaseMessaging.instance.getToken().then((token) {
+      print("The Token is $token");
+      saveToken(token!);
+    });
+  }
 
   @override
   void initState() {
@@ -39,6 +75,7 @@ class _HomePageState extends State<HomePage> {
     print("Checking curret User ${FirebaseAuth.instance.currentUser}");
     print(
         "The User Uid is ${credentialServices.userUid.value}, username : ${credentialServices.getusername}");
+    checkAuthCredential();
     LocationServices();
   }
 
@@ -110,11 +147,13 @@ class _HomePageState extends State<HomePage> {
 
                   // FirebaseAuth.instance.currentUser != null
                   //     ?
-                  StreamBuilder(
-                    stream: FirebaseAuth.instance.authStateChanges(),
-                    builder: (context, snapshot) {
+                  StreamBuilder<User?>(
+                    stream: FirebaseAuth.instance.idTokenChanges(),
+                    builder: (context, AsyncSnapshot<User?> snapshot) {
                       if (snapshot.connectionState == ConnectionState.active) {
-                        if (FirebaseAuth.instance.currentUser != null) {
+                        final bool signedIn = snapshot.hasData;
+                        if (signedIn == true) {
+                          print("The current user in Firebase ${signedIn}");
                           return Obx(
                             () => InkWell(
                               onTap: () {},
@@ -133,8 +172,8 @@ class _HomePageState extends State<HomePage> {
                                                     true
                                                 ? credentialServices
                                                     .SignOutGoogle()
-                                                : FirebaseAuth.instance
-                                                    .signOut();
+                                                : credentialServices
+                                                    .LogOutViaEmail();
                                           }
                                         },
                                         itemBuilder: (BuildContext context) =>

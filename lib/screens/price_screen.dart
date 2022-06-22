@@ -7,6 +7,8 @@ import 'package:barat/services/credentialservices.dart';
 import 'package:barat/services/locationservices.dart';
 import 'package:barat/widgets/reusableBigText.dart';
 import 'package:barat/widgets/reusableTextIconButton.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
@@ -26,15 +28,6 @@ class _PriceScreenState extends State<PriceScreen> {
   Map<String, dynamic>? paymentIntentData;
   final credentialServices = Get.put(CredentialServices());
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    print("The Date is : $date, time: $time , no of guest : $noOfGuests");
-    totalPriceMethod();
-    print(hallmodel.pricePerHead);
-  }
-
   final areaid = Get.arguments[0]['areaid'];
   final date = Get.arguments[1]['date'];
   final time = Get.arguments[2]['time'];
@@ -48,6 +41,16 @@ class _PriceScreenState extends State<PriceScreen> {
   final locationServices = Get.find<LocationServices>();
 
   var finalTotalPrice;
+  String? mtoken = " ";
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    totalPriceMethod();
+    print(hallmodel.pricePerHead);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,23 +81,9 @@ class _PriceScreenState extends State<PriceScreen> {
                   child: ReusableBigText(text: finalTotalPrice!.toString())),
             ),
             SizedBox(height: 20.h),
-
             InkWell(
               onTap: () async {
                 await MakePayment();
-
-                // isPaymentLoading
-                //     ? Center(
-                //         child: CircularProgressIndicator(),
-                //       )
-                //     : await locationServices.postbookHallsByUser(
-                //         userID,
-                //         date!,
-                //         time!,
-                //         noOfGuests,
-                //         isEventPlanner,
-                //         isCartService,
-                //         finalTotalPrice);
               },
               child: ReusableTextIconButton(
                 text: "Proceed to Pay",
@@ -102,18 +91,6 @@ class _PriceScreenState extends State<PriceScreen> {
                 color: Colors.greenAccent.withOpacity(0.5),
               ),
             ),
-            // InkWell(
-            //   onTap: () async {
-            //     await MakePayment();
-            //     // await locationServices.postbookHallsByUser(userID, date!, time!,
-            //     //     noOfGuests, isEventPlanner, isCartService, finalTotalPrice);
-            //   },
-            //   child: ReusableTextIconButton(
-            //     text: "stripe",
-            //     margin: 15,
-            //     color: Colors.greenAccent.withOpacity(0.5),
-            //   ),
-            // )
           ],
         ),
       ),
@@ -149,7 +126,7 @@ class _PriceScreenState extends State<PriceScreen> {
     }
   }
 
-  Future<void> sendNotificationToAdmin() async {
+  Future<void> sendNotification(String token) async {
     print("Getting Notification: ");
     try {
       Map<String, String> headerMap = {
@@ -159,7 +136,7 @@ class _PriceScreenState extends State<PriceScreen> {
       };
       Map notificationMap = {
         'title': 'Hall Booking Confirmation',
-        'body': '${credentialServices.getusername} Book a Hall Please Check',
+        'body': '${credentialServices.getusername} Booked a Hall Please Check',
       };
       Map dataMap = {
         'click-action': 'FLUTTER_NOTIFICATION_CLICK',
@@ -170,13 +147,15 @@ class _PriceScreenState extends State<PriceScreen> {
         'notification': notificationMap,
         'data': dataMap,
         'priority': 'high',
-        'to': '/topics/Admin',
+        'to': token,
       };
       var res = await http.post(
         Uri.parse('https://fcm.googleapis.com/fcm/send'),
         headers: headerMap,
         body: jsonEncode(sendNotificationMap),
       );
+
+      print("Notification to $mtoken");
     } catch (e) {
       print("The Problem is : ");
 
@@ -215,8 +194,14 @@ class _PriceScreenState extends State<PriceScreen> {
         halladdress: hallmodel.hallAddress,
         event: event,
       );
+      DocumentSnapshot snap = await FirebaseFirestore.instance
+          .collection("usertokens")
+          .doc(hallmodel.hallOwnerId)
+          .get();
 
-      sendNotificationToAdmin().whenComplete(
+      String token = snap['token'];
+      mtoken = token;
+      sendNotification(token).whenComplete(
         () => Get.offAll(() => const HomePage()),
       );
     } on StripeException catch (e) {

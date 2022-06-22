@@ -10,6 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 
 class VerificationScreen extends StatefulWidget {
   final name;
@@ -88,6 +89,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
           credentialServices.username.value =
               FirebaseAuth.instance.currentUser!.displayName!;
           credentialServices.useremail.value = widget.email;
+
           Get.offAll(() => const HomePage());
         } else if (widget.routename == "/signup") {
           Get.offAll(() => const LoginPage());

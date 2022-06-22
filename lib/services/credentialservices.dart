@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:barat/Models/user_model.dart';
@@ -19,7 +20,7 @@ import '../screens/HomePage.dart';
 class CredentialServices extends GetxController {
   FirebaseAuth auth = FirebaseAuth.instance;
   GoogleSignIn googleSignIn = GoogleSignIn();
-
+  final box = GetStorage('myData');
   var isGoogleSignedIn = false.obs;
   bool get getisGoogleSignedIn => isGoogleSignedIn.value;
   var isLoading = false.obs;
@@ -78,6 +79,12 @@ class CredentialServices extends GetxController {
             username.value = data["name"];
             useremail.value = data["email"];
 
+            box.write('user', userUid.value);
+            box.write('name', username.value);
+            box.write('email', useremail.value);
+            box.write('isAdmin', isAdmin.value);
+            print(
+                "We are reading value from Admin Credential : ${box.read('user')},${box.read('isAdmin')},${box.read('name')}");
             Get.offAll(() => const AdminPage());
           } else {
             isAdmin.value = false;
@@ -96,7 +103,11 @@ class CredentialServices extends GetxController {
             isAdmin.value = false;
             isLoading.value = false;
             isGoogleSignedIn.value = false;
-
+            box.write('user', userUid.value);
+            box.write('name', username.value);
+            box.write('email', useremail.value);
+            print(
+                "We are reading value from Credentinal Screen : ${box.read('user')}");
             Get.off(() => const HomePage());
           }
         });
@@ -195,17 +206,6 @@ class CredentialServices extends GetxController {
       "phoneNumber": phNo,
       "account_created": Timestamp.now(),
     });
-    // print("Save to Database");
-    // if (routename == '/create-hall-user') {
-    //   isLoading.value = false;
-    //   Get.offAll(() => const HomePage());
-    // } else if (routename == "/signup") {
-    //   username.value = name;
-    //   useremail.value = email;
-    //   userUid.value = user.user!.uid;
-    //   isLoading.value = false;
-    //   Get.offAll(() => const LoginPage());
-    // }
   }
 
   Future<void> registerAccount(
@@ -302,7 +302,12 @@ class CredentialServices extends GetxController {
 
   Future LogOutViaEmail() async {
     await auth.signOut();
-
+    box.remove('user');
+    box.remove('name');
+    box.remove('email');
+    box.remove('isAdmin');
+    print(
+        "User  Signed Out:${box.read('user')},${box.read('isAdmin')},${box.read('name')}");
     // Get.off(() => const LoginPage());
   }
 
@@ -342,6 +347,13 @@ class CredentialServices extends GetxController {
       print(
           "Google Sign In => ${userUid.value}, user name : ${username.value}, email: ${useremail.value} ");
       Get.off(() => const HomePage());
+      box.write('user', userUid.value);
+      box.write('name', googleuser.displayName.toString().toLowerCase());
+      box.write('email', googleuser.email!.toLowerCase());
+      box.write('isGoogle', isGoogleSignedIn.value);
+
+      print(
+          "We are reading value from Google Credential : ${box.read('user')},${box.read('isGoogle')}");
       print("Google Sign In => $userUid");
     } catch (e) {
       print("This is Error ${e.toString()}");
@@ -350,6 +362,13 @@ class CredentialServices extends GetxController {
 
   Future SignOutGoogle() async {
     await googleSignIn.signOut();
+    box.remove('isGoogle');
+    box.remove('user');
+    box.remove('name');
+    box.remove('email');
+
+    print(
+        "User  Signed Out:${box.read('user')},${box.read('isGoogle')},${box.read('name')}");
     // Get.off(() => const LoginPage());
   }
 

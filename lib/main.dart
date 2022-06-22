@@ -3,8 +3,10 @@ import 'package:barat/screens/auth_gate.dart';
 import 'package:barat/screens/hallsdetailform.dart';
 import 'package:barat/screens/loginPage.dart';
 import 'package:barat/screens/splash.dart';
+
 import 'package:barat/services/credentialservices.dart';
 import 'package:barat/utils/color.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -20,12 +22,18 @@ import 'firebase_options.dart';
 import 'screens/confirm_order_screen.dart';
 import 'screens/create_hall_user.dart';
 
+Future<void> backgroundHandler(RemoteMessage message) async {
+  print(message.data.toString());
+  print(message.notification!.title);
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await GetStorage.init();
+  await GetStorage.init('myData');
+  FirebaseMessaging.onBackgroundMessage(backgroundHandler);
   Stripe.publishableKey =
       'pk_test_51JcaT0LtlAjb95NaxcGQoOIyNA6uVyozoNYErdxkxZW55zUFTudT70R41lHRUbCVC4pGveeSwg6wkQwrbinVDSbL00neGfIMQx';
 
@@ -40,7 +48,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final box = GetStorage();
+  final box = GetStorage('myData');
 
   FirebaseMessaging messaging = FirebaseMessaging.instance;
   FlutterLocalNotificationsPlugin fltNotification =
@@ -116,10 +124,10 @@ class _MyAppState extends State<MyApp> {
           clientId:
               '635513644699-ie5f0v2ir9gjpidnmv8f3m8dlhgldi3p.apps.googleusercontent.com'),
     ];
-    print(box.read('responseLogin'));
-    box.listenKey('responseSignUp', (value) {
-      print('new key is $value');
-    });
+    // print(box.read('responseLogin'));
+    // box.listenKey('responseSignUp', (value) {
+    //   print('new key is $value');
+    // });
     return ScreenUtilInit(
       designSize: const Size(360, 690),
       builder: () => GetMaterialApp(

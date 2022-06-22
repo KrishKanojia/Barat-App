@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:barat/screens/HomePage.dart';
 import 'package:barat/screens/loginPage.dart';
+import 'package:barat/services/credentialservices.dart';
 import 'package:barat/utils/color.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -14,6 +16,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  final credentialServices = Get.put(CredentialServices());
   @override
   void initState() {
     // TODO: implement initState
