@@ -38,6 +38,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
   bool canResendEmail = false;
   Timer? timer;
   final credentialServices = Get.find<CredentialServices>();
+  final box = GetStorage('myData');
 
   Future _sendVerificationEmail() async {
     try {
@@ -90,6 +91,9 @@ class _VerificationScreenState extends State<VerificationScreen> {
               FirebaseAuth.instance.currentUser!.displayName!;
           credentialServices.useremail.value = widget.email;
 
+          box.write('user', credentialServices.userUid.value);
+          box.write('name', credentialServices.username.value);
+          box.write('email', credentialServices.useremail.value);
           Get.offAll(() => const HomePage());
         } else if (widget.routename == "/signup") {
           Get.offAll(() => const LoginPage());

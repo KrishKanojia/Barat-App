@@ -133,7 +133,11 @@ class _MyAppState extends State<MyApp> {
       builder: () => GetMaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Barat',
-        theme: ThemeData(primarySwatch: deepOrange),
+        theme: ThemeData(
+          fontFamily: 'OpenSans',
+          brightness: Brightness.light,
+          primarySwatch: deepOrange,
+        ),
         // home: const AuthGate(),
         // home: const AdminAreaForm(),
         // home: const AdminPage(),

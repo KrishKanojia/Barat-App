@@ -24,7 +24,7 @@ class ReusableTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      padding: const EdgeInsets.symmetric(horizontal: 30.0),
       child: TextField(
         readOnly: readonly == true ? true : false,
         controller: controller,

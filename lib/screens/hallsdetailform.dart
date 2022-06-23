@@ -551,21 +551,67 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
                                       child: hallid == null ||
                                               _selectedFiles.isNotEmpty
                                           ? GridView.builder(
-                                              itemCount: _selectedFiles.length,
+                                              itemCount:
+                                                  _selectedFiles.length + 1,
                                               gridDelegate:
                                                   const SliverGridDelegateWithFixedCrossAxisCount(
                                                       crossAxisCount: 3),
                                               itemBuilder:
                                                   (BuildContext context,
                                                       int index) {
-                                                return Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(3.0),
-                                                  child: Image.file(
-                                                      File(_selectedFiles[index]
-                                                          .path),
-                                                      fit: BoxFit.cover),
-                                                );
+                                                return index == 0
+                                                    ? Center(
+                                                        child: IconButton(
+                                                          icon: Icon(Icons.add),
+                                                          onPressed: () {
+                                                            pickImage();
+                                                          },
+                                                        ),
+                                                      )
+                                                    : Container(
+                                                        height: double.infinity,
+                                                        alignment:
+                                                            Alignment.center, //
+                                                        child: Stack(
+                                                          children: [
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(8.0),
+                                                              child: Image.file(
+                                                                  File(_selectedFiles[
+                                                                          index -
+                                                                              1]
+                                                                      .path),
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                  width: 210,
+                                                                  height: 210),
+                                                            ),
+                                                            Positioned(
+                                                              top: 0,
+                                                              right: 0,
+                                                              child:
+                                                                  GestureDetector(
+                                                                onTap: () {
+                                                                  _selectedFiles
+                                                                      .removeAt(
+                                                                          index -
+                                                                              1);
+                                                                  setState(
+                                                                      () {});
+                                                                  print(
+                                                                      'delete image from List');
+                                                                },
+                                                                child:
+                                                                    const Icon(
+                                                                  Icons.cancel,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      );
                                               })
                                           : StreamBuilder<DocumentSnapshot>(
                                               stream: FirebaseFirestore.instance
@@ -732,6 +778,24 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
     return await reference.getDownloadURL();
   }
   //Finish Upload Images in Firestore Storage
+
+  Future<void> pickImage() async {
+    try {
+      final List<XFile>? imgs = await _imagePicker.pickMultiImage(
+        imageQuality: 50,
+        maxWidth: 400,
+        maxHeight: 400,
+      );
+
+      if (imgs!.isNotEmpty) {
+        _selectedFiles.addAll(imgs);
+      }
+      print("List of Images : " + imgs.length.toString());
+    } catch (e) {
+      print("Something Wrong" + e.toString());
+    }
+    setState(() {});
+  }
 
 //Select Image From Gallery
   Future<void> selectImage() async {

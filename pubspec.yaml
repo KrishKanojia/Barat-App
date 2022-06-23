@@ -58,6 +58,9 @@ dependencies:
   search_map_place_updated:
   intl:
   async: 
+  file_picker: 
+  open_file: 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -103,9 +106,11 @@ flutter:
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
+  fonts:
+    - family: OpenSans
+      fonts:
+        - asset: images/fonts/OpenSans-regular.ttf
+        - asset: images/fonts/OpenSans-Italic-normal.ttf
   #         weight: 700
   #
   # For details regarding fonts from package dependencies,

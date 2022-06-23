@@ -16,6 +16,14 @@ const textColor = Color(0xff827A73);
 const borderColor = Color(0xff3C3736);
 const boolColor = Color(0xff6EE3AC);
 const darkyellow = Color(0xffE45826);
+
+const List<Color> appGradient = [
+  Color(0xff6D00),
+  Color(0xff9201),
+  Color(0xffAB49),
+  Color(0xffD181)
+];
+
 const MaterialColor deepOrange = MaterialColor(
   _deepOrangePrimaryValue,
   <int, Color>{

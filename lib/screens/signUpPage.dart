@@ -1,6 +1,7 @@
 import 'package:barat/screens/loginPage.dart';
 import 'package:barat/services/credentialservices.dart';
 import 'package:barat/utils/color.dart';
+import 'package:barat/widgets/buildTextField.dart';
 import 'package:barat/widgets/password_TextField.dart';
 import 'package:barat/widgets/reusableBigText.dart';
 import 'package:barat/widgets/reusableTextField.dart';
@@ -8,7 +9,10 @@ import 'package:barat/widgets/reusableTextIconButton.dart';
 import 'package:barat/widgets/reusablealreadytext.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+
+import '../widgets/buildPasswordField.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -42,6 +46,40 @@ class _SignUpPageState extends State<SignUpPage> {
     _phone.dispose();
     _email.dispose();
     _password.dispose();
+  }
+
+  Widget _buildRegisterBtn() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          primary: Colors.white,
+        ),
+        onPressed: () {
+          credentialServices.getisLoading == false
+              ? validation(context)
+              : () {
+                  print("Nothing Happen in register Screen");
+                };
+        },
+        child: const Padding(
+          padding: EdgeInsets.all(15.0),
+          child: Text(
+            'SIGNUP',
+            style: TextStyle(
+              color: secondaryColor,
+              letterSpacing: 1.5,
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'OpenSans',
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   void validation(BuildContext context) async {
@@ -131,136 +169,173 @@ class _SignUpPageState extends State<SignUpPage> {
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
       key: _scaffoldKey,
-      body: SingleChildScrollView(
-        child: Center(
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.light,
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
           child: Form(
             key: _formKey,
-            child: Container(
-              width: 500,
-              color: primaryColor,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                    maxHeight: MediaQuery.of(context).size.height),
-                child: Container(
-                    margin: const EdgeInsets.all(50),
+            child: Stack(
+              children: [
+                Container(
+                    height: height,
+                    width: width,
                     decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            background1Color,
+                            secondaryColor,
+                          ],
+                          stops: [0.2, 0.9],
+                        ),
                         color: whiteColor,
                         borderRadius: BorderRadius.circular(8)),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.all(12.0),
-                          child: ReusableBigText(
-                            text: 'Sign Up',
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 40.0,
+                      ),
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            height: height * 0.1,
                           ),
-                        ),
-                        SizedBox(
-                          height: height * 0.01,
-                        ),
-                        ReusableTextField(
-                          controller: _username,
-                          hintText: 'username',
-                          keyboardType: TextInputType.text,
-                        ),
-                        SizedBox(
-                          height: height * 0.01,
-                        ),
-                        ReusableTextField(
-                          controller: _fullname,
-                          hintText: 'Full Name',
-                          keyboardType: TextInputType.text,
-                        ),
-                        SizedBox(
-                          height: height * 0.01,
-                        ),
-                        // TextFormField(
-                        //   controller: _phone,
-                        //   maxLength: 11,
-                        //   decoration: const InputDecoration.collapsed(
-                        //     hintText: 'Phone: +9233546586',
-                        //   ),
-                        //   // hintText: 'Phone: +9233546586',
-                        //   keyboardType: TextInputType.text,
-                        // ),
-                        ReusableTextField(
-                          controller: _phone,
-                          hintText: 'Phone: +9233546586',
-                          keyboardType: TextInputType.text,
-                        ),
-                        SizedBox(
-                          height: height * 0.01,
-                        ),
-                        ReusableTextField(
-                          controller: _email,
-                          hintText: 'E-mail',
-                          keyboardType: TextInputType.text,
-                        ),
-                        SizedBox(
-                          height: height * 0.01,
-                        ),
-                        PasswordTextField(
-                          controller: _password,
-                          hintText: 'Password',
-                          keyboardType: TextInputType.visiblePassword,
-                          obscure: obserText,
-                          onTap: () {
-                            setState(() {
-                              obserText = !obserText;
-                            });
-                          },
-                        ),
-                        SizedBox(
-                          height: height * 0.02,
-                        ),
-                        Obx(
-                          () => InkWell(
-                            onTap: () async {
-                              credentialServices.getisLoading == false
-                                  ? validation(context)
-                                  : () {
-                                      print(
-                                          "Nothing Happen in register Screen");
-                                    };
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Text(
+                                'Register',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 30.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: height * 0.01,
+                          ),
+                          BuildTextFormField(
+                            controller: _username,
+                            hintText: 'Enter Username',
+                            keyboardType: TextInputType.text,
+                            titleText: 'User Name',
+                          ),
+                          SizedBox(
+                            height: height * 0.01,
+                          ),
+                          BuildTextFormField(
+                            controller: _fullname,
+                            hintText: 'Enter Full name',
+                            keyboardType: TextInputType.text,
+                            titleText: 'Full Name',
+                          ),
+
+                          SizedBox(
+                            height: height * 0.01,
+                          ),
+                          BuildTextFormField(
+                            controller: _phone,
+                            hintText: 'Phone: +9233546586',
+                            keyboardType: TextInputType.text,
+                            titleText: 'Phone',
+                          ),
+
+                          SizedBox(
+                            height: height * 0.01,
+                          ),
+                          BuildTextFormField(
+                            controller: _email,
+                            hintText: 'Enter Email',
+                            keyboardType: TextInputType.text,
+                            titleText: 'E-mail',
+                          ),
+
+                          // TextFormField(
+                          //   controller: _phone,
+                          //   maxLength: 11,
+                          //   decoration: const InputDecoration.collapsed(
+                          //     hintText: 'Phone: +9233546586',
+                          //   ),
+                          //   // hintText: 'Phone: +9233546586',
+                          //   keyboardType: TextInputType.text,
+                          // ),
+
+                          SizedBox(
+                            height: height * 0.01,
+                          ),
+                          BuildPasswordField(
+                            controller: _password,
+                            hintText: 'Enter your Password',
+                            keyboardType: TextInputType.visiblePassword,
+                            titleText: 'Password',
+                            obscure: obserText,
+                            onTap: () {
+                              setState(() {
+                                obserText = !obserText;
+                              });
                             },
-                            child: credentialServices.getisLoading == false
-                                ? const ReusableTextIconButton(
-                                    text: "SignUp",
-                                  )
-                                : Container(
-                                    width: width,
-                                    height: height / 14,
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 45.0),
-                                    decoration: BoxDecoration(
-                                      color: secondaryColor,
-                                      borderRadius:
-                                          BorderRadiusDirectional.circular(15),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.grey.withOpacity(0.5),
-                                          spreadRadius: 2,
-                                          blurRadius: 7,
-                                          offset: const Offset(0,
-                                              3), // changes position of shadow
+                          ),
+
+                          SizedBox(
+                            height: height * 0.02,
+                          ),
+                          Obx(
+                            () => InkWell(
+                              onTap: () async {
+                                credentialServices.getisLoading == false
+                                    ? validation(context)
+                                    : () {
+                                        print(
+                                            "Nothing Happen in register Screen");
+                                      };
+                              },
+                              child: credentialServices.getisLoading == false
+                                  ? _buildRegisterBtn()
+                                  // const ReusableTextIconButton(
+                                  //     text: "SignUp",
+                                  //   )
+                                  : Container(
+                                      width: width,
+                                      height: height / 14,
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 45.0),
+                                      decoration: BoxDecoration(
+                                        color: secondaryColor,
+                                        borderRadius:
+                                            BorderRadiusDirectional.circular(
+                                                15),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey.withOpacity(0.5),
+                                            spreadRadius: 2,
+                                            blurRadius: 7,
+                                            offset: const Offset(0,
+                                                3), // changes position of shadow
+                                          ),
+                                        ],
+                                      ),
+                                      child: const Center(
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
                                         ),
-                                      ],
-                                    ),
-                                    child: const Center(
-                                      child: CircularProgressIndicator(
-                                        color: Colors.white,
                                       ),
                                     ),
-                                  ),
+                            ),
                           ),
-                        ),
-                        ReusableAlreadyText(
-                          text: "Login",
-                          onClick: () => Get.off(() => const LoginPage()),
-                        ),
-                      ],
+                          ReusableAlreadyText(
+                            text: "Login",
+                            onClick: () => Get.off(() => const LoginPage()),
+                          ),
+                        ],
+                      ),
                     )),
-              ),
+              ],
             ),
           ),
         ),

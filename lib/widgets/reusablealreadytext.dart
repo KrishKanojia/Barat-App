@@ -13,7 +13,8 @@ class ReusableAlreadyText extends StatelessWidget {
       children: [
         const Text(
           "Don't have an account?",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: TextStyle(
+              fontSize: 16, fontWeight: FontWeight.w400, color: Colors.white),
         ),
         TextButton(
             onPressed: () {
@@ -23,7 +24,7 @@ class ReusableAlreadyText extends StatelessWidget {
               text,
               style: const TextStyle(
                   fontSize: 16,
-                  color: Colors.black87,
+                  color: Colors.white,
                   fontWeight: FontWeight.bold),
             )),
       ],
