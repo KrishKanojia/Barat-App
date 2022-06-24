@@ -73,62 +73,108 @@ class _AdminAreaFormState extends State<AdminAreaForm> {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Center(
-          child: Container(
-            width: 500,
-            color: primaryColor,
-            child: ConstrainedBox(
-              constraints:
-                  BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
-              child: isLoad == true
-                  ? Container(
-                      margin: const EdgeInsets.all(50),
-                      decoration: BoxDecoration(
-                          color: whiteColor,
-                          borderRadius: BorderRadius.circular(8)),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          // Text('data')
-                          const ReusableBigText(text: "Admin"),
-                          SizedBox(
-                            height: height * 0.01,
-                          ),
+      appBar: AppBar(
+        backgroundColor: background1Color,
+        centerTitle: true,
+        title: const Text('Area Form'),
+      ),
+      body: isLoad == true
+          ? Container(
+              decoration: BoxDecoration(
+                  color: whiteColor, borderRadius: BorderRadius.circular(8)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Text('data')
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  const ReusableBigText(text: "Create Area For User"),
+                  const SizedBox(
+                    height: 30,
+                  ),
 
-                          ReusableTextField(
-                            controller: areaName,
-                            hintText: 'Area Name',
-                            keyboardType: TextInputType.text,
-                          ),
-                          SizedBox(
-                            height: height * 0.01,
-                          ),
-                          Expanded(
-                            child: _upLoading
-                                ? showLoading()
-                                : Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Center(
-                                        child: OutlinedButton(
-                                            onPressed: () {
-                                              selectImage();
-                                            },
-                                            child: const Text('Select Files')),
-                                      ),
-                                      Center(
-                                        child: _selectedFiles.length == null
-                                            ? const Text("No Images Selected")
-                                            : Text(
-                                                'Image is Selected : ${_selectedFiles.length.toString()}'),
-                                      ),
-                                      Expanded(
-                                        child: areaid == null ||
-                                                _selectedFiles.isNotEmpty
-                                            ? GridView.builder(
-                                                itemCount:
-                                                    _selectedFiles.length,
+                  ReusableTextField(
+                    controller: areaName,
+                    hintText: 'Area Name',
+                    keyboardType: TextInputType.text,
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  Expanded(
+                    child: _upLoading
+                        ? showLoading()
+                        : Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Center(
+                                child: OutlinedButton(
+                                    onPressed: () {
+                                      selectImage();
+                                    },
+                                    child: const Text(
+                                      'Select Files',
+                                      style: TextStyle(color: background1Color),
+                                    )),
+                              ),
+                              Center(
+                                child: _selectedFiles.length == null
+                                    ? const Text("No Images Selected")
+                                    : Text(
+                                        'Image is Selected : ${_selectedFiles.length.toString()}'),
+                              ),
+                              Expanded(
+                                child: areaid == null ||
+                                        _selectedFiles.isNotEmpty
+                                    ? GridView.builder(
+                                        itemCount: _selectedFiles.length,
+                                        gridDelegate:
+                                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                                crossAxisCount: 3),
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
+                                          return Padding(
+                                              padding:
+                                                  const EdgeInsets.all(15.0),
+                                              child: Image.file(
+                                                  File(_selectedFiles[index]
+                                                      .path),
+                                                  fit: BoxFit.cover));
+                                        })
+                                    : StreamBuilder<DocumentSnapshot>(
+                                        stream: FirebaseFirestore.instance
+                                            .collection("admin")
+                                            .doc(areaid)
+                                            .snapshots(),
+                                        builder: (BuildContext context,
+                                            AsyncSnapshot<DocumentSnapshot>
+                                                snapshot) {
+                                          if (snapshot.connectionState ==
+                                              ConnectionState.waiting) {
+                                            return const Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                              color: Colors.green,
+                                            ));
+                                          } else if (!snapshot.hasData ||
+                                              !snapshot.data!.exists) {
+                                            return const Center(
+                                              child: Text(
+                                                "No Image",
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            );
+                                          } else {
+                                            Map<String, dynamic> data =
+                                                snapshot.data!.data()
+                                                    as Map<String, dynamic>;
+                                            imagename = data["areaImage"];
+                                            return GridView.builder(
+                                                itemCount: 1,
                                                 gridDelegate:
                                                     const SliverGridDelegateWithFixedCrossAxisCount(
                                                         crossAxisCount: 3),
@@ -136,177 +182,95 @@ class _AdminAreaFormState extends State<AdminAreaForm> {
                                                     (BuildContext context,
                                                         int index) {
                                                   return Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              3.0),
-                                                      child: Image.file(
-                                                          File(_selectedFiles[
-                                                                  index]
-                                                              .path),
-                                                          fit: BoxFit.cover));
-                                                })
-                                            : StreamBuilder<DocumentSnapshot>(
-                                                stream: FirebaseFirestore
-                                                    .instance
-                                                    .collection("admin")
-                                                    .doc(areaid)
-                                                    .snapshots(),
-                                                builder: (BuildContext context,
-                                                    AsyncSnapshot<
-                                                            DocumentSnapshot>
-                                                        snapshot) {
-                                                  if (snapshot
-                                                          .connectionState ==
-                                                      ConnectionState.waiting) {
-                                                    return const Center(
-                                                        child:
-                                                            CircularProgressIndicator(
-                                                      color: Colors.green,
-                                                    ));
-                                                  } else if (!snapshot
-                                                          .hasData ||
-                                                      !snapshot.data!.exists) {
-                                                    return const Center(
-                                                      child: Text(
-                                                        "No Image",
-                                                        style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          color: Colors.black,
-                                                        ),
-                                                      ),
-                                                    );
-                                                  } else {
-                                                    Map<String, dynamic> data =
-                                                        snapshot.data!.data()
-                                                            as Map<String,
-                                                                dynamic>;
-                                                    imagename =
-                                                        data["areaImage"];
-                                                    return GridView.builder(
-                                                        itemCount: 1,
-                                                        gridDelegate:
-                                                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                                                crossAxisCount:
-                                                                    3),
-                                                        itemBuilder:
-                                                            (BuildContext
-                                                                    context,
-                                                                int index) {
-                                                          return Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(3.0),
-                                                            child:
-                                                                Image.network(
-                                                              data["areaImage"],
-                                                              fit: BoxFit.cover,
-                                                              height: double
-                                                                  .infinity,
-                                                              width: double
-                                                                  .infinity,
-                                                            ),
-                                                          );
-                                                        });
-                                                  }
-                                                }),
-                                      )
-                                    ],
-                                  ),
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            3.0),
+                                                    child: Image.network(
+                                                      data["areaImage"],
+                                                      fit: BoxFit.cover,
+                                                      height: double.infinity,
+                                                      width: double.infinity,
+                                                    ),
+                                                  );
+                                                });
+                                          }
+                                        }),
+                              )
+                            ],
                           ),
-                          SizedBox(
-                            height: height * 0.02,
-                          ),
-                          InkWell(
-                            onTap: () async {
-                              if (areaid == null) {
-                                if (_selectedFiles.isNotEmpty &&
-                                    areaName.text
-                                        .toString()
-                                        .trim()
-                                        .isNotEmpty) {
-                                  await uploadFile(_selectedFiles.first);
-                                  locationServices.postLocationByAdmin(
-                                      img_url, areaName.text.toString());
-                                  Get.to(() => const AdminPage());
-                                } else if (areaName.text
-                                    .toString()
-                                    .trim()
-                                    .isEmpty) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content:
-                                              Text("PLEASE Enter Area Name")));
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content:
-                                              Text("PLEASE Select Image")));
-                                }
-                              } else {
-                                if (_selectedFiles.isNotEmpty &&
-                                    areaName.text
-                                        .toString()
-                                        .trim()
-                                        .isNotEmpty) {
-                                  await uploadFile(_selectedFiles.first);
-                                  locationServices.updateAreaByAdmin(
-                                      context: context,
-                                      areaImage: img_url,
-                                      areaId: areaid,
-                                      areaname: areaName.text.toString());
-                                } else if (areaName.text
-                                    .toString()
-                                    .trim()
-                                    .isEmpty) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content:
-                                              Text("PLEASE Enter Area Name")));
-                                } else if (_selectedFiles.isEmpty &&
-                                    areaName.text
-                                        .toString()
-                                        .trim()
-                                        .isNotEmpty) {
-                                  locationServices.updateAreaByAdmin(
-                                      context: context,
-                                      areaImage: imagename,
-                                      areaId: areaid,
-                                      areaname: areaName.text.toString());
-                                }
-                              }
-                            },
-                            child: const ReusableTextIconButton(
-                              text: "Submit",
-                            ),
-                          ),
-                          SizedBox(
-                            height: height * 0.15,
-                          ),
-                        ],
-                      ),
-                    )
-                  : SizedBox(
-                      height: height,
-                      width: 20.0,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Text("Please Wait..."),
-                          SizedBox(
-                            height: 15,
-                          ),
-                          CircularProgressIndicator(),
-                          SizedBox(
-                            height: 40,
-                          ),
-                        ],
-                      ),
+                  ),
+                  SizedBox(
+                    height: height * 0.02,
+                  ),
+                  InkWell(
+                    onTap: () async {
+                      if (areaid == null) {
+                        if (_selectedFiles.isNotEmpty &&
+                            areaName.text.toString().trim().isNotEmpty) {
+                          await uploadFile(_selectedFiles.first);
+                          locationServices.postLocationByAdmin(
+                              img_url, areaName.text.toString());
+                          Get.to(() => const AdminPage());
+                        } else if (areaName.text.toString().trim().isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text("PLEASE Enter Area Name")));
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text("PLEASE Select Image")));
+                        }
+                      } else {
+                        if (_selectedFiles.isNotEmpty &&
+                            areaName.text.toString().trim().isNotEmpty) {
+                          await uploadFile(_selectedFiles.first);
+                          locationServices.updateAreaByAdmin(
+                              context: context,
+                              areaImage: img_url,
+                              areaId: areaid,
+                              areaname: areaName.text.toString());
+                        } else if (areaName.text.toString().trim().isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text("PLEASE Enter Area Name")));
+                        } else if (_selectedFiles.isEmpty &&
+                            areaName.text.toString().trim().isNotEmpty) {
+                          locationServices.updateAreaByAdmin(
+                              context: context,
+                              areaImage: imagename,
+                              areaId: areaid,
+                              areaname: areaName.text.toString());
+                        }
+                      }
+                    },
+                    child: const ReusableTextIconButton(
+                      text: "Submit",
+                      color: background1Color,
                     ),
+                  ),
+                  SizedBox(
+                    height: height * 0.1,
+                  ),
+                ],
+              ),
+            )
+          : SizedBox(
+              height: height,
+              width: 20.0,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Text("Please Wait..."),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  CircularProgressIndicator(),
+                  SizedBox(
+                    height: 40,
+                  ),
+                ],
+              ),
             ),
-          ),
-        ),
-      ),
     );
   }
 

@@ -227,49 +227,53 @@ class _HallDetailScreenState extends State<HallDetailScreen> {
                         text2: "Contact Owner/Manager",
                       ),
                       widget.routename == "Halls screen"
-                          ? SizedBox(
-                              height: 50.h,
-                              width: 110.w,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  if (FirebaseAuth.instance.currentUser !=
-                                      null) {
-                                    Get.to(() => const BookingForm(),
-                                        arguments: [
-                                          {'hallmodel': hallmodel},
-                                          {"areaid": areaid},
+                          ? Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 40.0, vertical: 20.0),
+                              child: SizedBox(
+                                height: 50.h,
+                                width: size.width,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    if (FirebaseAuth.instance.currentUser !=
+                                        null) {
+                                      Get.to(() => const BookingForm(),
+                                          arguments: [
+                                            {'hallmodel': hallmodel},
+                                            {"areaid": areaid},
 
-                                          // {"userID": userID},
-                                          // {"pricePerHead": pricePerHead},
-                                          // {"cateringPerHead": cateringPerHead},
-                                          // {"hallOwnerId": hallOwnerId},
-                                          // {"hallid": hallid},
+                                            // {"userID": userID},
+                                            // {"pricePerHead": pricePerHead},
+                                            // {"cateringPerHead": cateringPerHead},
+                                            // {"hallOwnerId": hallOwnerId},
+                                            // {"hallid": hallid},
 
-                                          // {"images": images},
-                                          // {"hallname": hallname},
-                                          // {"ownername": ownerName},
-                                          // {"ownercontact": ownerContact},
-                                          // {"owneremail": ownerEmail},
-                                          // {"halladdress": hallAddress},
-                                        ]);
-                                  } else {
-                                    showAlertDialog(context);
-                                  }
-                                },
-                                child: Text(
-                                  "Book Now",
-                                  style: TextStyle(
-                                    fontSize: 17.sp,
-                                    color: whiteColor,
+                                            // {"images": images},
+                                            // {"hallname": hallname},
+                                            // {"ownername": ownerName},
+                                            // {"ownercontact": ownerContact},
+                                            // {"owneremail": ownerEmail},
+                                            // {"halladdress": hallAddress},
+                                          ]);
+                                    } else {
+                                      showAlertDialog(context);
+                                    }
+                                  },
+                                  child: Text(
+                                    "Book Now",
+                                    style: TextStyle(
+                                      fontSize: 17.sp,
+                                      color: whiteColor,
+                                    ),
                                   ),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  shadowColor: Colors.blueGrey,
-                                  primary: secondaryColor,
-                                  elevation: 9,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    // <-- Radius
+                                  style: ElevatedButton.styleFrom(
+                                    shadowColor: Colors.blueGrey,
+                                    primary: secondaryColor,
+                                    elevation: 9,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      // <-- Radius
+                                    ),
                                   ),
                                 ),
                               ),

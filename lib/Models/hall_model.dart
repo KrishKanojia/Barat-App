@@ -10,7 +10,7 @@ class HallModel {
   late var cateringPerHead;
   String? hallOwnerId;
   String? hallid;
-
+  double? rating;
   String? hallname;
 
   HallModel.fromMap(dynamic data) {

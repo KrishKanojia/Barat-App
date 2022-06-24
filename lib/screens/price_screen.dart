@@ -16,6 +16,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 import '../utils/color.dart';
+import '../widgets/reusable_detail_copy_text.dart';
 
 class PriceScreen extends StatefulWidget {
   const PriceScreen({Key? key}) : super(key: key);
@@ -29,7 +30,7 @@ class _PriceScreenState extends State<PriceScreen> {
   final credentialServices = Get.put(CredentialServices());
 
   final areaid = Get.arguments[0]['areaid'];
-  final date = Get.arguments[1]['date'];
+  final DateTime date = Get.arguments[1]['date'];
   final time = Get.arguments[2]['time'];
   final noOfGuests = Get.arguments[3]['noOfGuests'];
   final isEventPlanner = Get.arguments[4]['isEventPlanner'];
@@ -70,15 +71,33 @@ class _PriceScreenState extends State<PriceScreen> {
         width: double.infinity,
         child: Column(
           children: [
-            SizedBox(height: 20.h),
-            Container(
-              height: 250.h,
-              width: 230.w,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(150),
-                  color: secondaryColor.withOpacity(0.5)),
-              child: Center(
-                  child: ReusableBigText(text: finalTotalPrice!.toString())),
+            SizedBox(height: 15.h),
+            ReusableDetailsCopyText(
+              text1: "Booking Date",
+              text2: "${date.year}-${date.month}-${date.day}",
+
+              // text2: "${snapshot.data!.data![0].hallAddress}",
+            ),
+            ReusableDetailsCopyText(
+              text1: "Hall Price",
+              text2: "${noOfGuests * hallmodel.pricePerHead}",
+
+              // text2: "${snapshot.data!.data![0].hallAddress}",
+            ),
+            ReusableDetailsCopyText(
+              text1: "Catering Price",
+              text2: "${noOfGuests * CartService}",
+
+              // text2: "${snapshot.data!.data![0].hallAddress}",
+            ),
+            const Divider(
+              thickness: 3.0,
+            ),
+            ReusableDetailsCopyText(
+              text1: "Total Price",
+              text2: finalTotalPrice!.toString(),
+
+              // text2: "${snapshot.data!.data![0].hallAddress}",
             ),
             SizedBox(height: 20.h),
             InkWell(
@@ -177,7 +196,7 @@ class _PriceScreenState extends State<PriceScreen> {
       await locationServices.postbookHallsByUser(
         context: context,
         userId: hallmodel.userID,
-        date: date!,
+        date: date,
         time: time!,
         guestsQuantity: noOfGuests,
         eventPlaner: isEventPlanner,

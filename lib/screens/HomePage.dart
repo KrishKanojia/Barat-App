@@ -258,25 +258,27 @@ class _HomePageState extends State<HomePage> {
                 builder: (BuildContext context,
                     AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                        child: CircularProgressIndicator.adaptive());
+                    return SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.5,
+                      child: const Center(child: CircularProgressIndicator()),
+                    );
                   }
 
                   if (!snapshot.hasData) {
                     return SizedBox(
-                      height: MediaQuery.of(context).size.height,
+                      height: MediaQuery.of(context).size.height * 0.5,
                       child: const Center(child: CircularProgressIndicator()),
                     );
+                    ;
                   } else if (!snapshot.hasData && snapshot.data!.size == 0) {
                     // Assigning total document size to document field
-                    print("We have data");
 
                     // Provider.of<CustomerData>(context, listen: false)
                     //     .numberOfCust(context);
-                    return Center(
+                    return const Center(
                       child: Text(
                         'Record not found',
-                        style: theme.textTheme.headline5,
+                        style: TextStyle(color: Colors.black),
                       ),
                     );
                   } else {
@@ -340,7 +342,7 @@ class _HomePageState extends State<HomePage> {
                                         image: DecorationImage(
                                           image: NetworkImage(
                                               "${data["areaImage"]}"),
-                                          fit: BoxFit.fill,
+                                          fit: BoxFit.cover,
                                         )),
 
                                     // child: FadeInImage(
@@ -355,62 +357,71 @@ class _HomePageState extends State<HomePage> {
                                   Container(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 10, vertical: 12),
-                                    height: 70,
+                                    height: 50,
                                     child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 8.0),
-                                              child: Text(
-                                                "${data["areaName"].toString().substring(0, 1).toUpperCase() + data["areaName"].toString().substring(1, data["areaName"].toString().length)} ",
-                                                style: TextStyle(
-                                                  fontSize: 18.0,
-                                                  color: Colors.black,
-                                                ),
-                                              ),
-                                            ),
-                                            Spacer(),
-                                            Wrap(
-                                              children: [
-                                                Center(
-                                                  child: RatingStars(
-                                                    starSpacing: 5.0,
-                                                    value: 5.0,
-                                                    starBuilder:
-                                                        (index, color) => Icon(
-                                                      Icons.star,
-                                                      size: 18,
-                                                      color: color,
+                                        Flexible(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 7.0),
+                                                child: Container(
+                                                  constraints: BoxConstraints(
+                                                      minWidth: 50,
+                                                      maxWidth:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width -
+                                                              100),
+                                                  child: Text(
+                                                    "${data["areaName"].toString().substring(0, 1).toUpperCase() + data["areaName"].toString().substring(1, data["areaName"].toString().length)} ",
+                                                    style: const TextStyle(
+                                                      fontSize: 18.0,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      color: Colors.black,
                                                     ),
-                                                    starCount: 5,
-                                                    starSize: 20,
-                                                    maxValue: 5,
-                                                    maxValueVisibility: false,
-                                                    valueLabelVisibility: false,
-                                                    animationDuration:
-                                                        const Duration(
-                                                            milliseconds: 300),
-                                                    starOffColor: Colors.black
-                                                        .withOpacity(0.6),
-                                                    starColor: Colors.yellow,
                                                   ),
                                                 ),
-                                              ],
-                                            ),
-                                          ],
+                                              ),
+
+                                              // RatingStars(
+                                              //   starSpacing: 5.0,
+                                              //   value: 5.0,
+                                              //   starBuilder: (index, color) =>
+                                              //       Icon(
+                                              //     Icons.star,
+                                              //     size: 18,
+                                              //     color: color,
+                                              //   ),
+                                              //   starCount: 5,
+                                              //   starSize: 20,
+                                              //   maxValue: 5,
+                                              //   maxValueVisibility: false,
+                                              //   valueLabelVisibility: false,
+                                              //   animationDuration:
+                                              //       const Duration(
+                                              //           milliseconds: 300),
+                                              //   starOffColor: Colors.black
+                                              //       .withOpacity(0.6),
+                                              //   starColor: Colors.yellow,
+                                              // ),
+                                            ],
+                                          ),
                                         ),
                                         StreamBuilder(
                                           stream: FirebaseAuth.instance
                                               .authStateChanges(),
                                           builder: (context, snapshot) {
-                                            print(
-                                                "Check isAdmin ${credentialServices.getisAdmin} ");
+                                            // print(
+                                            //     "Check isAdmin ${credentialServices.getisAdmin} ");
                                             if (snapshot.connectionState ==
                                                 ConnectionState.active) {
                                               if (FirebaseAuth

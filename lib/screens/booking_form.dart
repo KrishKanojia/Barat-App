@@ -395,7 +395,7 @@ class _BookingFormState extends State<BookingForm> {
                                   decoration: InputDecoration(
                                     floatingLabelBehavior:
                                         FloatingLabelBehavior.always,
-                                    labelText: 'Unit',
+                                    labelText: 'Event',
                                     hintText: event,
                                     border: InputBorder.none,
                                     focusedBorder: InputBorder.none,
@@ -424,7 +424,7 @@ class _BookingFormState extends State<BookingForm> {
                           children: [
                             ReusableBigText(
                               text: 'Catering Service',
-                              fontSize: 18,
+                              fontSize: 16,
                               color: Colors.black.withOpacity(0.8),
                             ),
                             Row(
@@ -456,7 +456,7 @@ class _BookingFormState extends State<BookingForm> {
                                   },
                                   child: Container(
                                       height: 50.h,
-                                      width: 80.w,
+                                      width: 60.w,
                                       decoration: BoxDecoration(
                                         borderRadius: const BorderRadius.only(
                                             topRight: Radius.circular(25),
@@ -490,7 +490,7 @@ class _BookingFormState extends State<BookingForm> {
                           children: [
                             ReusableBigText(
                               text: 'Event Planner Service',
-                              fontSize: 18,
+                              fontSize: 16,
                               color: Colors.black.withOpacity(0.8),
                             ),
                             Row(
@@ -503,7 +503,7 @@ class _BookingFormState extends State<BookingForm> {
                                   },
                                   child: Container(
                                       height: 50.h,
-                                      width: 80.w,
+                                      width: 60.w,
                                       decoration: BoxDecoration(
                                         borderRadius: const BorderRadius.only(
                                             topLeft: Radius.circular(25),

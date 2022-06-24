@@ -108,7 +108,7 @@ class CredentialServices extends GetxController {
             box.write('email', useremail.value);
             print(
                 "We are reading value from Credentinal Screen : ${box.read('user')}");
-            Get.off(() => const HomePage());
+            Get.offAll(() => const HomePage());
           }
         });
       }

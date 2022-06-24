@@ -409,148 +409,148 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
-      body: Center(
-          child: Container(
-        width: 500.w,
-        color: primaryColor,
-        child: ConstrainedBox(
-          constraints:
-              BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
-          child: SingleChildScrollView(
-            child: Container(
-              margin: const EdgeInsets.all(50),
-              padding: EdgeInsets.only(top: 20.h),
-              decoration: BoxDecoration(
-                  color: whiteColor, borderRadius: BorderRadius.circular(8)),
-              child: isload == true
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const ReusableBigText(text: "Create Hall Details"),
-                        SizedBox(
-                          height: height * 0.01,
-                        ),
-                        SizedBox(
-                          height: height * 0.01,
-                        ),
-                        SizedBox(
-                          height: height * 0.01,
-                        ),
-                        ReusableTextField(
-                          controller: hallName,
-                          hintText: 'Hall Name',
-                          keyboardType: TextInputType.text,
-                        ),
-                        SizedBox(
-                          height: height * 0.01,
-                        ),
-                        hallid == null
-                            ? ReusableTextField(
-                                controller: areaName,
-                                hintText: 'Area Name',
-                                keyboardType: TextInputType.emailAddress,
-                              )
-                            : const SizedBox(width: 0.0, height: 0.0),
-                        SizedBox(
-                          height: height * 0.01,
-                        ),
-                        ReusableTextField(
-                          controller: ownerName,
-                          hintText: 'Owner Name',
-                          keyboardType: TextInputType.text,
-                        ),
-                        SizedBox(
-                          height: height * 0.01,
-                        ),
-                        ReusableTextField(
-                          controller: ownerContact,
-                          hintText: 'Owner Contact',
-                          keyboardType: TextInputType.number,
-                        ),
-                        SizedBox(
-                          height: height * 0.01,
-                        ),
-                        ReusableTextField(
-                          readonly: hallid != null ? true : false,
-                          controller: ownerEmail,
-                          hintText: 'Owner Email',
-                          keyboardType: TextInputType.emailAddress,
-                        ),
-                        SizedBox(
-                          height: height * 0.01,
-                        ),
-                        ReusableTextField(
-                          controller: hallAddress,
-                          hintText: 'Hall Address',
-                          keyboardType: TextInputType.emailAddress,
-                        ),
-                        SizedBox(
-                          height: height * 0.01,
-                        ),
-                        ReusableTextField(
-                          controller: hallCapacity,
-                          hintText: 'Hall Capacity',
-                          keyboardType: TextInputType.number,
-                        ),
-                        SizedBox(
-                          height: height * 0.01,
-                        ),
-                        ReusableTextField(
-                          controller: pricePerHead,
-                          hintText: 'Price Per Head',
-                          keyboardType: TextInputType.number,
-                        ),
-                        SizedBox(
-                          height: height * 0.01,
-                        ),
-                        ReusableTextField(
-                          controller: cateringPerHead,
-                          hintText: 'Catering Per Head',
-                          keyboardType: TextInputType.number,
-                        ),
-                        SizedBox(
-                          height: height * 0.01,
-                        ),
-                        Row(
-                          children: [
-                            CupertinoSwitch(
-                              value: eventPlanner,
-                              onChanged: (value) {
-                                setState(() {
-                                  eventPlanner = value;
-                                });
-                              },
-                            ),
-                            const Text('Event Planner')
-                          ],
-                        ),
-                        SizedBox(
-                          height: height * 0.01,
-                        ),
-                        SizedBox(
-                          height: height * 0.3,
-                          child: _upLoading
-                              ? showLoading()
-                              : Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Center(
-                                      child: OutlinedButton(
-                                          onPressed: () {
-                                            selectImage();
-                                          },
-                                          child: const Text('Select Files')),
+      appBar: AppBar(
+        backgroundColor: background1Color,
+        centerTitle: true,
+        title: const Text('Create Hall Details'),
+      ),
+      body: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.only(top: 20.h),
+          decoration: BoxDecoration(
+              color: whiteColor, borderRadius: BorderRadius.circular(8)),
+          child: isload == true
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    ReusableTextField(
+                      controller: hallName,
+                      hintText: 'Hall Name',
+                      keyboardType: TextInputType.text,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    hallid == null
+                        ? ReusableTextField(
+                            controller: areaName,
+                            hintText: 'Area Name',
+                            keyboardType: TextInputType.emailAddress,
+                          )
+                        : const SizedBox(width: 0.0, height: 0.0),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    ReusableTextField(
+                      controller: ownerName,
+                      hintText: 'Owner Name',
+                      keyboardType: TextInputType.text,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    ReusableTextField(
+                      controller: ownerContact,
+                      hintText: 'Owner Contact',
+                      keyboardType: TextInputType.number,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    ReusableTextField(
+                      readonly: hallid != null ? true : false,
+                      controller: ownerEmail,
+                      hintText: 'Owner Email',
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    ReusableTextField(
+                      controller: hallAddress,
+                      hintText: 'Hall Address',
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    ReusableTextField(
+                      controller: hallCapacity,
+                      hintText: 'Hall Capacity',
+                      keyboardType: TextInputType.number,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    ReusableTextField(
+                      controller: pricePerHead,
+                      hintText: 'Price Per Head',
+                      keyboardType: TextInputType.number,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    ReusableTextField(
+                      controller: cateringPerHead,
+                      hintText: 'Catering Per Head',
+                      keyboardType: TextInputType.number,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                      child: Row(
+                        children: [
+                          CupertinoSwitch(
+                            value: eventPlanner,
+                            onChanged: (value) {
+                              setState(() {
+                                eventPlanner = value;
+                              });
+                            },
+                          ),
+                          const Text('Event Planner')
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    SizedBox(
+                      height: height * 0.5,
+                      child: _upLoading
+                          ? showLoading()
+                          : Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Center(
+                                  child: OutlinedButton(
+                                    onPressed: () {
+                                      selectImage();
+                                    },
+                                    child: const Text(
+                                      'Select Files',
+                                      style: TextStyle(color: background1Color),
                                     ),
-                                    Center(
-                                      child: _selectedFiles.length == null
-                                          ? const Text("No Images Selected")
-                                          : Text(
-                                              'Image is Selected : ${_selectedFiles.length.toString()}'),
-                                    ),
-                                    Expanded(
-                                      child: hallid == null ||
-                                              _selectedFiles.isNotEmpty
-                                          ? GridView.builder(
+                                  ),
+                                ),
+                                Center(
+                                  child: _selectedFiles.length == null
+                                      ? const Text("No Images Selected")
+                                      : Text(
+                                          'Image is Selected : ${_selectedFiles.length.toString()}'),
+                                ),
+                                Expanded(
+                                  child: hallid == null ||
+                                          _selectedFiles.isNotEmpty
+                                      ? Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 20.0, vertical: 20),
+                                          child: GridView.builder(
                                               itemCount:
                                                   _selectedFiles.length + 1,
                                               gridDelegate:
@@ -560,12 +560,35 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
                                                   (BuildContext context,
                                                       int index) {
                                                 return index == 0
-                                                    ? Center(
-                                                        child: IconButton(
-                                                          icon: Icon(Icons.add),
-                                                          onPressed: () {
-                                                            pickImage();
-                                                          },
+                                                    ? InkWell(
+                                                        onTap: () {
+                                                          pickImage();
+                                                        },
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child: Container(
+                                                            width: 100,
+                                                            height: 100,
+                                                            decoration:
+                                                                const BoxDecoration(
+                                                              color: Color
+                                                                  .fromRGBO(
+                                                                      220,
+                                                                      220,
+                                                                      220,
+                                                                      1.0),
+                                                            ),
+                                                            child: const Center(
+                                                              child: Icon(
+                                                                Icons.add,
+                                                                size: 40.0,
+                                                                color: Colors
+                                                                    .black,
+                                                              ),
+                                                            ),
+                                                          ),
                                                         ),
                                                       )
                                                     : Container(
@@ -585,8 +608,8 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
                                                                       .path),
                                                                   fit: BoxFit
                                                                       .cover,
-                                                                  width: 210,
-                                                                  height: 210),
+                                                                  width: 130,
+                                                                  height: 130),
                                                             ),
                                                             Positioned(
                                                               top: 0,
@@ -612,118 +635,111 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
                                                           ],
                                                         ),
                                                       );
-                                              })
-                                          : StreamBuilder<DocumentSnapshot>(
-                                              stream: FirebaseFirestore.instance
-                                                  .collection("admin")
-                                                  .doc(areaid)
-                                                  .collection('halls')
-                                                  .doc(hallid)
-                                                  .snapshots(),
-                                              builder: (BuildContext context,
-                                                  AsyncSnapshot<
-                                                          DocumentSnapshot>
-                                                      snapshot) {
-                                                if (snapshot.connectionState ==
-                                                    ConnectionState.waiting) {
-                                                  return const Center(
-                                                      child:
-                                                          CircularProgressIndicator(
-                                                    color: Colors.green,
-                                                  ));
-                                                } else if (!snapshot.hasData ||
-                                                    !snapshot.data!.exists) {
-                                                  return const Center(
-                                                    child: Text(
-                                                      "No Image",
-                                                      style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        color: Colors.black,
-                                                      ),
-                                                    ),
-                                                  );
-                                                } else {
-                                                  Map<String, dynamic> data =
-                                                      snapshot.data!.data()
-                                                          as Map<String,
-                                                              dynamic>;
-                                                  arrimgsUrl = data['images']
-                                                      .cast<String>();
-
-                                                  return GridView.builder(
-                                                      itemCount:
-                                                          arrimgsUrl.length,
-                                                      gridDelegate:
-                                                          const SliverGridDelegateWithFixedCrossAxisCount(
-                                                              crossAxisCount:
-                                                                  3),
-                                                      itemBuilder:
-                                                          (BuildContext context,
-                                                              int index) {
-                                                        return Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(3.0),
-                                                          child: Image.network(
-                                                            arrimgsUrl[index],
-                                                            fit: BoxFit.cover,
-                                                            height:
-                                                                double.infinity,
-                                                            width:
-                                                                double.infinity,
-                                                          ),
-                                                        );
-                                                      });
-                                                }
                                               }),
-                                    )
-                                  ],
-                                ),
-                        ),
-                        SizedBox(
-                          height: height * 0.02,
-                        ),
-                        InkWell(
-                          onTap: () async {
-                            hallid == null
-                                ?
-                                // Create New Hall
-                                validation(context)
-                                :
-                                // Update Existing Hall
-                                existHallvalidation(context);
-                          },
-                          child: const ReusableTextIconButton(
-                            text: "Submit",
-                          ),
-                        ),
-                        SizedBox(
-                          height: height * 0.15,
-                        ),
-                      ],
-                    )
-                  : SizedBox(
-                      height: height,
-                      width: 20.0,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Text("Please Wait..."),
-                          SizedBox(
-                            height: 15,
-                          ),
-                          CircularProgressIndicator(),
-                          SizedBox(
-                            height: 40,
-                          ),
-                        ],
+                                        )
+                                      : StreamBuilder<DocumentSnapshot>(
+                                          stream: FirebaseFirestore.instance
+                                              .collection("admin")
+                                              .doc(areaid)
+                                              .collection('halls')
+                                              .doc(hallid)
+                                              .snapshots(),
+                                          builder: (BuildContext context,
+                                              AsyncSnapshot<DocumentSnapshot>
+                                                  snapshot) {
+                                            if (snapshot.connectionState ==
+                                                ConnectionState.waiting) {
+                                              return const Center(
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                color: Colors.green,
+                                              ));
+                                            } else if (!snapshot.hasData ||
+                                                !snapshot.data!.exists) {
+                                              return const Center(
+                                                child: Text(
+                                                  "No Image",
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Colors.black,
+                                                  ),
+                                                ),
+                                              );
+                                            } else {
+                                              Map<String, dynamic> data =
+                                                  snapshot.data!.data()
+                                                      as Map<String, dynamic>;
+                                              arrimgsUrl =
+                                                  data['images'].cast<String>();
+
+                                              return GridView.builder(
+                                                  itemCount: arrimgsUrl.length,
+                                                  gridDelegate:
+                                                      const SliverGridDelegateWithFixedCrossAxisCount(
+                                                          crossAxisCount: 3),
+                                                  itemBuilder:
+                                                      (BuildContext context,
+                                                          int index) {
+                                                    return Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              3.0),
+                                                      child: Image.network(
+                                                        arrimgsUrl[index],
+                                                        fit: BoxFit.cover,
+                                                        height: double.infinity,
+                                                        width: double.infinity,
+                                                      ),
+                                                    );
+                                                  });
+                                            }
+                                          }),
+                                )
+                              ],
+                            ),
+                    ),
+                    SizedBox(
+                      height: height * 0.02,
+                    ),
+                    InkWell(
+                      onTap: () async {
+                        hallid == null
+                            ?
+                            // Create New Hall
+                            validation(context)
+                            :
+                            // Update Existing Hall
+                            existHallvalidation(context);
+                      },
+                      child: const ReusableTextIconButton(
+                        text: "Submit",
+                        color: background1Color,
                       ),
                     ),
-            ),
-          ),
+                    SizedBox(
+                      height: height * 0.05,
+                    ),
+                  ],
+                )
+              : SizedBox(
+                  height: height,
+                  width: 20.0,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Text("Please Wait..."),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      CircularProgressIndicator(),
+                      SizedBox(
+                        height: 40,
+                      ),
+                    ],
+                  ),
+                ),
         ),
-      )),
+      ),
     );
   }
 

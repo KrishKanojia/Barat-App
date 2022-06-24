@@ -178,7 +178,10 @@ class _OrderConfirmListState extends State<OrderConfirmList> {
                                                 ),
                                               ),
                                               title: Text(
-                                                "Owner Name:  ${data["ownername"].toUpperCase()}",
+                                                credentialServices.getisAdmin !=
+                                                        true
+                                                    ? "Owner Name:  ${data["ownername"].toUpperCase()}"
+                                                    : "Client Name:  ${data["clientname"].toUpperCase()}",
                                                 style: const TextStyle(
                                                   color: Colors.black,
                                                   fontWeight: FontWeight.bold,
@@ -364,7 +367,10 @@ class _OrderConfirmListState extends State<OrderConfirmList> {
                                                 ),
                                               ),
                                               title: Text(
-                                                "Client Name: ${data["clientname"].toUpperCase()}",
+                                                credentialServices.getisAdmin !=
+                                                        true
+                                                    ? "Client Name:  ${data["clientname"].toUpperCase()}"
+                                                    : "Owner Name:  ${data["ownername"].toUpperCase()}",
                                                 style: const TextStyle(
                                                   color: Colors.black,
                                                   fontWeight: FontWeight.bold,
@@ -413,9 +419,9 @@ class _OrderConfirmListState extends State<OrderConfirmList> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        backgroundColor: background1Color,
         appBar: AppBar(
-          bottom: TabBar(tabs: [
+          backgroundColor: background1Color,
+          bottom: TabBar(indicatorColor: Colors.white, tabs: [
             Tab(
               text: credentialServices.getisAdmin == true
                   ? "User Hall Booking"
