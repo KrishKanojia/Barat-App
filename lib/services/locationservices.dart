@@ -50,21 +50,6 @@ class LocationServices extends GetxController {
     //  dialog.close();
   }
 
-  // void postLocationByAdmin(var imageUrl, String areaName) async {
-  //   var headers = {'Content-Type': 'application/json'};
-  //   var request = http.Request('POST', Uri.parse(AppUrl.createArea));
-  //   request.body = json.encode({"areaName": areaName, "areaImage": imageUrl});
-  //   request.headers.addAll(headers);
-
-  //   http.StreamedResponse response = await request.send();
-
-  //   if (response.statusCode == 200) {
-  //     print(await response.stream.bytesToString());
-  //   } else {
-  //     print(response.reasonPhrase);
-  //   }
-  // }
-
   var longitude = ' '.obs;
   var latitude = ' '.obs;
   var address = ' '.obs;
@@ -117,46 +102,6 @@ class LocationServices extends GetxController {
     Placemark place = placemark[0];
     address.value = 'Address : ${place.locality},${place.country}';
   }
-  // Future<void> postHallsByAdmin(
-  //     List listImages,
-  //     String areaId,
-  //     String hallOwnerId,
-  //     String OwnerName,
-  //     String hallName,
-  //     int OwnerContact,
-  //     String OwnerEmail,
-  //     String HallAddress,
-  //     int HallCapacity,
-  //     int PricePerHead,
-  //     int CateringPerHead,
-  //     bool EventPlanner) async {
-  //   var headers = {'Content-Type': 'application/json'};
-  //   var request = http.Request(
-  //       'POST', Uri.parse('http://192.168.1.104:2000/api/halls/createHalls'));
-  //   request.body = json.encode({
-  //     "images": listImages,
-  //     "areaId": areaId,
-  //     "hallOwnerId": hallOwnerId,
-  //     "OwnerName": OwnerName,
-  //     "hallName": hallName,
-  //     "OwnerContact": OwnerContact,
-  //     "OwnerEmail": OwnerEmail,
-  //     "HallAddress": HallAddress,
-  //     "HallCapacity": HallCapacity,
-  //     "PricePerHead": PricePerHead,
-  //     "CateringPerHead": CateringPerHead,
-  //     "EventPlanner": EventPlanner,
-  //   });
-  //   request.headers.addAll(headers);
-
-  //   http.StreamedResponse response = await request.send();
-
-  //   if (response.statusCode == 200) {
-  //     print(await response.stream.bytesToString());
-  //   } else {
-  //     print(response.reasonPhrase);
-  //   }
-  // }
 
   Future<GetHallsByID> getHallApiById(var id) async {
     final response =
@@ -276,9 +221,9 @@ class LocationServices extends GetxController {
       required String areaId,
       required String areaname}) async {
     await _db.collection("admin").doc(areaId).update({
-      "areaName": areaname,
+      "areaName": areaname.toLowerCase(),
       "areaImage": areaImage,
-      "updatedAt": Timestamp.now(),
+      "updateAt": Timestamp.now(),
     });
     Get.back();
   }

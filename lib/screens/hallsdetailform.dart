@@ -154,67 +154,71 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
   }
 
   void validation(BuildContext context) {
-    if (ownerName.text.trim().isEmpty &&
-        hallName.text.trim().isEmpty &&
-        ownerContact.text.trim().isEmpty &&
-        ownerEmail.text.trim().isEmpty &&
-        hallAddress.text.trim().isEmpty &&
-        hallCapacity.text.trim().isEmpty &&
-        pricePerHead.text.trim().isEmpty &&
-        cateringPerHead.text.trim().isEmpty &&
-        areaName.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("All Field Are Empty"),
-        ),
-      );
-    } else if (hallName.text.trim().isEmpty) {
-      displayValidationError(context, "Hall Name");
-    } else if (areaName.text.trim().isEmpty) {
-      displayValidationError(context, "Area Name");
-    } else if (ownerName.text.trim().isEmpty) {
-      displayValidationError(context, "Owner Name");
-    } else if (ownerContact.text.trim().isEmpty) {
-      displayValidationError(context, "Owner's Contact");
-    } else if (ownerEmail.text.trim().isEmpty) {
-      displayValidationError(context, "Owner's Email");
-    } else if (!regExp.hasMatch(ownerEmail.text)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Please Try Vaild Email"),
-        ),
-      );
-    } else if (hallAddress.text.trim().isEmpty) {
-      displayValidationError(context, "Hall Address");
-    } else if (hallCapacity.text.trim().isEmpty) {
-      displayValidationError(context, "Hall Capacity");
-    } else if (pricePerHead.text.trim().isEmpty) {
-      displayValidationError(context, "Price");
-    } else if (cateringPerHead.text.trim().isEmpty) {
-      displayValidationError(context, "Catering Price");
-    } else if (_selectedFiles.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Please Select Image"),
-        ),
-      );
-    } else {
-      if (_selectedFiles.isNotEmpty) {
-        postHallsByAdmin(
-            listImages: arrimgsUrl,
-            areaName: areaName.text.toString().toLowerCase(),
-            halladdress: hallAddress.text.toString(),
-            ownerName: ownerName.text.toString(),
-            hallName: hallName.text.toString(),
-            ownerContact: int.tryParse(ownerContact.text) ?? 1,
-            ownerEmail: ownerEmail.text.toString().toLowerCase(),
-            hallCapacity: int.parse(hallCapacity.text),
-            pricePerHead: int.parse(pricePerHead.text),
-            cateringPerHead: int.parse(cateringPerHead.text),
-            eventPlanner: eventPlanner,
-            context: context);
-        // Get.to(() => const AdminPage());
+    try {
+      if (ownerName.text.trim().isEmpty &&
+          hallName.text.trim().isEmpty &&
+          ownerContact.text.trim().isEmpty &&
+          ownerEmail.text.trim().isEmpty &&
+          hallAddress.text.trim().isEmpty &&
+          hallCapacity.text.trim().isEmpty &&
+          pricePerHead.text.trim().isEmpty &&
+          cateringPerHead.text.trim().isEmpty &&
+          areaName.text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("All Field Are Empty"),
+          ),
+        );
+      } else if (hallName.text.trim().isEmpty) {
+        displayValidationError(context, "Hall Name");
+      } else if (areaName.text.trim().isEmpty) {
+        displayValidationError(context, "Area Name");
+      } else if (ownerName.text.trim().isEmpty) {
+        displayValidationError(context, "Owner Name");
+      } else if (ownerContact.text.trim().isEmpty) {
+        displayValidationError(context, "Owner's Contact");
+      } else if (ownerEmail.text.trim().isEmpty) {
+        displayValidationError(context, "Owner's Email");
+      } else if (!regExp.hasMatch(ownerEmail.text)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Please Try Vaild Email"),
+          ),
+        );
+      } else if (hallAddress.text.trim().isEmpty) {
+        displayValidationError(context, "Hall Address");
+      } else if (hallCapacity.text.trim().isEmpty) {
+        displayValidationError(context, "Hall Capacity");
+      } else if (pricePerHead.text.trim().isEmpty) {
+        displayValidationError(context, "Price");
+      } else if (cateringPerHead.text.trim().isEmpty) {
+        displayValidationError(context, "Catering Price");
+      } else if (_selectedFiles.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Please Select Image"),
+          ),
+        );
+      } else {
+        if (_selectedFiles.isNotEmpty) {
+          postHallsByAdmin(
+              listImages: arrimgsUrl,
+              areaName: areaName.text.toString().toLowerCase(),
+              halladdress: hallAddress.text.toString(),
+              ownerName: ownerName.text.toString(),
+              hallName: hallName.text.toString(),
+              ownerContact: int.tryParse(ownerContact.text) ?? 1,
+              ownerEmail: ownerEmail.text.toString(),
+              hallCapacity: int.parse(hallCapacity.text),
+              pricePerHead: int.parse(pricePerHead.text),
+              cateringPerHead: int.parse(cateringPerHead.text),
+              eventPlanner: eventPlanner,
+              context: context);
+          // Get.to(() => const AdminPage());
+        }
       }
+    } catch (e) {
+      print("Error in Hall Form Validation ${e.toString()}");
     }
   }
 
@@ -231,140 +235,150 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
       required int cateringPerHead,
       required bool eventPlanner,
       required BuildContext context}) async {
-    var db = FirebaseFirestore.instance;
-    bool? checkOwnerEmail;
-    bool? checklawn;
-    var ownerid;
-    var areaid;
-    print("Owner email is $ownerEmail");
+    try {
+      var db = FirebaseFirestore.instance;
+      bool? checkOwnerEmail;
+      bool? checklawn;
+      var ownerid;
+      var areaid;
+      print("Owner email is $ownerEmail");
 
-    // get user from Firebase
-    QuerySnapshot userdata =
-        await db.collection('User').where('email', isEqualTo: ownerEmail).get();
+      // get user from Firebase
+      QuerySnapshot userdata = await db
+          .collection('User')
+          .where('email', isEqualTo: ownerEmail)
+          .get();
 
-    // get area from Firebase
-    // check if area exist in Firebase
-    QuerySnapshot area = await db
-        .collection('admin')
-        .where('areaName', isEqualTo: areaName)
-        .get();
-    print("Getting user data : $userdata and  Area $area");
-    if (userdata.size > 0 && area.size > 0) {
-      userdata.docs.forEach((doc) {
-        ownerid = doc.get("userId");
-        print("Owner email is $ownerEmail");
-      });
-      area.docs.forEach((doc) {
-        print("The Data is F0ollowing : ${userdata.docs[0].get("email")}");
-        areaid = doc.get("id");
-      });
-      print("The Area Name is $areaid");
-      await uploadFunction(_selectedFiles);
-      var halldoc = await FirebaseFirestore.instance
-          .collection("admin")
-          .doc(areaid)
-          .collection("halls")
-          .doc();
-      print("The Hall id is ${halldoc}");
+      // get area from Firebase
+      // check if area exist in Firebase
+      QuerySnapshot area = await db
+          .collection('admin')
+          .where('areaName', isEqualTo: areaName)
+          .get();
+      print("Getting user data : $userdata and  Area $area");
+      if (userdata.size > 0 && area.size > 0) {
+        userdata.docs.forEach((doc) {
+          ownerid = doc.get("userId");
+          print("Owner email is $ownerEmail");
+        });
+        area.docs.forEach((doc) {
+          print("The Data is F0ollowing : ${userdata.docs[0].get("email")}");
+          areaid = doc.get("id");
+        });
+        print("The Area Name is $areaid");
+        await uploadFunction(_selectedFiles);
+        var halldoc = await FirebaseFirestore.instance
+            .collection("admin")
+            .doc(areaid)
+            .collection("halls")
+            .doc();
+        print("The Hall id is ${halldoc}");
 
-      await FirebaseFirestore.instance
-          .collection("admin")
-          .doc(areaid)
-          .collection("halls")
-          .doc(halldoc.id)
-          .set({
-        "areaId": area.docs[0].id,
-        "hallName": hallName,
-        "hall_id": halldoc.id,
-        "EventPlanner": eventPlanner,
-        "CateringPerHead": cateringPerHead,
-        "HallAddress": halladdress,
-        "HallCapacity": hallCapacity,
-        "OwnerContact": ownerContact,
-        "OwnerEmail": ownerEmail,
-        "OwnerName": ownerName,
-        "PricePerHead": pricePerHead,
-        "createdAt": Timestamp.now(),
-        "images": listImages,
-        "updatedAt": Timestamp.now(),
-        "hallOwnerId": ownerid,
-      });
-      _selectedFiles.clear();
-      print("Hall Created");
-      Get.back();
-    } else if (userdata.docs.isEmpty) {
-      print("The Email is ${ownerEmail}");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          duration: Duration(seconds: 3),
-          content: Text("Owner Email is Invalid"),
-        ),
-      );
-    } else if (area.docs.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Area is Invalid"),
-        ),
-      );
-    } else {
-      print("Something went Wrong");
+        await FirebaseFirestore.instance
+            .collection("admin")
+            .doc(areaid)
+            .collection("halls")
+            .doc(halldoc.id)
+            .set({
+          "areaId": area.docs[0].id,
+          "hallName": hallName,
+          "hall_id": halldoc.id,
+          "EventPlanner": eventPlanner,
+          "CateringPerHead": cateringPerHead,
+          "HallAddress": halladdress,
+          "HallCapacity": hallCapacity,
+          "OwnerContact": ownerContact,
+          "OwnerEmail": ownerEmail,
+          "OwnerName": ownerName,
+          "PricePerHead": pricePerHead,
+          "createdAt": Timestamp.now(),
+          "images": listImages,
+          "updatedAt": Timestamp.now(),
+          "hallOwnerId": ownerid,
+        });
+        _selectedFiles.clear();
+        print("Hall Created");
+        Get.back();
+      } else if (userdata.docs.isEmpty) {
+        print("The Email is ${ownerEmail}");
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            duration: Duration(seconds: 3),
+            content: Text("Owner Email is Invalid"),
+          ),
+        );
+      } else if (area.docs.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Area is Invalid"),
+          ),
+        );
+      } else {
+        print("Something went Wrong");
+      }
+    } catch (e) {
+      print("Error in Post Hall Admin ${e.toString()}");
     }
   }
 
   Future<void> existHallvalidation(BuildContext context) async {
-    if (ownerName.text.trim().isEmpty &&
-        hallName.text.trim().isEmpty &&
-        ownerContact.text.trim().isEmpty &&
-        hallAddress.text.trim().isEmpty &&
-        hallCapacity.text.trim().isEmpty &&
-        pricePerHead.text.trim().isEmpty &&
-        cateringPerHead.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("All Field Are Empty"),
-        ),
-      );
-    } else if (hallName.text.trim().isEmpty) {
-      displayValidationError(context, "Hall Name");
-    } else if (ownerName.text.trim().isEmpty) {
-      displayValidationError(context, "Owner Name");
-    } else if (ownerContact.text.trim().isEmpty) {
-      displayValidationError(context, "Owner's Contact");
-    } else if (hallAddress.text.trim().isEmpty) {
-      displayValidationError(context, "Hall Address");
-    } else if (hallCapacity.text.trim().isEmpty) {
-      displayValidationError(context, "Hall Capacity");
-    } else if (pricePerHead.text.trim().isEmpty) {
-      displayValidationError(context, "Price");
-    } else if (cateringPerHead.text.trim().isEmpty) {
-      displayValidationError(context, "Catering Price");
-    } else if (_selectedFiles.isEmpty) {
-      // If Images are not updated, Only Text is updated
-      updateHallByAdmin(
-          listImages: arrimgsUrl,
-          halladdress: hallAddress.text.toString(),
-          ownerName: ownerName.text.toString(),
-          hallName: hallName.text.toString(),
-          ownerContact: int.tryParse(ownerContact.text) ?? 1,
-          hallCapacity: int.parse(hallCapacity.text),
-          pricePerHead: int.parse(pricePerHead.text),
-          cateringPerHead: int.parse(cateringPerHead.text),
-          eventPlanner: eventPlanner,
-          context: context);
-    } else if (_selectedFiles.isNotEmpty) {
-      // If Images are updated
-      await uploadFunction(_selectedFiles);
-      updateHallByAdmin(
-          listImages: arrimgsUrl,
-          halladdress: hallAddress.text.toString(),
-          ownerName: ownerName.text.toString(),
-          hallName: hallName.text.toString(),
-          ownerContact: int.tryParse(ownerContact.text) ?? 1,
-          hallCapacity: int.parse(hallCapacity.text),
-          pricePerHead: int.parse(pricePerHead.text),
-          cateringPerHead: int.parse(cateringPerHead.text),
-          eventPlanner: eventPlanner,
-          context: context);
+    try {
+      if (ownerName.text.trim().isEmpty &&
+          hallName.text.trim().isEmpty &&
+          ownerContact.text.trim().isEmpty &&
+          hallAddress.text.trim().isEmpty &&
+          hallCapacity.text.trim().isEmpty &&
+          pricePerHead.text.trim().isEmpty &&
+          cateringPerHead.text.trim().isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("All Field Are Empty"),
+          ),
+        );
+      } else if (hallName.text.trim().isEmpty) {
+        displayValidationError(context, "Hall Name");
+      } else if (ownerName.text.trim().isEmpty) {
+        displayValidationError(context, "Owner Name");
+      } else if (ownerContact.text.trim().isEmpty) {
+        displayValidationError(context, "Owner's Contact");
+      } else if (hallAddress.text.trim().isEmpty) {
+        displayValidationError(context, "Hall Address");
+      } else if (hallCapacity.text.trim().isEmpty) {
+        displayValidationError(context, "Hall Capacity");
+      } else if (pricePerHead.text.trim().isEmpty) {
+        displayValidationError(context, "Price");
+      } else if (cateringPerHead.text.trim().isEmpty) {
+        displayValidationError(context, "Catering Price");
+      } else if (_selectedFiles.isEmpty) {
+        // If Images are not updated, Only Text is updated
+        updateHallByAdmin(
+            listImages: arrimgsUrl,
+            halladdress: hallAddress.text.toString(),
+            ownerName: ownerName.text.toString(),
+            hallName: hallName.text.toString(),
+            ownerContact: int.tryParse(ownerContact.text) ?? 1,
+            hallCapacity: int.parse(hallCapacity.text),
+            pricePerHead: int.parse(pricePerHead.text),
+            cateringPerHead: int.parse(cateringPerHead.text),
+            eventPlanner: eventPlanner,
+            context: context);
+      } else if (_selectedFiles.isNotEmpty) {
+        // If Images are updated
+        await uploadFunction(_selectedFiles);
+        updateHallByAdmin(
+            listImages: arrimgsUrl,
+            halladdress: hallAddress.text.toString(),
+            ownerName: ownerName.text.toString(),
+            hallName: hallName.text.toString(),
+            ownerContact: int.tryParse(ownerContact.text) ?? 1,
+            hallCapacity: int.parse(hallCapacity.text),
+            pricePerHead: int.parse(pricePerHead.text),
+            cateringPerHead: int.parse(cateringPerHead.text),
+            eventPlanner: eventPlanner,
+            context: context);
+      }
+    } catch (e) {
+      print("Error in Exist Hall Validation ${e.toString()}");
     }
   }
 
@@ -380,26 +394,30 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
       required int cateringPerHead,
       required bool eventPlanner,
       required BuildContext context}) async {
-    await FirebaseFirestore.instance
-        .collection("admin")
-        .doc(areaid)
-        .collection("halls")
-        .doc(hallid)
-        .update({
-      "hallName": hallName,
-      "EventPlanner": eventPlanner,
-      "CateringPerHead": cateringPerHead,
-      "HallAddress": halladdress,
-      "HallCapacity": hallCapacity,
-      "OwnerContact": ownerContact,
-      "OwnerName": ownerName,
-      "PricePerHead": pricePerHead,
-      "images": listImages,
-      "updatedAt": Timestamp.now(),
-    });
-    _selectedFiles.clear();
-    print("Hall Updated");
-    Get.back();
+    try {
+      await FirebaseFirestore.instance
+          .collection("admin")
+          .doc(areaid)
+          .collection("halls")
+          .doc(hallid)
+          .update({
+        "hallName": hallName,
+        "EventPlanner": eventPlanner,
+        "CateringPerHead": cateringPerHead,
+        "HallAddress": halladdress,
+        "HallCapacity": hallCapacity,
+        "OwnerContact": ownerContact,
+        "OwnerName": ownerName,
+        "PricePerHead": pricePerHead,
+        "images": listImages,
+        "updatedAt": Timestamp.now(),
+      });
+      _selectedFiles.clear();
+      print("Hall Updated");
+      Get.back();
+    } catch (e) {
+      print("Error in Update Hall Admin ${e.toString()}");
+    }
   }
 
   @override
@@ -441,9 +459,11 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
                             keyboardType: TextInputType.emailAddress,
                           )
                         : const SizedBox(width: 0.0, height: 0.0),
-                    const SizedBox(
-                      height: 20,
-                    ),
+                    hallid == null
+                        ? const SizedBox(
+                            height: 20,
+                          )
+                        : const SizedBox(width: 0.0, height: 0.0),
                     ReusableTextField(
                       controller: ownerName,
                       hintText: 'Owner Name',
@@ -703,13 +723,21 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
                     ),
                     InkWell(
                       onTap: () async {
-                        hallid == null
-                            ?
-                            // Create New Hall
-                            validation(context)
-                            :
-                            // Update Existing Hall
-                            existHallvalidation(context);
+                        _upLoading == false
+                            ? hallid == null
+                                ?
+                                // Create New Hall
+                                validation(context)
+                                :
+                                // Update Existing Hall
+                                existHallvalidation(context)
+                            : ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content:
+                                      Text("Please Wait Hall is Uploading"),
+                                ),
+                              );
+                        ;
                       },
                       child: const ReusableTextIconButton(
                         text: "Submit",

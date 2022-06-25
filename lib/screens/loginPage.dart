@@ -6,6 +6,7 @@ import 'package:barat/utils/color.dart';
 import 'package:barat/utils/constants.dart';
 import 'package:barat/widgets/buildPasswordField.dart';
 import 'package:barat/widgets/buildTextField.dart';
+import 'package:barat/widgets/loadingButton.dart';
 import 'package:barat/widgets/password_TextField.dart';
 import 'package:barat/widgets/reusableTextField.dart';
 import 'package:barat/widgets/reusableTextIconButton.dart';
@@ -24,7 +25,7 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   final box = GetStorage();
   bool obserText = true;
 
@@ -32,16 +33,9 @@ class _LoginPageState extends State<LoginPage> {
   final credentialServices = Get.put(CredentialServices());
   final TextEditingController _username = TextEditingController();
   final TextEditingController _password = TextEditingController();
+
   // final String username = "admin@gmail.com";
   // final int password = 12345;
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    _username.dispose();
-    _password.dispose();
-  }
 
   Widget _buildForgotPasswordBtn() {
     return Container(
@@ -78,7 +72,7 @@ class _LoginPageState extends State<LoginPage> {
               ));
             } else {
               credentialServices.signInWithUsername(
-                username: _username.text.trim().toString().toLowerCase(),
+                Usermail: _username.text.trim().toString(),
                 password: _password.text.trim().toString(),
                 context: context,
               );
@@ -104,6 +98,28 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  late final AnimationController _controller = AnimationController(
+    duration: const Duration(seconds: 3),
+    vsync: this,
+  );
+  late final Animation<double> _animation =
+      Tween<double>(begin: 0.2, end: 1.2).animate(_controller);
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _controller.dispose();
+    _username.dispose();
+    _password.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -118,18 +134,17 @@ class _LoginPageState extends State<LoginPage> {
               Container(
                   height: height,
                   width: width,
-                  decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          background1Color,
-                          secondaryColor,
-                        ],
-                        stops: [0.2, 0.9],
-                      ),
-                      color: whiteColor,
-                      borderRadius: BorderRadius.circular(8)),
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        background1Color,
+                        secondaryColor,
+                      ],
+                      stops: [0.2, 0.9],
+                    ),
+                  ),
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 40.0,
@@ -138,16 +153,16 @@ class _LoginPageState extends State<LoginPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Text('data')
-                        SizedBox(
-                          height: height * 0.05,
-                        ),
-                        FittedBox(
-                          child: Image.asset(
-                            'images/logo1.png',
-                            width: 180,
-                            height: 180,
-                            fit: BoxFit.fill,
+                        SizedBox(height: height * 0.08),
+                        ScaleTransition(
+                          scale: _animation,
+                          child: FittedBox(
+                            child: Image.asset(
+                              'images/logo1.png',
+                              width: 140,
+                              height: 140,
+                              fit: BoxFit.fill,
+                            ),
                           ),
                         ),
                         const SizedBox(height: 20.0),
@@ -171,9 +186,7 @@ class _LoginPageState extends State<LoginPage> {
                           keyboardType: TextInputType.text,
                           titleText: 'Email',
                         ),
-
                         const SizedBox(height: 20.0),
-
                         BuildPasswordField(
                           controller: _password,
                           hintText: 'Enter your Password',
@@ -186,9 +199,7 @@ class _LoginPageState extends State<LoginPage> {
                             });
                           },
                         ),
-
                         _buildForgotPasswordBtn(),
-
                         Obx(
                           () => InkWell(
                             onTap: () {
@@ -199,29 +210,7 @@ class _LoginPageState extends State<LoginPage> {
                                 // const ReusableTextIconButton(
                                 //     text: "Login",
                                 //   )
-                                : Container(
-                                    width: double.infinity,
-                                    height: height / 14,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius:
-                                          BorderRadiusDirectional.circular(15),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.grey.withOpacity(0.5),
-                                          spreadRadius: 2,
-                                          blurRadius: 7,
-                                          offset: const Offset(0,
-                                              3), // changes position of shadow
-                                        ),
-                                      ],
-                                    ),
-                                    child: const Center(
-                                      child: CircularProgressIndicator(
-                                        color: secondaryColor,
-                                      ),
-                                    ),
-                                  ),
+                                : LoadingButton(),
                           ),
                         ),
                         SizedBox(

@@ -1,5 +1,6 @@
 import 'package:barat/screens/HomePage.dart';
 import 'package:barat/screens/auth_gate.dart';
+import 'package:barat/screens/hall_details_screen.dart';
 import 'package:barat/screens/hallsdetailform.dart';
 import 'package:barat/screens/loginPage.dart';
 import 'package:barat/screens/splash.dart';
@@ -182,6 +183,7 @@ class _MyAppState extends State<MyApp> {
           HallsDetailForm.routeName: (context) => const HallsDetailForm(),
           CreateHallUser.routeName: (context) => const CreateHallUser(),
           ConfirmOrderScreen.routeName: (context) => ConfirmOrderScreen(),
+          HallDetailScreen.routeName: (context) => HallDetailScreen(),
         },
       ),
     );

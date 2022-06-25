@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:barat/Models/user_model.dart';
 import 'package:barat/screens/admin.dart';
+import 'package:barat/screens/hall_details_screen.dart';
 import 'package:barat/screens/loginPage.dart';
 import 'package:barat/screens/order_confirm_list.dart';
 import 'package:barat/screens/verification_screen.dart';
@@ -40,20 +41,22 @@ class CredentialServices extends GetxController {
   Future signIn(
       {required String email,
       required String password,
+      required String name,
       required BuildContext context}) async {
     String errorMessage;
     var db = FirebaseFirestore.instance;
 
     try {
       UserCredential userCredential = await auth.signInWithEmailAndPassword(
-          email: email.toLowerCase(), password: password);
+          email: email, password: password);
 
       bool isEmaiLVerified = FirebaseAuth.instance.currentUser!.emailVerified;
       if (!isEmaiLVerified) {
         isLoading.value = false;
-
+        userUid.value = userCredential.user!.uid;
         Get.to(
           () => VerificationScreen(
+            name: name,
             email: email,
             password: password,
             usercredential: userCredential,
@@ -103,12 +106,15 @@ class CredentialServices extends GetxController {
             isAdmin.value = false;
             isLoading.value = false;
             isGoogleSignedIn.value = false;
+
             box.write('user', userUid.value);
             box.write('name', username.value);
             box.write('email', useremail.value);
+
             print(
                 "We are reading value from Credentinal Screen : ${box.read('user')}");
-            Get.offAll(() => const HomePage());
+            Get.back();
+            // Get.offAll(() => const HomePage());
           }
         });
       }
@@ -408,30 +414,31 @@ class CredentialServices extends GetxController {
   }
 
   Future<void> signInWithUsername(
-      {required String username,
+      {required String Usermail,
       required String password,
       required BuildContext context}) async {
-    late String useremail;
+    late String Username;
     isLoading.value = true;
     // String userName = username.replaceAll(' ', '').toLowerCase();
     RegExp regExp = RegExp(
         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
 
     try {
-      if (!regExp.hasMatch(username)) {
+      if (!regExp.hasMatch(Usermail)) {
         QuerySnapshot userdata = await FirebaseFirestore.instance
             .collection('User')
-            .where('userName', isEqualTo: username)
+            .where('userName', isEqualTo: Usermail.toLowerCase())
             .get();
         if (userdata.size > 0) {
           userdata.docs.forEach((doc) {
-            useremail = doc.get("email");
+            Username = doc.get("email");
             print("Owner email is $useremail");
           });
 
           signIn(
+            name: Usermail,
             context: context,
-            email: useremail,
+            email: Username,
             password: password,
           );
         } else {
@@ -447,11 +454,24 @@ class CredentialServices extends GetxController {
           );
         }
       } else {
-        signIn(
-          context: context,
-          email: username,
-          password: password,
-        );
+        QuerySnapshot userdata = await FirebaseFirestore.instance
+            .collection('User')
+            .where('email', isEqualTo: Usermail.toLowerCase())
+            .get();
+
+        if (userdata.size > 0) {
+          userdata.docs.forEach((doc) {
+            Username = doc.get("userName");
+            print("Owner email is $useremail");
+          });
+
+          signIn(
+            name: Username,
+            context: context,
+            email: Usermail,
+            password: password,
+          );
+        }
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

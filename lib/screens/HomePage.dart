@@ -160,7 +160,7 @@ class _HomePageState extends State<HomePage> {
                                 padding: const EdgeInsets.all(0.0),
                                 onSelected: (result) {
                                   if (result == 0) {
-                                    Get.off(() => const AdminPage());
+                                    Get.offAll(() => const AdminPage());
                                   } else if (result == 1) {
                                     credentialServices.LogOutViaEmail();
                                     credentialServices.isAdmin.value = false;
@@ -198,12 +198,7 @@ class _HomePageState extends State<HomePage> {
                 padding: const EdgeInsets.only(right: 10.0),
                 child: TextButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (BuildContext context) => const LoginPage(),
-                      ),
-                    );
+                    Get.to(() => const LoginPage());
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

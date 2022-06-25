@@ -2,6 +2,7 @@ import 'package:barat/screens/loginPage.dart';
 import 'package:barat/services/credentialservices.dart';
 import 'package:barat/utils/color.dart';
 import 'package:barat/widgets/buildTextField.dart';
+import 'package:barat/widgets/loadingButton.dart';
 import 'package:barat/widgets/password_TextField.dart';
 import 'package:barat/widgets/reusableBigText.dart';
 import 'package:barat/widgets/reusableTextField.dart';
@@ -180,18 +181,17 @@ class _SignUpPageState extends State<SignUpPage> {
                 Container(
                     height: height,
                     width: width,
-                    decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            background1Color,
-                            secondaryColor,
-                          ],
-                          stops: [0.2, 0.9],
-                        ),
-                        color: whiteColor,
-                        borderRadius: BorderRadius.circular(8)),
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          background1Color,
+                          secondaryColor,
+                        ],
+                        stops: [0.2, 0.9],
+                      ),
+                    ),
                     child: SingleChildScrollView(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 40.0,
@@ -300,37 +300,14 @@ class _SignUpPageState extends State<SignUpPage> {
                                   // const ReusableTextIconButton(
                                   //     text: "SignUp",
                                   //   )
-                                  : Container(
-                                      width: width,
-                                      height: height / 14,
-                                      margin: const EdgeInsets.symmetric(
-                                          horizontal: 45.0),
-                                      decoration: BoxDecoration(
-                                        color: secondaryColor,
-                                        borderRadius:
-                                            BorderRadiusDirectional.circular(
-                                                15),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.grey.withOpacity(0.5),
-                                            spreadRadius: 2,
-                                            blurRadius: 7,
-                                            offset: const Offset(0,
-                                                3), // changes position of shadow
-                                          ),
-                                        ],
-                                      ),
-                                      child: const Center(
-                                        child: CircularProgressIndicator(
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
+                                  : LoadingButton(),
                             ),
                           ),
                           ReusableAlreadyText(
                             text: "Login",
-                            onClick: () => Get.off(() => const LoginPage()),
+                            onClick: () => Get.off(
+                              () => const LoginPage(),
+                            ),
                           ),
                         ],
                       ),

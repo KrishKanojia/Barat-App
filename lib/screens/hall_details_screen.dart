@@ -16,8 +16,8 @@ import '../utils/color.dart';
 
 class HallDetailScreen extends StatefulWidget {
   String routename;
-  HallDetailScreen({required this.routename});
-
+  HallDetailScreen({this.routename = ''});
+  static const routeName = '/HallDetailScreen';
   @override
   _HallDetailScreenState createState() => _HallDetailScreenState();
 }
@@ -81,18 +81,20 @@ class _HallDetailScreenState extends State<HallDetailScreen> {
     Widget signup = TextButton(
       child: const Text("Sign Up"),
       onPressed: () {
+        Get.back();
         Get.to(() => const SignUpPage());
       },
     );
     Widget signin = TextButton(
       child: const Text("Sign In"),
       onPressed: () {
+        Get.back();
         Get.to(() => const LoginPage());
       },
     );
     AlertDialog alert = AlertDialog(
-      title: const Text("Warning"),
-      content: const Text("Login or SignUp First"),
+      title: const Text("Account Required"),
+      content: const Text("Please Sign in to Book Hall"),
       actions: [
         signup,
         signin,
