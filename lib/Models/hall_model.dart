@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class HallModel {
   List? images;
   String? userID;
@@ -10,7 +12,7 @@ class HallModel {
   late var cateringPerHead;
   String? hallOwnerId;
   String? hallid;
-  double? rating;
+  var rating;
   String? hallname;
 
   HallModel.fromMap(dynamic data) {
@@ -26,5 +28,6 @@ class HallModel {
     hallOwnerId = data["hallOwnerId"];
     hallid = data["hall_id"];
     hallname = data["hallName"];
+    rating = data["hallrating"];
   }
 }

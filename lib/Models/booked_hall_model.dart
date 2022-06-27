@@ -1,24 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class BookedHallModel {
-  // BookedHallModel(
-  //     {required listimages,
-  //     required ownerName,
-  //     required ownerContact,
-  //     required ownerEmail,
-  //     required hallAddress,
-  //     required guestsQuantity,
-  //     required clientname,
-  //     required clientemail,
-  //     required totalPayment,
-  //     required date,
-  //     required hallname,
-  //     required eventplanner,
-  //     required cateringServices,
-  //     required ismyhall,
-  //     required bookingId,
-  //     required feedback,
-  //     required event});
   List? listimages;
   String? ownerName;
   String? ownerContact;
@@ -32,10 +14,11 @@ class BookedHallModel {
   String? hallname;
   bool? eventplanner;
   bool? cateringServices;
-
+  String? hallid;
   String? bookingId;
   String? feedback;
   String? event;
+  String? areaid;
 
   BookedHallModel.fromMap(dynamic data) {
     listimages = data["images"] ?? ' ';
@@ -51,9 +34,10 @@ class BookedHallModel {
     hallname = data["hallname"] ?? ' ';
     eventplanner = data["EventPlaner"] ?? ' ';
     cateringServices = data["CateringServices"] ?? ' ';
-
+    hallid = data["hallid"] ?? ' ';
     bookingId = data["bookingId"] ?? ' ';
     feedback = data["feedback"] ?? ' ';
     event = data["event"] ?? ' ';
+    areaid = data["areaid"] ?? ' ';
   }
 }

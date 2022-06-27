@@ -203,7 +203,7 @@ class LocationServices extends GetxController {
 
   Future<void> deleteHall(
       {required BuildContext context,
-      required String hallId,
+      required String? hallId,
       required String areaId}) async {
     await _db
         .collection('admin')

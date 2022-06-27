@@ -3,6 +3,7 @@ import 'package:barat/screens/hallsdetailform.dart';
 import 'package:barat/screens/manual_booking.dart';
 import 'package:barat/services/credentialservices.dart';
 import 'package:barat/services/locationservices.dart';
+import 'package:barat/services/ratingservice.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -33,24 +34,9 @@ class _HallsScreenState extends State<HallsScreen> {
   String? areaName = Get.arguments[1]['AreaName'];
   var areaid;
   List<int> halls = [];
-  List<HallModel> hallModelList = [];
-  bool isRatingFetched = false;
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    areaid = FirebaseFirestore.instance
-        .collection("admin")
-        .doc(areaId)
-        .collection("halls");
-    // fetchHallsRating();
-    print('20 ${areaName.toString()}');
-    print('21 ${areaId.toString()}');
-    LocationServices();
-    // locationServices.getHallApiById(data);
-  }
+  RatingService ratingService = RatingService();
 
-  deleteHallDialog({required String areaId, required String hallId}) {
+  deleteHallDialog({required String areaId, required String? hallId}) {
     showDialog(
       context: context,
       builder: (context) {
@@ -82,6 +68,13 @@ class _HallsScreenState extends State<HallsScreen> {
     );
   }
 
+  List<HallModel> hallModelList = [];
+  bool isRatingFetched = false;
+
+//  Future<void> getAllHalls()async{
+  //     await
+  //}
+
   Future<void> fetchHallsRating() async {
     hallModelList.forEach((hallModel) async {
       checkRating(hallModel);
@@ -91,7 +84,7 @@ class _HallsScreenState extends State<HallsScreen> {
     });
   }
 
-  Future<void> checkRating(HallModel hallModel) async {
+  Future<double> checkRating(HallModel hallModel) async {
     int countRating = 0;
     double singleratings = 0.0;
     double rating = 0.0;
@@ -107,10 +100,29 @@ class _HallsScreenState extends State<HallsScreen> {
           Map<String, dynamic> data = docSnap.data() as Map<String, dynamic>;
           singleratings += double.parse(data["rating"].toString());
         });
-
-        hallModel.rating = singleratings / countRating;
+        print(
+            "The Fetched Data is ${hallModel.rating = singleratings / countRating}");
+        return hallModel.rating = singleratings / countRating;
       }
+      return 0.0;
     });
+    return 0.0;
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    areaid = FirebaseFirestore.instance
+        .collection("admin")
+        .doc(areaId)
+        .collection("halls");
+    fetchHallsRating();
+    print('20 ${areaName.toString()}');
+    print('21 ${areaId.toString()}');
+    LocationServices();
+    super.initState();
+
+    // locationServices.getHallApiById(data);
   }
 
   @override
@@ -124,7 +136,7 @@ class _HallsScreenState extends State<HallsScreen> {
         ),
         body: Container(
           width: width,
-          color: whiteColor,
+          color: Colors.white,
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -271,7 +283,8 @@ class _HallsScreenState extends State<HallsScreen> {
                               }
 
                               if (!snapshot.hasData) {
-                                return SizedBox(
+                                return Container(
+                                  color: Colors.white,
                                   height:
                                       MediaQuery.of(context).size.height * 0.5,
                                   child: const Center(
@@ -279,7 +292,8 @@ class _HallsScreenState extends State<HallsScreen> {
                                 );
                               } else if (!snapshot.hasData ||
                                   snapshot.data!.size == 0) {
-                                return SizedBox(
+                                return Container(
+                                  color: Colors.white,
                                   height:
                                       MediaQuery.of(context).size.height * 0.5,
                                   child: const Center(
@@ -363,7 +377,8 @@ class _HallsScreenState extends State<HallsScreen> {
                                                     ),
                                                     image: DecorationImage(
                                                       image: NetworkImage(
-                                                          "${data["images"][0]}"),
+                                                          // "${data["images"][0]}"
+                                                          "${hallModel.images![0]}"),
                                                       fit: BoxFit.cover,
                                                     )),
 
@@ -406,16 +421,21 @@ class _HallsScreenState extends State<HallsScreen> {
                                                                         .width -
                                                                     100),
                                                             child: Text(
-                                                              data["hallName"]
+                                                              // data["hallName"]
+                                                              hallModel.hallname
                                                                       .toString()
                                                                       .substring(
                                                                           0, 1)
                                                                       .toUpperCase() +
-                                                                  data["hallName"]
+                                                                  // data["hallName"]
+                                                                  hallModel
+                                                                      .hallname
                                                                       .toString()
                                                                       .substring(
                                                                           1,
-                                                                          data["hallName"]
+                                                                          // data["hallName"]
+                                                                          hallModel
+                                                                              .hallname
                                                                               .toString()
                                                                               .length),
                                                               style:
@@ -435,7 +455,9 @@ class _HallsScreenState extends State<HallsScreen> {
                                                               MainAxisSize.min,
                                                           children: [
                                                             Text(
-                                                              "${hallModel.rating}/5",
+                                                              hallModel.rating!
+                                                                  .toStringAsFixed(
+                                                                      1),
                                                               style:
                                                                   const TextStyle(
                                                                 overflow:
@@ -503,8 +525,10 @@ class _HallsScreenState extends State<HallsScreen> {
                                                                           true ||
                                                                       credentialServices
                                                                               .getUserId ==
-                                                                          data[
-                                                                              "hallOwnerId"]
+                                                                          hallModel
+                                                                              .hallOwnerId
+                                                                  // data[
+                                                                  //     "hallOwnerId"]
                                                                   ? Padding(
                                                                       padding: const EdgeInsets
                                                                               .only(
@@ -521,27 +545,34 @@ class _HallsScreenState extends State<HallsScreen> {
                                                                                   "areaid": areaId
                                                                                 },
                                                                                 {
-                                                                                  "hallid": data["hall_id"]
+                                                                                  "hallid": hallModel.hallid
+                                                                                  // data["hall_id"]
                                                                                 },
                                                                               ]);
                                                                         } else if (result ==
                                                                             1) {
                                                                           deleteHallDialog(
-                                                                              areaId: areaId,
-                                                                              hallId: data["hall_id"]);
+                                                                            areaId:
+                                                                                areaId,
+                                                                            hallId:
+                                                                                hallModel.hallid,
+                                                                            // data["hall_id"]
+                                                                          );
                                                                         } else if (result ==
                                                                             2) {
                                                                           Get.to(
                                                                               () => const ManaulBooking(),
                                                                               arguments: [
                                                                                 {
-                                                                                  "hallid": data["hall_id"]
+                                                                                  "hallid": hallModel.hallid
+                                                                                  //  data["hall_id"]
                                                                                 },
                                                                                 {
                                                                                   "areaid": areaId,
                                                                                 },
                                                                                 {
-                                                                                  "hallownerid": data["hallOwnerId"],
+                                                                                  "hallownerid": hallModel.hallOwnerId,
+                                                                                  //   data["hallOwnerId"],
                                                                                 }
                                                                               ]);
                                                                           print(
@@ -551,7 +582,9 @@ class _HallsScreenState extends State<HallsScreen> {
                                                                           (BuildContext
                                                                               context) {
                                                                         print(
-                                                                            "The Value of Hall Owner is ${data["hallOwnerId"]} && ${credentialServices.getUserId}");
+                                                                            "The Value of Hall Owner is ${hallModel.hallOwnerId} && ${credentialServices.getUserId}");
+                                                                        //     data["hallOwnerId"]
+
                                                                         return credentialServices.getUserId ==
                                                                                 data["hallOwnerId"]
                                                                             ? <PopupMenuItem<int>>[

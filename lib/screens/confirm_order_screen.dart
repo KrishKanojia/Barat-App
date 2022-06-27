@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:barat/screens/HomePage.dart';
 import 'package:barat/services/credentialservices.dart';
+import 'package:barat/services/ratingservice.dart';
 import 'package:barat/utils/color.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -14,14 +15,26 @@ import '../widgets/reusableText.dart';
 class ConfirmOrderScreen extends StatefulWidget {
   String? date;
   String? bookid;
-  ConfirmOrderScreen({Key? key, this.date = "", this.bookid = ""})
-      : super(key: key);
+  String? areaid;
+  String? hallid;
+  String? bookingid;
+  String? feedback;
+  ConfirmOrderScreen({
+    Key? key,
+    this.date = "",
+    this.bookid = "",
+    this.areaid = "",
+    this.hallid = "",
+    this.bookingid = "",
+    this.feedback = "",
+  }) : super(key: key);
   static const routeName = '/confirm-order-screen';
   @override
   State<ConfirmOrderScreen> createState() => _ConfirmOrderScreenState();
 }
 
 class _ConfirmOrderScreenState extends State<ConfirmOrderScreen> {
+  RatingService ratingService = RatingService();
   final credentialServices = Get.find<CredentialServices>();
   final TextEditingController feedbackCont = TextEditingController();
   double rating = 0.0;
@@ -93,14 +106,20 @@ class _ConfirmOrderScreenState extends State<ConfirmOrderScreen> {
                       onTap: () {},
                       child: IconButton(
                         onPressed: () {
-                          FirebaseFirestore.instance
-                              .collection("bookings")
-                              .doc(widget.bookid)
-                              .update({
-                            "feedback": feedbackCont.text.toLowerCase(),
-                            "rating": rating,
-                          });
-                          Get.off(() => const HomePage());
+                          ratingService.giveFeeback(
+                            areaid: widget.areaid,
+                            hallid: widget.hallid,
+                            bookingid: widget.bookingid,
+                            feedback: feedbackCont.text,
+                            rating: rating,
+                          );
+                          // FirebaseFirestore.instance
+                          //     .collection("bookings")
+                          //     .doc(widget.bookid)
+                          //     .update({
+                          //   "feedback": feedbackCont.text.toLowerCase(),
+                          //   "rating": rating,
+                          // });
                         },
                         icon: const Icon(
                           Icons.home,

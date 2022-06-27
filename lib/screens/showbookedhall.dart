@@ -185,6 +185,10 @@ class _ShowBookedHallState extends State<ShowBookedHall> {
                               Get.to(() => ConfirmOrderScreen(
                                     date: bookedDate!,
                                     bookid: bookedHallModel.bookingId,
+                                    areaid: bookedHallModel.areaid,
+                                    hallid: bookedHallModel.hallid,
+                                    bookingid: bookedHallModel.bookingId,
+                                    feedback: bookedHallModel.feedback,
                                   ));
                             },
                             child: Container(
