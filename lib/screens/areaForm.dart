@@ -45,6 +45,7 @@ class _AdminAreaFormState extends State<AdminAreaForm> {
       Map<String, dynamic> data = docsnapshot.data()! as Map<String, dynamic>;
       areaName.text = data["areaName"];
     });
+
     setState(() {
       isLoad = true;
     });
@@ -256,7 +257,7 @@ class _AdminAreaFormState extends State<AdminAreaForm> {
             )
           : SizedBox(
               height: height,
-              width: 20.0,
+              width: width,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [

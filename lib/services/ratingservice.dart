@@ -11,6 +11,8 @@ class RatingService {
     required String? feedback,
     required double? rating,
   }) async {
+    print(
+        "Hallid  $areaid  areaid  $hallid  bookingid  $bookingid  feedback  $feedback  rating  $rating");
     var db = FirebaseFirestore.instance;
     var hallrating = 0.0;
 
@@ -44,7 +46,7 @@ class RatingService {
                 singleratings += double.parse(data["rating"].toString());
               });
               singleratings += rating!;
-              countRating += 1;
+
               //  Calculate Total Rating
               hallrating = singleratings / countRating;
             });

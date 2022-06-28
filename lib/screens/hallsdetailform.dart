@@ -39,7 +39,7 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
   List<String> arrimgsUrl = [];
   int uploadItem = 0;
   bool _upLoading = false;
-  var img_url;
+  var totalimages = 0;
 
   String? AreaName;
   String? UserName;
@@ -61,32 +61,56 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
   bool isload = false;
 
   Future<void> _asyncMethod() async {
-    await FirebaseFirestore.instance
-        .collection("admin")
-        .doc(areaid)
-        .collection('halls')
-        .doc(hallid)
-        .get()
-        .then((DocumentSnapshot docsnapshot) {
-      Map<String, dynamic> data = docsnapshot.data()! as Map<String, dynamic>;
-      hallName.text = data["hallName"];
-      // areaName.text = data["areaName"];
-      ownerName.text = data["OwnerName"];
-      ownerContact.text = data["OwnerContact"].toString();
-      ownerEmail.text = data["OwnerEmail"];
-      hallAddress.text = data["HallAddress"];
-      hallCapacity.text = data["HallCapacity"].toString();
-      pricePerHead.text = data["PricePerHead"].toString();
-      cateringPerHead.text = data["CateringPerHead"].toString();
-      eventPlanner = data["EventPlanner"];
-    }).whenComplete(() {
+    try {
+      await FirebaseFirestore.instance
+          .collection("admin")
+          .doc(areaid)
+          .collection('halls')
+          .doc(hallid)
+          .get()
+          .then((DocumentSnapshot docsnapshot) {
+        Map<String, dynamic> data = docsnapshot.data()! as Map<String, dynamic>;
+        hallName.text = data["hallName"];
+        // areaName.text = data["areaName"];
+        ownerName.text = data["OwnerName"];
+        ownerContact.text = data["OwnerContact"].toString();
+        ownerEmail.text = data["OwnerEmail"];
+        hallAddress.text = data["HallAddress"];
+        hallCapacity.text = data["HallCapacity"].toString();
+        pricePerHead.text = data["PricePerHead"].toString();
+        cateringPerHead.text = data["CateringPerHead"].toString();
+        eventPlanner = data["EventPlanner"];
+      });
+
+      if (hallid != null) {
+        await FirebaseFirestore.instance
+            .collection("admin")
+            .doc(areaid)
+            .collection('halls')
+            .doc(hallid)
+            .get()
+            .then((snapshot) {
+          Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+          // arrimgsUrl.add(data['images'].toString());
+          arrimgsUrl = data['images'].cast<String>();
+        });
+      }
+
       if (eventPlanner) {
         eventPlanner == true;
       }
       setState(() {
         isload = true;
       });
-    });
+      totalimages = arrimgsUrl.length + _selectedFiles.length;
+      print(arrimgsUrl);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Something went wrong try again"),
+        ),
+      );
+    }
   }
 
   @override
@@ -104,7 +128,7 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
       });
     }
     super.initState();
-    LocationServices().fetchLocationArea();
+    // LocationServices().fetchLocationArea();
   }
 
   @override
@@ -295,6 +319,7 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
           "images": listImages,
           "updatedAt": Timestamp.now(),
           "hallOwnerId": ownerid,
+          "hallrating": 0.0,
         });
         _selectedFiles.clear();
         print("Hall Created");
@@ -349,6 +374,8 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
         displayValidationError(context, "Price");
       } else if (cateringPerHead.text.trim().isEmpty) {
         displayValidationError(context, "Catering Price");
+      } else if (arrimgsUrl.isEmpty && _selectedFiles.isEmpty) {
+        displayValidationError(context, "Image");
       } else if (_selectedFiles.isEmpty) {
         // If Images are not updated, Only Text is updated
         updateHallByAdmin(
@@ -422,7 +449,7 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
 
   @override
   Widget build(BuildContext context) {
-    print('49 ${locationServices.fetchLocationArea()}');
+    // print('49 ${locationServices.fetchLocationArea()}');
 
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
@@ -657,62 +684,84 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
                                                       );
                                               }),
                                         )
-                                      : StreamBuilder<DocumentSnapshot>(
-                                          stream: FirebaseFirestore.instance
-                                              .collection("admin")
-                                              .doc(areaid)
-                                              .collection('halls')
-                                              .doc(hallid)
-                                              .snapshots(),
-                                          builder: (BuildContext context,
-                                              AsyncSnapshot<DocumentSnapshot>
-                                                  snapshot) {
-                                            if (snapshot.connectionState ==
-                                                ConnectionState.waiting) {
-                                              return const Center(
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                color: Colors.green,
-                                              ));
-                                            } else if (!snapshot.hasData ||
-                                                !snapshot.data!.exists) {
-                                              return const Center(
-                                                child: Text(
-                                                  "No Image",
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w500,
-                                                    color: Colors.black,
-                                                  ),
-                                                ),
-                                              );
-                                            } else {
-                                              Map<String, dynamic> data =
-                                                  snapshot.data!.data()
-                                                      as Map<String, dynamic>;
-                                              arrimgsUrl =
-                                                  data['images'].cast<String>();
-
-                                              return GridView.builder(
-                                                  itemCount: arrimgsUrl.length,
-                                                  gridDelegate:
-                                                      const SliverGridDelegateWithFixedCrossAxisCount(
-                                                          crossAxisCount: 3),
-                                                  itemBuilder:
-                                                      (BuildContext context,
-                                                          int index) {
-                                                    return Padding(
+                                      : GridView.builder(
+                                          itemCount: arrimgsUrl.length + 1,
+                                          gridDelegate:
+                                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                                  crossAxisCount: 3),
+                                          itemBuilder: (BuildContext context,
+                                              int index) {
+                                            return index == 0
+                                                ? InkWell(
+                                                    onTap: () {
+                                                      pickImage();
+                                                    },
+                                                    child: Padding(
                                                       padding:
                                                           const EdgeInsets.all(
-                                                              3.0),
-                                                      child: Image.network(
-                                                        arrimgsUrl[index],
-                                                        fit: BoxFit.cover,
-                                                        height: double.infinity,
-                                                        width: double.infinity,
+                                                              8.0),
+                                                      child: Container(
+                                                        width: 100,
+                                                        height: 100,
+                                                        decoration:
+                                                            const BoxDecoration(
+                                                          color: Color.fromRGBO(
+                                                              220,
+                                                              220,
+                                                              220,
+                                                              1.0),
+                                                        ),
+                                                        child: const Center(
+                                                          child: Icon(
+                                                            Icons.add,
+                                                            size: 40.0,
+                                                            color: Colors.black,
+                                                          ),
+                                                        ),
                                                       ),
-                                                    );
-                                                  });
-                                            }
+                                                    ),
+                                                  )
+                                                : Container(
+                                                    height: double.infinity,
+                                                    alignment: Alignment.center,
+                                                    child: Stack(
+                                                      children: [
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child: Image.network(
+                                                            arrimgsUrl[
+                                                                index - 1],
+                                                            fit: BoxFit.cover,
+                                                            height:
+                                                                double.infinity,
+                                                            width:
+                                                                double.infinity,
+                                                          ),
+                                                        ),
+                                                        Positioned(
+                                                          top: 0,
+                                                          right: 0,
+                                                          child:
+                                                              GestureDetector(
+                                                            onTap: () {
+                                                              arrimgsUrl
+                                                                  .removeAt(
+                                                                      index -
+                                                                          1);
+                                                              setState(() {});
+                                                              print(
+                                                                  'delete image from List');
+                                                            },
+                                                            child: const Icon(
+                                                              Icons.cancel,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  );
                                           }),
                                 )
                               ],
@@ -749,9 +798,10 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
                     ),
                   ],
                 )
-              : SizedBox(
+              : Container(
+                  color: Colors.white,
                   height: height,
-                  width: 20.0,
+                  width: width,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: const [
@@ -833,6 +883,7 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
 
       if (imgs!.isNotEmpty) {
         _selectedFiles.addAll(imgs);
+        totalimages += imgs.length;
       }
       print("List of Images : " + imgs.length.toString());
     } catch (e) {

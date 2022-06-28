@@ -297,6 +297,7 @@ class _BookingFormState extends State<BookingForm> {
                           String sanitized = sanitizeDateTime(val);
                           return !unselectableDates.contains(sanitized);
                         },
+
                         initialDate: dateCheck,
                         decoration: const InputDecoration(
                           enabledBorder: OutlineInputBorder(
@@ -605,6 +606,7 @@ class _BookingFormState extends State<BookingForm> {
                         child: const ReusableTextIconButton(
                           text: "Show Expenses",
                           margin: 10,
+                          color: background1Color,
                         ),
                       ),
                     ],

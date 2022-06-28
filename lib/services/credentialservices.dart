@@ -368,6 +368,7 @@ class CredentialServices extends GetxController {
 
   Future SignOutGoogle() async {
     await googleSignIn.signOut();
+    await auth.signOut();
     box.remove('isGoogle');
     box.remove('user');
     box.remove('name');
@@ -456,7 +457,7 @@ class CredentialServices extends GetxController {
       } else {
         QuerySnapshot userdata = await FirebaseFirestore.instance
             .collection('User')
-            .where('email', isEqualTo: Usermail.toLowerCase())
+            .where('email', isEqualTo: Usermail)
             .get();
 
         if (userdata.size > 0) {

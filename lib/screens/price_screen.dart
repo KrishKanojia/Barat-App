@@ -1,14 +1,15 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:barat/Models/hall_model.dart';
-import 'package:barat/screens/HomePage.dart';
-import 'package:barat/screens/confirm_order_screen.dart';
+
+import 'package:barat/screens/congratulation_screen.dart';
 import 'package:barat/services/credentialservices.dart';
 import 'package:barat/services/locationservices.dart';
-import 'package:barat/widgets/reusableBigText.dart';
+
 import 'package:barat/widgets/reusableTextIconButton.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
@@ -43,7 +44,7 @@ class _PriceScreenState extends State<PriceScreen> {
 
   var finalTotalPrice;
   String? mtoken = " ";
-
+  bool isload = false;
   @override
   void initState() {
     // TODO: implement initState
@@ -59,13 +60,17 @@ class _PriceScreenState extends State<PriceScreen> {
     // "${userID} ${date}${time}${noOfGuests}${isEventPlanner}${isCartService}${totalPrice}");
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: background1Color,
         leading: IconButton(
           onPressed: () {
             Get.back();
           },
           icon: Icon(Icons.adaptive.arrow_back_outlined),
         ),
-        title: const Text("Hall Name"),
+        title: Text(
+          "${hallmodel.hallname}",
+          style: const TextStyle(overflow: TextOverflow.ellipsis),
+        ),
       ),
       body: SizedBox(
         width: double.infinity,
@@ -102,7 +107,18 @@ class _PriceScreenState extends State<PriceScreen> {
             SizedBox(height: 20.h),
             InkWell(
               onTap: () async {
-                await MakePayment();
+                if (isload == false) {
+                  setState(() {
+                    isload = true;
+                  });
+                  await MakePayment();
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Processing... Please Wait'),
+                    ),
+                  );
+                }
               },
               child: ReusableTextIconButton(
                 text: "Proceed to Pay",
@@ -141,6 +157,9 @@ class _PriceScreenState extends State<PriceScreen> {
 
       displayPaymentSheet();
     } catch (e) {
+      setState(() {
+        isload = false;
+      });
       print(e.toString());
     }
   }
@@ -191,8 +210,7 @@ class _PriceScreenState extends State<PriceScreen> {
       setState(() {
         paymentIntentData = null;
       });
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Paid Succesfully')));
+
       await locationServices.postbookHallsByUser(
         context: context,
         userId: hallmodel.userID,
@@ -217,19 +235,33 @@ class _PriceScreenState extends State<PriceScreen> {
           .collection("usertokens")
           .doc(hallmodel.hallOwnerId)
           .get();
-
-      String token = snap['token'];
-      mtoken = token;
-      sendNotification(token).whenComplete(
-        () => Get.offAll(() => const HomePage()),
-      );
+      if (snap.exists) {
+        String token = snap['token'];
+        mtoken = token;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Paid Succesfully'),
+          ),
+        );
+        sendNotification(token).whenComplete(
+          () => Get.offAll(
+            () => Congratulations(date: date.toString()),
+          ),
+        );
+      } else {
+        Get.offAll(
+          () => Congratulations(date: date.toString()),
+        );
+      }
     } on StripeException catch (e) {
+      isload = false;
       print('Exception/DISPLAYPAYMENTSHEET==> $e');
       showDialog(
-          context: context,
-          builder: (_) => const AlertDialog(
-                content: Text("Cancelled "),
-              ));
+        context: context,
+        builder: (_) => const AlertDialog(
+          content: Text("Cancelled "),
+        ),
+      );
     }
   }
 
@@ -251,6 +283,7 @@ class _PriceScreenState extends State<PriceScreen> {
 
       return jsonDecode(response.body.toString());
     } catch (e) {
+      isload = false;
       print(e.toString());
     }
   }

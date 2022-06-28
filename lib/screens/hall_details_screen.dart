@@ -270,7 +270,7 @@ class _HallDetailScreenState extends State<HallDetailScreen> {
                                   ),
                                   style: ElevatedButton.styleFrom(
                                     shadowColor: Colors.blueGrey,
-                                    primary: secondaryColor,
+                                    primary: background1Color,
                                     elevation: 9,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(15),
@@ -347,6 +347,7 @@ class _HallDetailScreenState extends State<HallDetailScreen> {
                             );
                           } else {
                             return ListView(
+                              physics: const NeverScrollableScrollPhysics(),
                               shrinkWrap: true,
                               children: snapshot.data!.docs
                                   .map((DocumentSnapshot documentSnapshot) {

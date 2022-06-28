@@ -64,31 +64,6 @@ class _ConfirmOrderScreenState extends State<ConfirmOrderScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    height: 120.h,
-                    width: 140.w,
-                    decoration: BoxDecoration(
-                      border: Border.all(width: 5, color: Colors.greenAccent),
-                      borderRadius: BorderRadius.circular(150),
-                    ),
-                    child: const Center(
-                        child: Icon(
-                      Icons.check,
-                      size: 100,
-                      color: Colors.greenAccent,
-                    )),
-                  ),
-                  SizedBox(height: 40.h),
-                  Center(
-                    child: SizedBox(
-                      width: 320.w,
-                      child: ReusableText(
-                          fontSize: 15,
-                          text:
-                              "Congratulations, The Hall has been succesfully Booked on date ${widget.date},"
-                              " Kindly Contact the hall to confirm your booking,Thank you for using the Baraat App"),
-                    ),
-                  ),
                   SizedBox(height: 20.h),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),

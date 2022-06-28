@@ -142,6 +142,7 @@ class LocationServices extends GetxController {
     print("76 $userId");
 
     var bookingDoc = await _db.collection("bookings").doc();
+
     await _db.collection("bookings").doc(bookingDoc.id).set({
       "bookingId": bookingDoc.id,
       // "userId": userId,

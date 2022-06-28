@@ -12,7 +12,7 @@ class ReusableTextIconButton extends StatelessWidget {
   const ReusableTextIconButton(
       {Key? key,
       required this.text,
-      this.color = secondaryColor,
+      this.color = background1Color,
       this.margin = 45})
       : super(key: key);
 

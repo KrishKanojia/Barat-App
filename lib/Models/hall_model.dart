@@ -28,6 +28,6 @@ class HallModel {
     hallOwnerId = data["hallOwnerId"];
     hallid = data["hall_id"];
     hallname = data["hallName"];
-    rating = data["hallrating"];
+    rating = double.parse(data["hallrating"].toString());
   }
 }

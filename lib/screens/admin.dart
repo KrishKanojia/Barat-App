@@ -90,16 +90,16 @@ class _AdminPageState extends State<AdminPage> {
               ),
               InkWell(
                 onTap: () => Get.to(() => const CreateHallUser()),
-                child: makeDashboardItem("Create Halls User", Icons.person_add),
+                child: makeDashboardItem("Create User", Icons.person_add),
               ),
               InkWell(
                 onTap: () => Get.to(() => const OrderConfirmList()),
                 child: makeDashboardItem(
-                    "Show All Bookings", Icons.bookmark_add_rounded),
+                    "Show Bookings", Icons.bookmark_add_rounded),
               ),
               InkWell(
                 onTap: () => Get.to(() => const HomePage()),
-                child: makeDashboardItem("Go To Home Page", Icons.home),
+                child: makeDashboardItem("Home", Icons.home),
               ),
             ],
           ),

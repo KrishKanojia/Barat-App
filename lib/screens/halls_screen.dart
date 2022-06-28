@@ -169,99 +169,6 @@ class _HallsScreenState extends State<HallsScreen> {
                 SizedBox(
                   height: height * 0.01,
                 ),
-                // Expanded(
-                //     child: StreamBuilder<QuerySnapshot>(
-                //         stream: areaid.snapshots(),
-                //         // locationServices.getHallApiById(data),
-                //         builder:
-                //             (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                //           if (snapshot.connectionState ==
-                //               ConnectionState.waiting) {
-                //             return const Center(
-                //                 child: CircularProgressIndicator(
-                //               color: Colors.green,
-                //             ));
-                //           } else if (!snapshot.hasData ||
-                //               snapshot.data!.size == 0) {
-                //             return const Center(
-                //               child: Text(
-                //                 "No Hall Found",
-                //                 style: TextStyle(
-                //                   fontWeight: FontWeight.w500,
-                //                   color: Colors.black,
-                //                 ),
-                //               ),
-                //             );
-                //           } else {
-                //             return GridView.count(
-                //               physics: const NeverScrollableScrollPhysics(),
-                //               // itemCount: snapshot.data!.docs.isEmpty ? 1 : snapshot.data!.docs.length,
-                //               scrollDirection: Axis.vertical,
-                //               shrinkWrap: true,
-                //               crossAxisCount: 2,
-
-                //               childAspectRatio: 0.7,
-                //               mainAxisSpacing: 10,
-                //               crossAxisSpacing: 25,
-                //               padding: const EdgeInsets.only(
-                //                   top: 10.0, bottom: 12.0, left: 5, right: 5),
-
-                //               children: snapshot.data!.docs
-                //                   .map((DocumentSnapshot documentSnapshot) {
-                //                 Map<String, dynamic> data = documentSnapshot
-                //                     .data()! as Map<String, dynamic>;
-                //                 return InkWell(
-                //                     onTap: () {
-                //                       HallModel hallModel =
-                //                           HallModel.fromMap(data);
-                //                       Get.to(
-                //                           () => HallDetailScreen(
-                //                               routename: "Halls screen"),
-                //                           arguments: [
-                //                             {"hallmodel": hallModel},
-                //                             {"areaid": areaId},
-                //                           ]);
-                //                     },
-                //                     child: Container(
-                //                       padding: EdgeInsets.only(bottom: 15.h),
-                //                       decoration: BoxDecoration(
-                //                           borderRadius:
-                //                               BorderRadiusDirectional.circular(
-                //                                   20.r),
-                //                           color: Colors.red,
-                //                           image: DecorationImage(
-                //                               image:
-                //                                   NetworkImage(data["images"][0]),
-                //                               fit: BoxFit.cover)),
-                //                       child: Stack(
-                //                         children: [
-                //                           Align(
-                //                             alignment: Alignment.bottomCenter,
-                //                             child: Container(
-                //                               color: whiteColor,
-                //                               child: ReusableBigText(
-                //                                 text: data["hallName"]
-                //                                         .toString()
-                //                                         .substring(0, 1)
-                //                                         .toUpperCase() +
-                //                                     data["hallName"]
-                //                                         .toString()
-                //                                         .substring(
-                //                                             1,
-                //                                             data["hallName"]
-                //                                                 .toString()
-                //                                                 .length),
-                //                                 fontSize: 16,
-                //                               ),
-                //                             ),
-                //                           ),
-                //                         ],
-                //                       ),
-                //                     ));
-                //               }).toList(),
-                //             );
-                //           }
-                //         })),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -309,31 +216,14 @@ class _HallsScreenState extends State<HallsScreen> {
                                 // Assigning total document size to document field
 
                               } else {
-                                // return ListView(
-                                //   shrinkWrap: true,
-                                //   children: snapshot.data!.docs
-                                //       .map((DocumentSnapshot documentSnapshot) {
-                                //     Map<String, dynamic> data =
-                                //         documentSnapshot.data()! as Map<String, dynamic>;
-
                                 return ListView(
                                   physics: const NeverScrollableScrollPhysics(),
-                                  // itemCount: snapshot.data!.docs.isEmpty ? 1 : snapshot.data!.docs.length,
                                   scrollDirection: Axis.vertical,
                                   shrinkWrap: true,
-
-                                  // gridDelegate:
-                                  // SliverGridDelegateWithMaxCrossAxisExtent(
-                                  //     maxCrossAxisExtent: 160.h,
-                                  //     mainAxisExtent: 230.w,
-                                  //     crossAxisSpacing: 25.0.h,
-                                  //     mainAxisSpacing: 10.0.w,
-                                  //     childAspectRatio: 0.7),
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 15.0,
                                     vertical: 15,
                                   ),
-
                                   children: snapshot.data!.docs
                                       .map((DocumentSnapshot documentSnapshot) {
                                     Map<String, dynamic> data = documentSnapshot
@@ -450,57 +340,66 @@ class _HallsScreenState extends State<HallsScreen> {
                                                             ),
                                                           ),
                                                         ),
-                                                        Row(
-                                                          mainAxisSize:
-                                                              MainAxisSize.min,
-                                                          children: [
-                                                            Text(
-                                                              hallModel.rating!
-                                                                  .toStringAsFixed(
-                                                                      1),
-                                                              style:
-                                                                  const TextStyle(
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontSize: 15.0,
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .only(
+                                                                  left: 7.0),
+                                                          child: Row(
+                                                            mainAxisSize:
+                                                                MainAxisSize
+                                                                    .min,
+                                                            children: [
+                                                              RatingStars(
+                                                                starSpacing:
+                                                                    5.0,
+                                                                value: hallModel
+                                                                    .rating,
+                                                                starBuilder:
+                                                                    (index, color) =>
+                                                                        Icon(
+                                                                  Icons.star,
+                                                                  size: 18,
+                                                                  color: color,
+                                                                ),
+                                                                starCount: 5,
+                                                                starSize: 20,
+                                                                maxValue: 5,
+                                                                maxValueVisibility:
+                                                                    false,
+                                                                valueLabelVisibility:
+                                                                    false,
+                                                                animationDuration:
+                                                                    const Duration(
+                                                                        milliseconds:
+                                                                            300),
+                                                                starOffColor: Colors
+                                                                    .black
+                                                                    .withOpacity(
+                                                                        0.6),
+                                                                starColor:
+                                                                    Colors
+                                                                        .yellow,
                                                               ),
-                                                            ),
-                                                            const SizedBox(
-                                                              width: 10,
-                                                            ),
-                                                            RatingStars(
-                                                              starSpacing: 5.0,
-                                                              value: 5.0,
-                                                              starBuilder: (index,
-                                                                      color) =>
-                                                                  Icon(
-                                                                Icons.star,
-                                                                size: 18,
-                                                                color: color,
+                                                              const SizedBox(
+                                                                width: 5,
                                                               ),
-                                                              starCount: 5,
-                                                              starSize: 20,
-                                                              maxValue: 5,
-                                                              maxValueVisibility:
-                                                                  false,
-                                                              valueLabelVisibility:
-                                                                  false,
-                                                              animationDuration:
-                                                                  const Duration(
-                                                                      milliseconds:
-                                                                          300),
-                                                              starOffColor: Colors
-                                                                  .black
-                                                                  .withOpacity(
-                                                                      0.6),
-                                                              starColor:
-                                                                  Colors.yellow,
-                                                            ),
-                                                          ],
+                                                              Text(
+                                                                "${hallModel.rating!} ",
+                                                                style:
+                                                                    const TextStyle(
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  fontSize:
+                                                                      15.0,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
                                                         ),
                                                       ],
                                                     ),
