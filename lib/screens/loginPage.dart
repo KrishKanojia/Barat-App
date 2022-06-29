@@ -33,6 +33,12 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   final credentialServices = Get.put(CredentialServices());
   final TextEditingController _username = TextEditingController();
   final TextEditingController _password = TextEditingController();
+  late final AnimationController _controller = AnimationController(
+    duration: const Duration(seconds: 3),
+    vsync: this,
+  );
+  late final Animation<double> _animation =
+      Tween<double>(begin: 0.2, end: 1.2).animate(_controller);
 
   // final String username = "admin@gmail.com";
   // final int password = 12345;
@@ -98,12 +104,93 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     );
   }
 
-  late final AnimationController _controller = AnimationController(
-    duration: const Duration(seconds: 3),
-    vsync: this,
-  );
-  late final Animation<double> _animation =
-      Tween<double>(begin: 0.2, end: 1.2).animate(_controller);
+  Widget steps(int i, String description) {
+    return RichText(
+      text: TextSpan(
+          text: 'Step $i: \n',
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: whiteColor,
+            fontSize: 16,
+          ),
+          children: [
+            TextSpan(
+              text: description,
+              style: const TextStyle(
+                color: whiteColor,
+                fontSize: 15,
+              ),
+            )
+          ]),
+    );
+  }
+
+  guideLines(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    final _form = GlobalKey<FormState>();
+    return showModalBottomSheet(
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (context) {
+          return Padding(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: Container(
+              width: size.width,
+              height: size.height * 0.45,
+              padding: const EdgeInsets.fromLTRB(20, 20, 10, 20),
+              decoration: const BoxDecoration(
+                color: background1Color,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(15),
+                  topRight: Radius.circular(15),
+                ),
+              ),
+              child: Form(
+                key: _form,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          "How to become Hall Owner",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            Get.back();
+                          },
+                          icon: const Icon(
+                            Icons.close,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Spacer(),
+                    steps(1, 'You need to sign up as user.'),
+                    const SizedBox(height: 20),
+                    steps(2,
+                        'Contact admin and provide the data of your hall.\nAdmin Email: iamsubhanqureshi@gmail.com'),
+                    const SizedBox(height: 20),
+                    steps(3,
+                        'Admin will make you hall owner after above 2 steps.'),
+                    const Spacer(),
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
+  }
 
   @override
   void initState() {
@@ -262,6 +349,20 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                         ReusableAlreadyText(
                           text: 'Signup',
                           onClick: () => Get.off(() => const SignUpPage()),
+                        ),
+                        SizedBox(
+                          height: height * 0.015,
+                        ),
+                        GestureDetector(
+                          onTap: () => guideLines(context),
+                          child: const Text(
+                            "How to become Hall Owner",
+                            style: TextStyle(
+                                decoration: TextDecoration.underline,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(255, 253, 253, 253)),
+                          ),
                         ),
                       ],
                     ),

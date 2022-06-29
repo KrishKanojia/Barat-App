@@ -59,6 +59,7 @@ dependencies:
   intl:
   async: 
   equatable:
+  cached_network_image:
 
 dev_dependencies:
   flutter_test:

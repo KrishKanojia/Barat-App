@@ -19,7 +19,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-
+import 'package:cached_network_image/cached_network_image.dart';
 import '../services/credentialservices.dart';
 
 class HomePage extends StatefulWidget {
@@ -329,17 +329,35 @@ class _HomePageState extends State<HomePage> {
                                   Container(
                                     height: 180,
                                     width: MediaQuery.of(context).size.width,
-                                    decoration: BoxDecoration(
-                                        borderRadius: const BorderRadius.only(
-                                          topRight: Radius.circular(15.0),
-                                          topLeft: Radius.circular(15.0),
-                                        ),
-                                        image: DecorationImage(
-                                          image: NetworkImage(
-                                              "${data["areaImage"]}"),
+                                    decoration: const BoxDecoration(
+                                      borderRadius: BorderRadius.only(
+                                        topRight: Radius.circular(15.0),
+                                        topLeft: Radius.circular(15.0),
+                                      ),
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: const BorderRadius.only(
+                                        topRight: Radius.circular(15.0),
+                                        topLeft: Radius.circular(15.0),
+                                      ),
+                                      child: CachedNetworkImage(
+                                        imageUrl: data["areaImage"],
+                                        placeholder: (context, url) => Image(
+                                          image: const AssetImage(
+                                              "images/placeholder.jpg"),
                                           fit: BoxFit.cover,
-                                        )),
-
+                                          height: 180,
+                                          width:
+                                              MediaQuery.of(context).size.width,
+                                        ),
+                                        errorWidget: (context, url, error) =>
+                                            const Icon(Icons.error),
+                                        fit: BoxFit.cover,
+                                        height: 180,
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                      ),
+                                    ),
                                     // child: FadeInImage(
                                     //   image: NetworkImage(e.thumbnail),
                                     //   placeholder:

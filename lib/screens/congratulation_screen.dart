@@ -43,11 +43,11 @@ class _CongratulationsState extends State<Congratulations> {
           Center(
             child: SizedBox(
               width: 320.w,
-              child: ReusableText(
-                  fontSize: 15,
-                  text:
-                      "Congratulations, The Hall has been succesfully Booked on date ${widget.date},"
-                      " Kindly Contact the hall to confirm your booking,Thank you for using the Baraat App"),
+              child: Text(
+                "Congratulations, The Hall has been succesfully Booked on date ${widget.date},"
+                "\nKindly Contact the hall to confirm your booking.\nThank you for using the Baraat App",
+                textAlign: TextAlign.center,
+              ),
             ),
           ),
           TextButton(

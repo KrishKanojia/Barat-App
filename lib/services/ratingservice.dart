@@ -65,7 +65,7 @@ class RatingService {
         });
       }).whenComplete(() {
         print("Rating completed successfully");
-        Get.off(() => const HomePage());
+        Get.offAll(() => const HomePage());
       });
     } catch (e) {
       print("Error is : $e");

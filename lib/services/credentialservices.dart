@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:barat/Models/user_model.dart';
 import 'package:barat/screens/admin.dart';
@@ -148,6 +149,16 @@ class CredentialServices extends GetxController {
           ),
         );
       }
+    } on SocketException catch (err) {
+      isLoading.value = false;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          duration: Duration(seconds: 3),
+          content: Text(
+            'Something Went Wrong Try Again',
+          ),
+        ),
+      );
     } catch (error) {
       switch (error.toString()) {
         case "ERROR_INVALID_EMAIL":
@@ -200,18 +211,29 @@ class CredentialServices extends GetxController {
       required BuildContext context,
       required String routename,
       required UserCredential user}) async {
-    await FirebaseFirestore.instance
-        .collection("User")
-        .doc(user.user!.uid)
-        .set({
-      // Change username to Lowercase
-      "userName": name,
-      "fullname": fullname,
-      "userId": user.user!.uid,
-      "email": email,
-      "phoneNumber": phNo,
-      "account_created": Timestamp.now(),
-    });
+    try {
+      await FirebaseFirestore.instance
+          .collection("User")
+          .doc(user.user!.uid)
+          .set({
+        // Change username to Lowercase
+        "userName": name,
+        "fullname": fullname,
+        "userId": user.user!.uid,
+        "email": email,
+        "phoneNumber": phNo,
+        "account_created": Timestamp.now(),
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          duration: Duration(seconds: 3),
+          content: Text(
+            'Something Went Wrong Try Again',
+          ),
+        ),
+      );
+    }
   }
 
   Future<void> registerAccount(
@@ -293,6 +315,16 @@ class CredentialServices extends GetxController {
           ),
         );
       }
+    } on SocketException catch (error) {
+      isLoading.value = false;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          duration: Duration(seconds: 3),
+          content: Text(
+            'Something Went Wrong Try Again',
+          ),
+        ),
+      );
     } catch (errorMsg) {
       isLoading.value = false;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -401,6 +433,16 @@ class CredentialServices extends GetxController {
       } else {
         return false;
       }
+    } on SocketException catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          duration: Duration(seconds: 3),
+          content: Text(
+            'Something Went Wrong Try Again',
+          ),
+        ),
+      );
+      return false;
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -474,7 +516,18 @@ class CredentialServices extends GetxController {
           );
         }
       }
+    } on SocketException catch (error) {
+      isLoading.value = false;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          duration: Duration(seconds: 3),
+          content: Text(
+            'Something Went Wrong Try Again',
+          ),
+        ),
+      );
     } catch (e) {
+      isLoading.value = false;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           duration: const Duration(seconds: 3),

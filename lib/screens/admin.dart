@@ -61,6 +61,8 @@ class _AdminPageState extends State<AdminPage> {
 
   @override
   Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
+    var height = MediaQuery.of(context).size.height;
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
@@ -68,106 +70,59 @@ class _AdminPageState extends State<AdminPage> {
           title: const Text("Dashboard"),
         ),
         body: Container(
-          padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 2.0),
-          child: GridView.count(
-            crossAxisCount: 2,
-            padding: const EdgeInsets.all(3.0),
-            children: [
-              InkWell(
-                onTap: () => Get.to(() => const AdminAreaForm(), arguments: [
-                  {"areaid": null},
-                ]),
-                child: makeDashboardItem(
-                    "Create Area", Icons.add_location_alt_rounded),
-              ),
-              InkWell(
-                onTap: () => Get.to(() => const HallsDetailForm(), arguments: [
-                  {"areaid": null},
-                  {"hallid": null}
-                ]),
-                child: makeDashboardItem(
-                    "Create Halls", Icons.holiday_village_outlined),
-              ),
-              InkWell(
-                onTap: () => Get.to(() => const CreateHallUser()),
-                child: makeDashboardItem("Create User", Icons.person_add),
-              ),
-              InkWell(
-                onTap: () => Get.to(() => const OrderConfirmList()),
-                child: makeDashboardItem(
-                    "Show Bookings", Icons.bookmark_add_rounded),
-              ),
-              InkWell(
-                onTap: () => Get.to(() => const HomePage()),
-                child: makeDashboardItem("Home", Icons.home),
-              ),
-            ],
+          width: width,
+          height: height,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                GridView.count(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisCount: 2,
+                  padding: const EdgeInsets.all(3.0),
+                  children: [
+                    InkWell(
+                      onTap: () =>
+                          Get.to(() => const AdminAreaForm(), arguments: [
+                        {"areaid": null},
+                      ]),
+                      child: makeDashboardItem(
+                          "Create Area", Icons.add_location_alt_rounded),
+                    ),
+                    InkWell(
+                      onTap: () =>
+                          Get.to(() => const HallsDetailForm(), arguments: [
+                        {"areaid": null},
+                        {"hallid": null}
+                      ]),
+                      child: makeDashboardItem(
+                          "Create Halls", Icons.holiday_village_outlined),
+                    ),
+                    InkWell(
+                      onTap: () => Get.to(() => const CreateHallUser()),
+                      child: makeDashboardItem("Create User", Icons.person_add),
+                    ),
+                    InkWell(
+                      onTap: () => Get.to(() => const OrderConfirmList()),
+                      child: makeDashboardItem(
+                          "Show Bookings", Icons.bookmark_add_rounded),
+                    ),
+                  ],
+                ),
+                Flexible(
+                  child: SizedBox(
+                    width: width * 0.5,
+                    height: height * 0.25,
+                    child: GestureDetector(
+                      onTap: () => Get.to(() => const HomePage()),
+                      child: makeDashboardItem("Home", Icons.home),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-          // Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          //   LoadingButton(
-          //       onClick: () {
-          //         Get.to(() => const AdminAreaForm(), arguments: [
-          //           {"areaid": null},
-          //         ]);
-          //       },
-          //       color: Colors.red,
-          //       childWidget: Row(
-          //         mainAxisAlignment: MainAxisAlignment.center,
-          //         children: const [
-          //           Text('Create Area'),
-          //         ],
-          //       )),
-          //   SizedBox(height: 10.h),
-          //   LoadingButton(
-          //       onClick: () {
-          //         Get.to(() => const HallsDetailForm(), arguments: [
-          //           {"areaid": null},
-          //           {"hallid": null},
-          //         ]);
-          //       },
-          //       color: Colors.red,
-          //       childWidget: Row(
-          //         mainAxisAlignment: MainAxisAlignment.center,
-          //         children: const [
-          //           Text('Create Halls'),
-          //         ],
-          //       )),
-          //   SizedBox(height: 10.h),
-          //   LoadingButton(
-          //     onClick: () {
-          //       Get.to(() => const CreateHallUser());
-          //     },
-          //     color: Colors.red,
-          //     childWidget: Row(
-          //       mainAxisAlignment: MainAxisAlignment.center,
-          //       children: const [
-          //         Text('Create Halls User'),
-          //       ],
-          //     ),
-          //   ),
-          //   SizedBox(height: 10.h),
-          //   LoadingButton(
-          //     onClick: () {
-          //       Get.to(() => const OrderConfirmList());
-          //     },
-          //     color: Colors.red,
-          //     childWidget: Row(
-          //       mainAxisAlignment: MainAxisAlignment.center,
-          //       children: const [
-          //         Text('Show All Bookings'),
-          //       ],
-          //     ),
-          //   ),
-          //   SizedBox(height: 10.h),
-          //   InkWell(
-          //     onTap: () {
-          //       Get.to(() => const HomePage());
-          //     },
-          //     child: const ReusableTextIconButton(
-          //       text: 'Go To Home Page',
-          //     ),
-          //   )
-          // ]),
         ));
   }
 }
