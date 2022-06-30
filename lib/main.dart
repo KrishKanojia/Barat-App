@@ -139,34 +139,8 @@ class _MyAppState extends State<MyApp> {
           brightness: Brightness.light,
           primarySwatch: deepOrange,
         ),
-        // home: const AuthGate(),
-        // home: const AdminAreaForm(),
-        // home: const AdminPage(),
-        // home: box.read('responseSignUp') == null
-        //     ? box.read('responseLogin') == null
-        //         ? const LoginPage()
-        //         : const HomePage()
-        //     : const HomePage()
-
-        // home: const HallsDetailForm(),
-        // initialRoute: '/',
         initialRoute: SplashScreen.routeName,
-        // FirebaseAuth.instance.currentUser == null
-        //     ? LoginPage.routeName
-        //     : HomePage.routeName,
         routes: {
-          // '/': (context) => const AuthGate(),
-
-          // '/sign-in': (context) {
-          //   return SignInScreen(
-          //     providerConfigs: providerConfigs,
-          //     actions: [
-          //       AuthStateChangeAction<SignedIn>((context, state) {
-          //         Navigator.pushNamed(context, LoginPage.routeName);
-          //       }),
-          //     ],
-          //   );
-          // },
           '/profile': (context) {
             return ProfileScreen(
               providerConfigs: providerConfigs,

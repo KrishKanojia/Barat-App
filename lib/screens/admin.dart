@@ -8,6 +8,7 @@ import 'package:barat/utils/color.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:barat/services/credentialservices.dart';
@@ -63,66 +64,95 @@ class _AdminPageState extends State<AdminPage> {
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
-    return Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: background1Color,
-          title: const Text("Dashboard"),
-        ),
-        body: Container(
-          width: width,
-          height: height,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                GridView.count(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisCount: 2,
-                  padding: const EdgeInsets.all(3.0),
-                  children: [
-                    InkWell(
-                      onTap: () =>
-                          Get.to(() => const AdminAreaForm(), arguments: [
-                        {"areaid": null},
-                      ]),
-                      child: makeDashboardItem(
-                          "Create Area", Icons.add_location_alt_rounded),
-                    ),
-                    InkWell(
-                      onTap: () =>
-                          Get.to(() => const HallsDetailForm(), arguments: [
-                        {"areaid": null},
-                        {"hallid": null}
-                      ]),
-                      child: makeDashboardItem(
-                          "Create Halls", Icons.holiday_village_outlined),
-                    ),
-                    InkWell(
-                      onTap: () => Get.to(() => const CreateHallUser()),
-                      child: makeDashboardItem("Create User", Icons.person_add),
-                    ),
-                    InkWell(
-                      onTap: () => Get.to(() => const OrderConfirmList()),
-                      child: makeDashboardItem(
-                          "Show Bookings", Icons.bookmark_add_rounded),
-                    ),
-                  ],
-                ),
-                Flexible(
-                  child: SizedBox(
-                    width: width * 0.5,
-                    height: height * 0.25,
-                    child: GestureDetector(
-                      onTap: () => Get.to(() => const HomePage()),
-                      child: makeDashboardItem("Home", Icons.home),
-                    ),
+    return WillPopScope(
+      onWillPop: () async {
+        return await showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text(
+                'Are you sure you want to Exit?',
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => SystemNavigator.pop(),
+                  child: const Text(
+                    'Exit',
+                    style: TextStyle(
+                        color: Colors.red, fontWeight: FontWeight.bold),
                   ),
                 ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('Cancel'),
+                )
               ],
-            ),
+            );
+          },
+        );
+      },
+      child: Scaffold(
+          appBar: AppBar(
+            centerTitle: true,
+            backgroundColor: background1Color,
+            title: const Text("Dashboard"),
           ),
-        ));
+          body: Container(
+            width: width,
+            height: height,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GridView.count(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    crossAxisCount: 2,
+                    padding: const EdgeInsets.all(3.0),
+                    children: [
+                      InkWell(
+                        onTap: () =>
+                            Get.to(() => const AdminAreaForm(), arguments: [
+                          {"areaid": null},
+                        ]),
+                        child: makeDashboardItem(
+                            "Create Area", Icons.add_location_alt_rounded),
+                      ),
+                      InkWell(
+                        onTap: () =>
+                            Get.to(() => const HallsDetailForm(), arguments: [
+                          {"areaid": null},
+                          {"hallid": null}
+                        ]),
+                        child: makeDashboardItem(
+                            "Create Halls", Icons.holiday_village_outlined),
+                      ),
+                      InkWell(
+                        onTap: () => Get.to(() => const CreateHallUser()),
+                        child:
+                            makeDashboardItem("Create User", Icons.person_add),
+                      ),
+                      InkWell(
+                        onTap: () => Get.to(() => const OrderConfirmList()),
+                        child: makeDashboardItem(
+                            "Show Bookings", Icons.bookmark_add_rounded),
+                      ),
+                    ],
+                  ),
+                  Flexible(
+                    child: SizedBox(
+                      width: width * 0.5,
+                      height: height * 0.25,
+                      child: GestureDetector(
+                        onTap: () => Get.to(() => const HomePage()),
+                        child: makeDashboardItem("Home", Icons.home),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )),
+    );
   }
 }

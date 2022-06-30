@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../screens/HomePage.dart';
@@ -10,12 +11,13 @@ class RatingService {
     required String? bookingid,
     required String? feedback,
     required double? rating,
+    required BuildContext context,
   }) async {
     print(
         "Hallid  $areaid  areaid  $hallid  bookingid  $bookingid  feedback  $feedback  rating  $rating");
     var db = FirebaseFirestore.instance;
     var hallrating = 0.0;
-
+    int countRating = 0;
     var hallReference =
         db.collection("admin").doc(areaid).collection("halls").doc(hallid);
 
@@ -38,17 +40,22 @@ class RatingService {
 
             double singleratings = 0.0;
             await bookingReference.get().then((querySnapshot) {
-              int countRating = querySnapshot.docs.length;
               //  Read All Ratings From User
               querySnapshot.docs.forEach((DocumentSnapshot docSnapshot) {
                 Map<String, dynamic> data =
                     docSnapshot.data() as Map<String, dynamic>;
-                singleratings += double.parse(data["rating"].toString());
+                //
+
+                var ratingVal = double.parse(data["rating"].toString());
+                if (ratingVal != 0) {
+                  singleratings += ratingVal;
+                  countRating++;
+                }
               });
               singleratings += rating!;
 
               //  Calculate Total Rating
-              hallrating = singleratings / countRating;
+              hallrating = singleratings / (countRating + 1);
             });
 
             // Update hall Rating
@@ -68,7 +75,12 @@ class RatingService {
         Get.offAll(() => const HomePage());
       });
     } catch (e) {
-      print("Error is : $e");
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        duration: Duration(seconds: 3),
+        content: Text(
+          "Something Went Wrong... Try Again",
+        ),
+      ));
     }
   }
 }

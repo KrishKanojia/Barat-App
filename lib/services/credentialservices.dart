@@ -83,10 +83,10 @@ class CredentialServices extends GetxController {
             username.value = data["name"];
             useremail.value = data["email"];
 
-            box.write('user', userUid.value);
-            box.write('name', username.value);
-            box.write('email', useremail.value);
-            box.write('isAdmin', isAdmin.value);
+            await box.write('user', userUid.value);
+            await box.write('name', username.value);
+            await box.write('email', useremail.value);
+            await box.write('isAdmin', isAdmin.value);
             print(
                 "We are reading value from Admin Credential : ${box.read('user')},${box.read('isAdmin')},${box.read('name')}");
             Get.offAll(() => const AdminPage());
@@ -108,13 +108,12 @@ class CredentialServices extends GetxController {
             isLoading.value = false;
             isGoogleSignedIn.value = false;
 
+            print(
+                "We are reading value from Credentinal Screen : ${box.read('user')}");
+            Get.back(canPop: true);
             box.write('user', userUid.value);
             box.write('name', username.value);
             box.write('email', useremail.value);
-
-            print(
-                "We are reading value from Credentinal Screen : ${box.read('user')}");
-            Get.back();
             // Get.offAll(() => const HomePage());
           }
         });
@@ -160,37 +159,36 @@ class CredentialServices extends GetxController {
         ),
       );
     } catch (error) {
+      isLoading.value = false;
       switch (error.toString()) {
         case "ERROR_INVALID_EMAIL":
           errorMessage = "Your email address appears to be malformed.";
-          isLoading.value = false;
           break;
+
         case "ERROR_WRONG_PASSWORD":
           errorMessage = "Your password is wrong.";
-          isLoading.value = false;
-
           break;
+
         case "ERROR_USER_NOT_FOUND":
           errorMessage = "User with this email doesn't exist.";
-          isLoading.value = false;
-
           break;
+
         case "ERROR_USER_DISABLED":
           errorMessage = "User with this email has been disabled.";
-          isLoading.value = false;
           break;
+
         case "ERROR_TOO_MANY_REQUESTS":
           errorMessage = "Too many requests. Try again later.";
-          isLoading.value = false;
           break;
+
         case "ERROR_OPERATION_NOT_ALLOWED":
           errorMessage = "Signing in with Email and Password is not enabled.";
-          isLoading.value = false;
           break;
+
         default:
           errorMessage = "An undefined Error happened.";
       }
-      isLoading.value = false;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           duration: const Duration(seconds: 3),

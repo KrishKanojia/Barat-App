@@ -81,13 +81,32 @@ class _ConfirmOrderScreenState extends State<ConfirmOrderScreen> {
                       onTap: () {},
                       child: IconButton(
                         onPressed: () {
-                          ratingService.giveFeeback(
-                            areaid: widget.areaid,
-                            hallid: widget.hallid,
-                            bookingid: widget.bookingid,
-                            feedback: feedbackCont.text,
-                            rating: rating,
-                          );
+                          if (feedbackCont.text.isNotEmpty && rating != 0) {
+                            ratingService.giveFeeback(
+                              areaid: widget.areaid,
+                              hallid: widget.hallid,
+                              bookingid: widget.bookingid,
+                              feedback: feedbackCont.text,
+                              rating: rating,
+                              context: context,
+                            );
+                          } else if (feedbackCont.text.trim().isEmpty) {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              duration: Duration(seconds: 3),
+                              content: Text(
+                                "Please Give Feedback",
+                              ),
+                            ));
+                          } else if (rating == 0) {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              duration: Duration(seconds: 3),
+                              content: Text(
+                                "Please Give Rating",
+                              ),
+                            ));
+                          }
                           // FirebaseFirestore.instance
                           //     .collection("bookings")
                           //     .doc(widget.bookid)

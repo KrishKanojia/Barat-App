@@ -64,10 +64,14 @@ class _HallDetailScreenState extends State<HallDetailScreen> {
         .get()
         .then((snapshot) {
       if (snapshot.size > 0 && snapshot.docs.isNotEmpty) {
-        countRating = snapshot.docs.length;
         snapshot.docs.forEach((docSnap) {
           Map<String, dynamic> data = docSnap.data() as Map<String, dynamic>;
-          singleratings += double.parse(data["rating"].toString());
+          var ratingVal = double.parse(data["rating"].toString());
+
+          if (ratingVal != 0) {
+            singleratings += ratingVal;
+            countRating++;
+          }
         });
         setState(() {
           rating = singleratings / countRating;
@@ -362,21 +366,52 @@ class _HallDetailScreenState extends State<HallDetailScreen> {
                                         ),
                                         width: size.width,
                                         child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
                                           children: [
                                             Row(
                                                 mainAxisAlignment:
-                                                    MainAxisAlignment.start,
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
                                                 children: [
-                                                  const Icon(
-                                                    Icons.person_pin,
-                                                    size: 30,
+                                                  Row(children: [
+                                                    const Icon(
+                                                      Icons.person_pin,
+                                                      size: 30,
+                                                    ),
+                                                    const SizedBox(
+                                                      width: 10,
+                                                    ),
+                                                    ConstrainedBox(
+                                                      constraints:
+                                                          BoxConstraints(
+                                                              minWidth:
+                                                                  size.width *
+                                                                      0.6,
+                                                              maxWidth:
+                                                                  size.width *
+                                                                      0.6),
+                                                      child: Text(
+                                                        "${data["clientname"]}",
+                                                        style: const TextStyle(
+                                                          fontSize: 15,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(
+                                                      width: 10,
+                                                    ),
+                                                  ]),
+                                                  Text(
+                                                    "${data["rating"].toString()}",
+                                                    style: const TextStyle(
+                                                      fontSize: 15,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
                                                   ),
-                                                  const SizedBox(
-                                                    width: 10,
-                                                  ),
-                                                  Text("${data["clientname"]}",
-                                                      style: const TextStyle(
-                                                          fontSize: 15)),
                                                 ]),
                                             const SizedBox(
                                               height: 8,

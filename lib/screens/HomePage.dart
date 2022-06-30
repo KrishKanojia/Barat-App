@@ -33,7 +33,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   GetStorage getStorage = GetStorage('myData');
   final locationServices = Get.put(LocationServices());
-  // final CredentialServices credentialServices = CredentialServices();
+
   final credentialServices = Get.find<CredentialServices>();
   final getHall = FirebaseFirestore.instance.collection("admin");
 
@@ -43,13 +43,21 @@ class _HomePageState extends State<HomePage> {
         await getStorage.read('isAdmin') ?? false;
     credentialServices.isGoogleSignedIn.value =
         getStorage.read('isGoogle') ?? false;
-
+    print(
+        "The calues are ${credentialServices.userUid.value},${credentialServices.isAdmin.value},${credentialServices.isGoogleSignedIn.value}");
     if (credentialServices.userUid.value != ' ') {
       credentialServices.username.value = await getStorage.read('name');
       credentialServices.useremail.value = await getStorage.read('email');
       getToken();
       print("User is not null");
     }
+  }
+
+  Future<void> getToken() async {
+    await FirebaseMessaging.instance.getToken().then((token) {
+      print("The Token is $token");
+      saveToken(token!);
+    });
   }
 
   Future<void> saveToken(String token) async {
@@ -60,13 +68,6 @@ class _HomePageState extends State<HomePage> {
       'token': token,
       'username': credentialServices.username.value,
       'useremail': credentialServices.useremail.value,
-    });
-  }
-
-  void getToken() async {
-    await FirebaseMessaging.instance.getToken().then((token) {
-      print("The Token is $token");
-      saveToken(token!);
     });
   }
 
@@ -198,7 +199,9 @@ class _HomePageState extends State<HomePage> {
                 padding: const EdgeInsets.only(right: 10.0),
                 child: TextButton(
                   onPressed: () {
-                    Get.to(() => const LoginPage());
+                    Get.to(() => const LoginPage())!.then((value) {
+                      checkAuthCredential();
+                    });
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -222,7 +225,9 @@ class _HomePageState extends State<HomePage> {
                     MaterialPageRoute(
                       builder: (BuildContext context) => const LoginPage(),
                     ),
-                  );
+                  ).then((value) {
+                    checkAuthCredential();
+                  });
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

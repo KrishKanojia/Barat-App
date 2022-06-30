@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:barat/screens/forget_password.dart';
 import 'package:barat/screens/signUpPage.dart';
 import 'package:barat/screens/verification_screen.dart';
@@ -40,6 +42,9 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   late final Animation<double> _animation =
       Tween<double>(begin: 0.2, end: 1.2).animate(_controller);
 
+  StreamController<double?>? streamController =
+      StreamController<double?>.broadcast();
+  double? position;
   // final String username = "admin@gmail.com";
   // final int password = 12345;
 
@@ -110,14 +115,15 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           text: 'Step $i: \n',
           style: const TextStyle(
             fontWeight: FontWeight.bold,
-            color: whiteColor,
+            color: secondaryColor,
             fontSize: 16,
           ),
           children: [
             TextSpan(
               text: description,
               style: const TextStyle(
-                color: whiteColor,
+                fontWeight: FontWeight.w400,
+                color: secondaryColor,
                 fontSize: 15,
               ),
             )
@@ -128,68 +134,48 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   guideLines(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     final _form = GlobalKey<FormState>();
-    return showModalBottomSheet(
-        isScrollControlled: true,
-        backgroundColor: Colors.transparent,
-        context: context,
-        builder: (context) {
-          return Padding(
-            padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom),
-            child: Container(
-              width: size.width,
-              height: size.height * 0.45,
-              padding: const EdgeInsets.fromLTRB(20, 20, 10, 20),
-              decoration: const BoxDecoration(
-                color: background1Color,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(15),
-                  topRight: Radius.circular(15),
-                ),
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.0),
+            ),
+            title: const Text(
+              "How to become Hall Owner",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: secondaryColor,
               ),
-              child: Form(
-                key: _form,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          "How to become Hall Owner",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: Colors.white,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            Get.back();
-                          },
-                          icon: const Icon(
-                            Icons.close,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const Spacer(),
-                    steps(1, 'You need to sign up as user.'),
-                    const SizedBox(height: 20),
-                    steps(2,
-                        'Contact admin and provide the data of your hall.\nAdmin Email: iamsubhanqureshi@gmail.com'),
-                    const SizedBox(height: 20),
-                    steps(3,
-                        'Admin will make you hall owner after above 2 steps.'),
-                    const Spacer(),
-                  ],
-                ),
+              overflow: TextOverflow.ellipsis,
+            ),
+            content: SizedBox(
+              width: size.width,
+              height: size.height * 0.3,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  steps(1, 'You need to sign up as user.'),
+                  const SizedBox(height: 20),
+                  steps(2,
+                      'Contact admin and provide the data of your hall.\nAdmin Email: iamsubhanqureshi@gmail.com'),
+                  const SizedBox(height: 20),
+                  steps(
+                      3, 'Admin will make you hall owner after above 2 steps.'),
+                  const Spacer(),
+                ],
               ),
             ),
-          );
-        });
+            actions: <Widget>[
+              ElevatedButton(
+                  style: ElevatedButton.styleFrom(primary: secondaryColor),
+                  child: const Text('OK'),
+                  onPressed: () => Get.back()),
+            ]);
+      },
+    );
   }
 
   @override
@@ -204,6 +190,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     _controller.dispose();
     _username.dispose();
     _password.dispose();
+    streamController?.close();
     super.dispose();
   }
 
@@ -212,6 +199,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
         child: GestureDetector(
@@ -232,142 +220,190 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                       stops: [0.2, 0.9],
                     ),
                   ),
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 40.0,
-                    ),
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(height: height * 0.08),
-                        ScaleTransition(
-                          scale: _animation,
-                          child: FittedBox(
-                            child: Image.asset(
-                              'images/logo1.png',
-                              width: 140,
-                              height: 140,
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 20.0),
-                        Row(
-                          children: const [
-                            Text(
-                              'Sign In',
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 30.0,
-                                fontWeight: FontWeight.bold,
+                  child: SafeArea(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 40.0,
+                      ),
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(height: height * 0.08),
+                          ScaleTransition(
+                            scale: _animation,
+                            child: FittedBox(
+                              child: Image.asset(
+                                'images/logo1.png',
+                                width: 140,
+                                height: 140,
+                                fit: BoxFit.fill,
                               ),
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 20.0),
-                        BuildTextFormField(
-                          controller: _username,
-                          hintText: 'Enter your Email',
-                          keyboardType: TextInputType.text,
-                          titleText: 'Email',
-                        ),
-                        const SizedBox(height: 20.0),
-                        BuildPasswordField(
-                          controller: _password,
-                          hintText: 'Enter your Password',
-                          keyboardType: TextInputType.visiblePassword,
-                          titleText: 'Password',
-                          obscure: obserText,
-                          onTap: () {
-                            setState(() {
-                              obserText = !obserText;
-                            });
-                          },
-                        ),
-                        _buildForgotPasswordBtn(),
-                        Obx(
-                          () => InkWell(
-                            onTap: () {
-                              // Get.off(() => '/sign-in');
-                            },
-                            child: credentialServices.getisLoading == false
-                                ? _buildLoginBtn()
-                                // const ReusableTextIconButton(
-                                //     text: "Login",
-                                //   )
-                                : LoadingButton(),
                           ),
-                        ),
-                        SizedBox(
-                          height: height * 0.02,
-                        ),
-                        InkWell(
-                          onTap: () {
-                            credentialServices.signInWithGoogle();
-                          },
-                          child: Container(
-                            width: double.infinity,
-                            height: height / 14,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius:
-                                  BorderRadiusDirectional.circular(20),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.5),
-                                  spreadRadius: 2,
-                                  blurRadius: 7,
-                                  offset: const Offset(
-                                      0, 3), // changes position of shadow
+                          const SizedBox(height: 20.0),
+                          Row(
+                            children: const [
+                              Text(
+                                'Sign In',
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 30.0,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                              ],
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20.0),
+                          BuildTextFormField(
+                            controller: _username,
+                            hintText: 'Enter your Email',
+                            keyboardType: TextInputType.text,
+                            titleText: 'Email',
+                          ),
+                          const SizedBox(height: 20.0),
+                          BuildPasswordField(
+                            controller: _password,
+                            hintText: 'Enter your Password',
+                            keyboardType: TextInputType.visiblePassword,
+                            titleText: 'Password',
+                            obscure: obserText,
+                            onTap: () {
+                              setState(() {
+                                obserText = !obserText;
+                              });
+                            },
+                          ),
+                          _buildForgotPasswordBtn(),
+                          Obx(
+                            () => InkWell(
+                              onTap: () {
+                                // Get.off(() => '/sign-in');
+                              },
+                              child: credentialServices.getisLoading == false
+                                  ? _buildLoginBtn()
+                                  // const ReusableTextIconButton(
+                                  //     text: "Login",
+                                  //   )
+                                  : LoadingButton(),
                             ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(14.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Image.asset(
-                                    'images/google_signin.png',
-                                    width: 18,
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Text(
-                                    "Sign in with Google",
-                                    style: TextStyle(
-                                        fontSize: 18.sp,
-                                        color: secondaryColor,
-                                        fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(
+                            height: height * 0.02,
+                          ),
+                          InkWell(
+                            onTap: () {
+                              credentialServices.signInWithGoogle();
+                            },
+                            child: Container(
+                              width: double.infinity,
+                              height: height / 14,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius:
+                                    BorderRadiusDirectional.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 2,
+                                    blurRadius: 7,
+                                    offset: const Offset(
+                                        0, 3), // changes position of shadow
                                   ),
                                 ],
                               ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(14.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
+                                      'images/google_signin.png',
+                                      width: 18,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Text(
+                                      "Sign in with Google",
+                                      style: TextStyle(
+                                          fontSize: 18.sp,
+                                          color: secondaryColor,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                        ReusableAlreadyText(
-                          text: 'Signup',
-                          onClick: () => Get.off(() => const SignUpPage()),
-                        ),
-                        SizedBox(
-                          height: height * 0.015,
-                        ),
-                        GestureDetector(
-                          onTap: () => guideLines(context),
-                          child: const Text(
-                            "How to become Hall Owner",
-                            style: TextStyle(
-                                decoration: TextDecoration.underline,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 253, 253, 253)),
+                          ReusableAlreadyText(
+                            text: 'Signup',
+                            onClick: () => Get.off(() => const SignUpPage()),
                           ),
-                        ),
-                      ],
+                          SizedBox(
+                            height: height * 0.015,
+                          ),
+                          /*     GestureDetector(
+                            onVerticalDragUpdate: (show) {
+                              guideLines(context);
+                            },
+                            child: const Text(
+                              "How to become Hall Owner",
+                              style: TextStyle(
+                                  decoration: TextDecoration.underline,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color.fromARGB(255, 253, 253, 253)),
+                            ),
+                          ),*/
+                        ],
+                      ),
                     ),
                   )),
             ],
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: StreamBuilder<double?>(
+        stream: streamController!.stream,
+        builder: (context, AsyncSnapshot<double?> snapshot) => GestureDetector(
+          onVerticalDragUpdate: (details) {
+            position = height - details.globalPosition.dy;
+            if (!position!.isNegative && position! < 140 && position! > 30) {
+              streamController!.add(position);
+            }
+          },
+          onVerticalDragEnd: (details) {
+            streamController!.add(50);
+            guideLines(context);
+          },
+          child: Container(
+            padding: const EdgeInsets.only(bottom: 2.0),
+            decoration: const BoxDecoration(
+                color: Colors.white60,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(80.0),
+                  topRight: Radius.circular(80.0),
+                )),
+            width: width * 0.6,
+            height: snapshot.hasData ? snapshot.data : height * 0.07,
+            child: Column(
+              children: const [
+                Icon(
+                  Icons.arrow_upward,
+                  color: Colors.black54,
+                  size: 20.0,
+                ),
+                Text(
+                  "How to become Hall Owner",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black54),
+                ),
+              ],
+            ),
           ),
         ),
       ),
