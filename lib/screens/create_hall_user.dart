@@ -20,7 +20,6 @@ class _CreateHallUserState extends State<CreateHallUser> {
   final TextEditingController _phone = TextEditingController();
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
-  int userRoll = 2;
 
   @override
   void dispose() {
@@ -36,8 +35,6 @@ class _CreateHallUserState extends State<CreateHallUser> {
 
   @override
   Widget build(BuildContext context) {
-    print("31   $userRoll");
-
     final height = MediaQuery.of(context).size.height;
     // final width = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -107,13 +104,6 @@ class _CreateHallUserState extends State<CreateHallUser> {
                         phNo: _phone.text.trim().toString(),
                         name: _username.text.trim().toString(),
                         routename: '/create-hall-user');
-                    // credentialServices.signUpPost(
-                    //     _username.text,
-                    //     _fullname.text,
-                    //     _email.text,
-                    //     _phone.text,
-                    //     _password.text,
-                    //     userRoll);
                   },
                   child: const ReusableTextIconButton(
                     text: "SignUp",

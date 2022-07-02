@@ -55,7 +55,8 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
   final TextEditingController pricePerHead = TextEditingController();
   final TextEditingController cateringPerHead = TextEditingController();
   final TextEditingController areaName = TextEditingController();
-  bool isLoading = true;
+  //Uploading data to Firebase
+  bool _isHallSubmitted = false;
   bool eventPlanner = false;
   bool isAdmin = true;
   bool isload = false;
@@ -146,29 +147,6 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
     areaName.dispose();
   }
 
-  Future<void> showPlacePicker(BuildContext context) async {
-    const apiKey = "AIzaSyBqbPKtyaIo4H85J5or0lCZ7Lyipc8nxSY";
-    const LatLng initialPosition = LatLng(31.5116835, 74.3330131);
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => PlacePicker(
-          apiKey: apiKey,
-          onPlacePicked: (result) {
-            print('AAAAAAA :${result.formattedAddress}');
-            Navigator.of(context).pop();
-            setState(() {
-              hallAddress.value =
-                  TextEditingValue(text: result.formattedAddress ?? '');
-            });
-          },
-          initialPosition: initialPosition,
-          useCurrentLocation: true,
-        ),
-      ),
-    );
-  }
-
   displayValidationError(BuildContext context, String errorname) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -177,7 +155,7 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
     );
   }
 
-  void validation(BuildContext context) {
+  void validationForNewHall(BuildContext context) {
     try {
       if (ownerName.text.trim().isEmpty &&
           hallName.text.trim().isEmpty &&
@@ -259,6 +237,9 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
       required int cateringPerHead,
       required bool eventPlanner,
       required BuildContext context}) async {
+    setState(() {
+      _isHallSubmitted = true;
+    });
     try {
       var db = FirebaseFirestore.instance;
       bool? checkOwnerEmail;
@@ -325,6 +306,9 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
         print("Hall Created");
         Get.back();
       } else if (userdata.docs.isEmpty) {
+        setState(() {
+          _isHallSubmitted = false;
+        });
         print("The Email is ${ownerEmail}");
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -333,6 +317,9 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
           ),
         );
       } else if (area.docs.isEmpty) {
+        setState(() {
+          _isHallSubmitted = false;
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text("Area is Invalid"),
@@ -341,12 +328,33 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
       } else {
         print("Something went Wrong");
       }
-    } catch (e) {
+    } on SocketException catch (e) {
+      setState(() {
+        _isHallSubmitted = false;
+      });
       print("Error in Post Hall Admin ${e.toString()}");
+
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        duration: Duration(seconds: 3),
+        content: Text(
+          "No Internet Connection",
+        ),
+      ));
+    } catch (e) {
+      print("Problem in Post Hall Admin ${e.toString()}");
+      setState(() {
+        _isHallSubmitted = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        duration: Duration(seconds: 3),
+        content: Text(
+          "Something went Wrong Try Again later",
+        ),
+      ));
     }
   }
 
-  Future<void> existHallvalidation(BuildContext context) async {
+  Future<void> validationForExistingHall(BuildContext context) async {
     try {
       if (ownerName.text.trim().isEmpty &&
           hallName.text.trim().isEmpty &&
@@ -391,6 +399,7 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
             context: context);
       } else if (_selectedFiles.isNotEmpty) {
         // If Images are updated
+
         await uploadFunction(_selectedFiles);
         updateHallByAdmin(
             listImages: arrimgsUrl,
@@ -421,6 +430,12 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
       required int cateringPerHead,
       required bool eventPlanner,
       required BuildContext context}) async {
+    if (_isHallSubmitted != true) {
+      setState(() {
+        _isHallSubmitted = true;
+      });
+    }
+
     try {
       await FirebaseFirestore.instance
           .collection("admin")
@@ -442,8 +457,29 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
       _selectedFiles.clear();
       print("Hall Updated");
       Get.back();
-    } catch (e) {
+    } on SocketException catch (e) {
+      setState(() {
+        _isHallSubmitted = false;
+      });
       print("Error in Update Hall Admin ${e.toString()}");
+
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        duration: Duration(seconds: 3),
+        content: Text(
+          "No Internet Connection",
+        ),
+      ));
+    } catch (e) {
+      print("Problem in Update Hall Admin ${e.toString()}");
+      setState(() {
+        _isHallSubmitted = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        duration: Duration(seconds: 3),
+        content: Text(
+          "Something went Wrong Try Again later",
+        ),
+      ));
     }
   }
 
@@ -771,26 +807,33 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
                       height: height * 0.02,
                     ),
                     InkWell(
-                      onTap: () async {
-                        _upLoading == false
-                            ? hallid == null
-                                ?
-                                // Create New Hall
-                                validation(context)
-                                :
-                                // Update Existing Hall
-                                existHallvalidation(context)
-                            : ScaffoldMessenger.of(context).showSnackBar(
+                      onTap: _isHallSubmitted == false
+                          ? () async {
+                              _upLoading == false
+                                  ? hallid == null
+                                      ?
+                                      // Create New Hall
+                                      validationForNewHall(context)
+                                      :
+                                      // Update Existing Hall
+                                      validationForExistingHall(context)
+                                  : ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                            "Please Wait Hall is Uploading"),
+                                      ),
+                                    );
+                            }
+                          : () => ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content:
-                                      Text("Please Wait Hall is Uploading"),
+                                  content: Text("Processing... Please Wait"),
                                 ),
-                              );
-                        ;
-                      },
-                      child: const ReusableTextIconButton(
+                              ),
+                      child: ReusableTextIconButton(
                         text: "Submit",
-                        color: background1Color,
+                        color: _isHallSubmitted == false
+                            ? background1Color
+                            : Colors.grey,
                       ),
                     ),
                     SizedBox(
@@ -856,6 +899,7 @@ class _HallsDetailFormState extends State<HallsDetailForm> {
   Future<String> uploadFile(XFile _image) async {
     setState(() {
       _upLoading = true;
+      _isHallSubmitted = true;
     });
     Reference reference =
         _firebaseStorage.ref().child("areaImages").child(_image.name);

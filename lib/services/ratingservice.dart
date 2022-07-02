@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -13,8 +15,13 @@ class RatingService {
     required double? rating,
     required BuildContext context,
   }) async {
-    print(
-        "Hallid  $areaid  areaid  $hallid  bookingid  $bookingid  feedback  $feedback  rating  $rating");
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
     var db = FirebaseFirestore.instance;
     var hallrating = 0.0;
     int countRating = 0;
@@ -48,6 +55,7 @@ class RatingService {
 
                 var ratingVal = double.parse(data["rating"].toString());
                 if (ratingVal != 0) {
+                  print("The ratings  are  ${ratingVal}");
                   singleratings += ratingVal;
                   countRating++;
                 }
@@ -56,6 +64,7 @@ class RatingService {
 
               //  Calculate Total Rating
               hallrating = singleratings / (countRating + 1);
+              print("Total count ${countRating}");
             });
 
             // Update hall Rating
@@ -74,11 +83,22 @@ class RatingService {
         print("Rating completed successfully");
         Get.offAll(() => const HomePage());
       });
-    } catch (e) {
+    } on SocketException catch (e) {
+      Get.back();
+      print("The error is ${e.toString()}");
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         duration: Duration(seconds: 3),
         content: Text(
-          "Something Went Wrong... Try Again",
+          "No Internet Connection",
+        ),
+      ));
+    } catch (e) {
+      Get.back();
+      print("The Problem is : ${e.toString()}");
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        duration: Duration(seconds: 3),
+        content: Text(
+          "Something went Wrong Try Again later",
         ),
       ));
     }

@@ -148,8 +148,12 @@ class _VerificationScreenState extends State<VerificationScreen> {
   Future<bool> _willpopscope() async {
     if (widget.routename == '/signin') {
       FirebaseAuth.instance.signOut();
+      Get.back();
+    } else if (widget.routename == "/signup") {
+      FirebaseAuth.instance.signOut();
+      Get.off(() => const LoginPage());
     }
-    Get.back();
+
     return true;
   }
 
@@ -252,7 +256,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                                   Get.back();
                                 } else if (widget.routename == "/signup") {
                                   FirebaseAuth.instance.signOut();
-                                  Get.back();
+                                  Get.off(() => const LoginPage());
                                 } else if (widget.routename ==
                                     '/create-hall-user') {
                                   Get.off(() => const AdminPage());

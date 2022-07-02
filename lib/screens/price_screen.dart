@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:barat/Models/hall_model.dart';
@@ -107,15 +108,26 @@ class _PriceScreenState extends State<PriceScreen> {
             SizedBox(height: 20.h),
             InkWell(
               onTap: () async {
-                if (isload == false) {
-                  setState(() {
-                    isload = true;
-                  });
-                  await MakePayment();
-                } else {
+                try {
+                  if (isload == false) {
+                    setState(() {
+                      isload = true;
+                    });
+                    await MakePayment();
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Processing... Please Wait'),
+                      ),
+                    );
+                  }
+                } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Processing... Please Wait'),
+                      duration: Duration(seconds: 3),
+                      content: Text(
+                        'Something Went Wrong Try Again',
+                      ),
                     ),
                   );
                 }
@@ -146,14 +158,16 @@ class _PriceScreenState extends State<PriceScreen> {
     try {
       // paymentIntentData = await createPaymentIntent('20', "USD");
       paymentIntentData =
-          await createPaymentIntent(finalTotalPrice!.toString(), "USD");
+          await createPaymentIntent(finalTotalPrice!.toString(), "PKR");
+
       await Stripe.instance.initPaymentSheet(
           paymentSheetParameters: SetupPaymentSheetParameters(
-              paymentIntentClientSecret: paymentIntentData!['client_secret'],
-              applePay: true,
-              googlePay: true,
-              merchantDisplayName: 'Asif',
-              merchantCountryCode: 'US'));
+        paymentIntentClientSecret: paymentIntentData!['client_secret'],
+        applePay: true,
+        googlePay: true,
+        merchantDisplayName: 'Asif',
+        merchantCountryCode: 'US',
+      ));
 
       displayPaymentSheet();
     } catch (e) {
@@ -194,10 +208,23 @@ class _PriceScreenState extends State<PriceScreen> {
       );
 
       print("Notification to $mtoken");
+    } on SocketException catch (e) {
+      print("The error is ${e.toString()}");
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        duration: Duration(seconds: 3),
+        content: Text(
+          "No Internet Connection",
+        ),
+      ));
     } catch (e) {
-      print("The Problem is : ");
+      print("The Problem is : ${e.toString()}");
 
-      print(e.toString());
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        duration: Duration(seconds: 3),
+        content: Text(
+          "Something went Wrong Try Again later",
+        ),
+      ));
     }
   }
 
@@ -213,7 +240,6 @@ class _PriceScreenState extends State<PriceScreen> {
 
       await locationServices.postbookHallsByUser(
         context: context,
-        userId: hallmodel.userID,
         date: date,
         time: time!,
         guestsQuantity: noOfGuests,

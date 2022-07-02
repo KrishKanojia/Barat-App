@@ -37,6 +37,26 @@ class _HomePageState extends State<HomePage> {
   final credentialServices = Get.find<CredentialServices>();
   final getHall = FirebaseFirestore.instance.collection("admin");
 
+  Future checkEmailVerifiedThenSignIn() async {
+    try {
+      User? _user = FirebaseAuth.instance.currentUser;
+      print("Checking curret User $_user");
+
+      if (_user != null) {
+        await FirebaseAuth.instance.currentUser?.reload();
+        bool isEmaiLVerified = _user.emailVerified;
+        if (isEmaiLVerified != true) {
+          FirebaseAuth.instance.signOut();
+          setState(() {});
+        } else {
+          checkAuthCredential();
+        }
+      }
+    } catch (e) {
+      print("CheckingError $e");
+    }
+  }
+
   Future<void> checkAuthCredential() async {
     credentialServices.userUid.value = await getStorage.read('user') ?? ' ';
     credentialServices.isAdmin.value =
@@ -49,7 +69,6 @@ class _HomePageState extends State<HomePage> {
       credentialServices.username.value = await getStorage.read('name');
       credentialServices.useremail.value = await getStorage.read('email');
       getToken();
-      print("User is not null");
     }
   }
 
@@ -409,28 +428,6 @@ class _HomePageState extends State<HomePage> {
                                                   ),
                                                 ),
                                               ),
-
-                                              // RatingStars(
-                                              //   starSpacing: 5.0,
-                                              //   value: 5.0,
-                                              //   starBuilder: (index, color) =>
-                                              //       Icon(
-                                              //     Icons.star,
-                                              //     size: 18,
-                                              //     color: color,
-                                              //   ),
-                                              //   starCount: 5,
-                                              //   starSize: 20,
-                                              //   maxValue: 5,
-                                              //   maxValueVisibility: false,
-                                              //   valueLabelVisibility: false,
-                                              //   animationDuration:
-                                              //       const Duration(
-                                              //           milliseconds: 300),
-                                              //   starOffColor: Colors.black
-                                              //       .withOpacity(0.6),
-                                              //   starColor: Colors.yellow,
-                                              // ),
                                             ],
                                           ),
                                         ),
@@ -532,10 +529,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    print("Checking curret User ${FirebaseAuth.instance.currentUser}");
-    print(
-        "The User Uid is ${credentialServices.userUid.value}, username : ${credentialServices.getusername}");
-    checkAuthCredential();
+    checkEmailVerifiedThenSignIn();
     LocationServices();
   }
 

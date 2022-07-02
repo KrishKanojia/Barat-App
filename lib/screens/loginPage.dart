@@ -199,7 +199,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
         child: GestureDetector(
@@ -340,21 +339,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                             onClick: () => Get.off(() => const SignUpPage()),
                           ),
                           SizedBox(
-                            height: height * 0.015,
+                            height: height * 0.02,
                           ),
-                          /*     GestureDetector(
-                            onVerticalDragUpdate: (show) {
-                              guideLines(context);
-                            },
-                            child: const Text(
-                              "How to become Hall Owner",
-                              style: TextStyle(
-                                  decoration: TextDecoration.underline,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color.fromARGB(255, 253, 253, 253)),
-                            ),
-                          ),*/
                         ],
                       ),
                     ),
@@ -374,31 +360,30 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
             }
           },
           onVerticalDragEnd: (details) {
-            streamController!.add(50);
+            streamController!.add(30);
             guideLines(context);
           },
           child: Container(
-            padding: const EdgeInsets.only(bottom: 2.0),
             decoration: const BoxDecoration(
                 color: Colors.white60,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(80.0),
                   topRight: Radius.circular(80.0),
                 )),
-            width: width * 0.6,
-            height: snapshot.hasData ? snapshot.data : height * 0.07,
+            width: width * 0.5,
+            height: snapshot.hasData ? snapshot.data : height * 0.04,
             child: Column(
               children: const [
                 Icon(
                   Icons.arrow_upward,
                   color: Colors.black54,
-                  size: 20.0,
+                  size: 16.0,
                 ),
                 Text(
                   "How to become Hall Owner",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      fontSize: 14.0,
+                      fontSize: 10.0,
                       fontWeight: FontWeight.bold,
                       color: Colors.black54),
                 ),

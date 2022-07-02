@@ -35,7 +35,7 @@ class _AdminAreaFormState extends State<AdminAreaForm> {
   final TextEditingController areaName = TextEditingController();
   var getareaid;
   bool isLoad = false;
-
+  bool _isAreaSubmitted = false;
   Future<void> _asyncMethod() async {
     await FirebaseFirestore.instance
         .collection("admin")
@@ -67,6 +67,71 @@ class _AdminAreaFormState extends State<AdminAreaForm> {
     // TODO: implement dispose
     super.dispose();
     areaName.dispose();
+  }
+
+  Future<void> checkValidationAndSubmitArea() async {
+    // If Admin is creating new Area
+    if (areaid == null) {
+      if (_selectedFiles.isNotEmpty &&
+          areaName.text.toString().trim().isNotEmpty) {
+        setState(() {
+          _isAreaSubmitted = true;
+        });
+        await uploadFile(_selectedFiles.first);
+
+        locationServices.postAreaByAdmin(
+          img_url,
+          areaName.text.toString(),
+          context,
+        );
+        Get.to(() => const AdminPage());
+      } else if (areaName.text.toString().trim().isEmpty) {
+        setState(() {
+          _isAreaSubmitted = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("PLEASE Enter Area Name")));
+      } else {
+        setState(() {
+          _isAreaSubmitted = false;
+        });
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text("PLEASE Select Image")));
+      }
+    }
+    // If Admin is updating Area
+    else {
+      if (_selectedFiles.isNotEmpty &&
+          areaName.text.toString().trim().isNotEmpty) {
+        setState(() {
+          _isAreaSubmitted = true;
+        });
+        await uploadFile(_selectedFiles.first);
+        locationServices.updateAreaByAdmin(
+          context: context,
+          areaImage: img_url,
+          areaId: areaid,
+          areaname: areaName.text.toString(),
+        );
+      } else if (areaName.text.toString().trim().isEmpty) {
+        setState(() {
+          _isAreaSubmitted = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("PLEASE Enter Area Name")));
+      } else if (_selectedFiles.isEmpty &&
+          areaName.text.toString().trim().isNotEmpty) {
+        setState(() {
+          _isAreaSubmitted = true;
+        });
+        locationServices.updateAreaByAdmin(
+          context: context,
+          areaImage: imagename,
+          areaId: areaid,
+          areaname: areaName.text.toString(),
+        );
+      }
+    }
   }
 
   @override
@@ -204,49 +269,20 @@ class _AdminAreaFormState extends State<AdminAreaForm> {
                     height: height * 0.02,
                   ),
                   InkWell(
-                    onTap: () async {
-                      if (areaid == null) {
-                        if (_selectedFiles.isNotEmpty &&
-                            areaName.text.toString().trim().isNotEmpty) {
-                          await uploadFile(_selectedFiles.first);
-                          locationServices.postLocationByAdmin(
-                              img_url, areaName.text.toString());
-                          Get.to(() => const AdminPage());
-                        } else if (areaName.text.toString().trim().isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
+                    onTap: _isAreaSubmitted == false
+                        ? () async {
+                            checkValidationAndSubmitArea();
+                          }
+                        : () => ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                  content: Text("PLEASE Enter Area Name")));
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text("PLEASE Select Image")));
-                        }
-                      } else {
-                        if (_selectedFiles.isNotEmpty &&
-                            areaName.text.toString().trim().isNotEmpty) {
-                          await uploadFile(_selectedFiles.first);
-                          locationServices.updateAreaByAdmin(
-                              context: context,
-                              areaImage: img_url,
-                              areaId: areaid,
-                              areaname: areaName.text.toString());
-                        } else if (areaName.text.toString().trim().isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text("PLEASE Enter Area Name")));
-                        } else if (_selectedFiles.isEmpty &&
-                            areaName.text.toString().trim().isNotEmpty) {
-                          locationServices.updateAreaByAdmin(
-                              context: context,
-                              areaImage: imagename,
-                              areaId: areaid,
-                              areaname: areaName.text.toString());
-                        }
-                      }
-                    },
-                    child: const ReusableTextIconButton(
+                                content: Text("Processing... Please Wait"),
+                              ),
+                            ),
+                    child: ReusableTextIconButton(
                       text: "Submit",
-                      color: background1Color,
+                      color: _isAreaSubmitted == true
+                          ? Colors.grey
+                          : background1Color,
                     ),
                   ),
                   SizedBox(
@@ -308,6 +344,7 @@ class _AdminAreaFormState extends State<AdminAreaForm> {
   Future<String> uploadFile(XFile _image) async {
     setState(() {
       _upLoading = true;
+      _isAreaSubmitted = false;
     });
     Reference reference =
         _firebaseStorage.ref().child("Area images").child(_image.name);

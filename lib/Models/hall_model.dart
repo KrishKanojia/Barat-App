@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HallModel {
   List? images;
-  String? userID;
+
   String? ownerName;
   late var ownerContact;
   String? ownerEmail;
@@ -17,7 +17,7 @@ class HallModel {
 
   HallModel.fromMap(dynamic data) {
     images = data["images"];
-    userID = data.toString();
+
     ownerName = data["OwnerName"];
     ownerContact = data["OwnerContact"];
     ownerEmail = data["OwnerEmail"];
@@ -28,6 +28,11 @@ class HallModel {
     hallOwnerId = data["hallOwnerId"];
     hallid = data["hall_id"];
     hallname = data["hallName"];
-    rating = double.parse(data["hallrating"].toString());
+    rating = parseToDouble(double.parse(data["hallrating"].toString()));
+  }
+
+  double parseToDouble(double rating) {
+    String inString = rating.toStringAsFixed(1); // '2.35'
+    return double.parse(inString); // 2.35
   }
 }

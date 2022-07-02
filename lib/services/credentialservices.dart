@@ -33,7 +33,7 @@ class CredentialServices extends GetxController {
   String get getUserId => userUid.value;
   String get getusername => username.value;
   String get getuseremail => useremail.value;
-  String adminUid = "mqDeynQAVabEqKSfwGqIVjQmUfC2";
+
   var isAdmin = false.obs;
   bool get getisAdmin => isAdmin.value;
   var isEmailVerified = false.obs;
@@ -244,6 +244,15 @@ class CredentialServices extends GetxController {
       required String routename}) async {
     isLoading.value = true;
     bool isEmailVerified = false;
+    if (routename == '/create-hall-user') {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
 
     try {
       bool isUserExist = await usernameExist(context: context, username: name);
@@ -271,10 +280,19 @@ class CredentialServices extends GetxController {
               usercredential: user),
         );
       } else {
-        isLoading.value = false;
+        if (routename == '/create-hall-user') {
+          Get.back();
+        } else {
+          isLoading.value = false;
+        }
       }
     } on PlatformException catch (e) {
-      isLoading.value = false;
+      if (routename == '/create-hall-user') {
+        Get.back();
+      } else {
+        isLoading.value = false;
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -283,7 +301,11 @@ class CredentialServices extends GetxController {
         ),
       );
     } on FirebaseAuthException catch (e) {
-      isLoading.value = false;
+      if (routename == '/create-hall-user') {
+        Get.back();
+      } else {
+        isLoading.value = false;
+      }
 
       if (e.code == 'weak-password') {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -314,7 +336,11 @@ class CredentialServices extends GetxController {
         );
       }
     } on SocketException catch (error) {
-      isLoading.value = false;
+      if (routename == '/create-hall-user') {
+        Get.back();
+      } else {
+        isLoading.value = false;
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           duration: Duration(seconds: 3),
@@ -324,7 +350,11 @@ class CredentialServices extends GetxController {
         ),
       );
     } catch (errorMsg) {
-      isLoading.value = false;
+      if (routename == '/create-hall-user') {
+        Get.back();
+      } else {
+        isLoading.value = false;
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           duration: const Duration(seconds: 3),

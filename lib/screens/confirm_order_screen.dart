@@ -78,49 +78,44 @@ class _ConfirmOrderScreenState extends State<ConfirmOrderScreen> {
                   _ratting(),
                   SizedBox(height: 20.h),
                   InkWell(
-                      onTap: () {},
-                      child: IconButton(
-                        onPressed: () {
-                          if (feedbackCont.text.isNotEmpty && rating != 0) {
-                            ratingService.giveFeeback(
-                              areaid: widget.areaid,
-                              hallid: widget.hallid,
-                              bookingid: widget.bookingid,
-                              feedback: feedbackCont.text,
-                              rating: rating,
-                              context: context,
-                            );
-                          } else if (feedbackCont.text.trim().isEmpty) {
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(const SnackBar(
-                              duration: Duration(seconds: 3),
-                              content: Text(
-                                "Please Give Feedback",
-                              ),
-                            ));
-                          } else if (rating == 0) {
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(const SnackBar(
-                              duration: Duration(seconds: 3),
-                              content: Text(
-                                "Please Give Rating",
-                              ),
-                            ));
-                          }
-                          // FirebaseFirestore.instance
-                          //     .collection("bookings")
-                          //     .doc(widget.bookid)
-                          //     .update({
-                          //   "feedback": feedbackCont.text.toLowerCase(),
-                          //   "rating": rating,
-                          // });
-                        },
-                        icon: const Icon(
-                          Icons.home,
-                          size: 40,
-                          color: secondaryColor,
-                        ),
-                      ))
+                    onTap: () {},
+                    child: IconButton(
+                      splashColor: background1Color,
+                      onPressed: () {
+                        if (feedbackCont.text.isNotEmpty && rating != 0) {
+                          ratingService.giveFeeback(
+                            areaid: widget.areaid,
+                            hallid: widget.hallid,
+                            bookingid: widget.bookingid,
+                            feedback: feedbackCont.text,
+                            rating: rating,
+                            context: context,
+                          );
+                        } else if (feedbackCont.text.trim().isEmpty) {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            duration: Duration(seconds: 3),
+                            content: Text(
+                              "Please Give Feedback",
+                            ),
+                          ));
+                        } else if (rating == 0) {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            duration: Duration(seconds: 3),
+                            content: Text(
+                              "Please Give Rating",
+                            ),
+                          ));
+                        }
+                      },
+                      icon: const Icon(
+                        Icons.home,
+                        size: 40,
+                        color: secondaryColor,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

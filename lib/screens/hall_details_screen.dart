@@ -35,7 +35,7 @@ class _HallDetailScreenState extends State<HallDetailScreen> {
   Widget _ratting() {
     return Center(
       child: RatingStars(
-        value: rating,
+        value: hallmodel.rating!,
         starBuilder: (index, color) => Icon(
           Icons.star,
           size: 20,
@@ -51,34 +51,6 @@ class _HallDetailScreenState extends State<HallDetailScreen> {
         starColor: Colors.yellow,
       ),
     );
-  }
-
-  bool isload = false;
-  double rating = 0.0;
-  Future<void> checkRating() async {
-    int countRating = 0;
-    double singleratings = 0.0;
-    await FirebaseFirestore.instance
-        .collection("bookings")
-        .where("hallid", isEqualTo: hallmodel.hallid)
-        .get()
-        .then((snapshot) {
-      if (snapshot.size > 0 && snapshot.docs.isNotEmpty) {
-        snapshot.docs.forEach((docSnap) {
-          Map<String, dynamic> data = docSnap.data() as Map<String, dynamic>;
-          var ratingVal = double.parse(data["rating"].toString());
-
-          if (ratingVal != 0) {
-            singleratings += ratingVal;
-            countRating++;
-          }
-        });
-        setState(() {
-          rating = singleratings / countRating;
-          isload = true;
-        });
-      }
-    });
   }
 
   showAlertDialog(BuildContext ctx) {
@@ -117,8 +89,8 @@ class _HallDetailScreenState extends State<HallDetailScreen> {
   @override
   void initState() {
     super.initState();
-    checkRating();
-    print("Onwer contact : ${hallmodel.ownerContact}");
+    print("Rounded${double.parse("3.5444444")}");
+    print("Onwer id : ${hallmodel.hallid}");
   }
 
   @override
@@ -291,44 +263,38 @@ class _HallDetailScreenState extends State<HallDetailScreen> {
                       const SizedBox(
                         height: 20,
                       ),
-                      isload == true
-                          ? Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20.0),
-                              child: Row(
-                                children: [
-                                  const Text(
-                                    "Rating",
-                                    style: TextStyle(
-                                      overflow: TextOverflow.ellipsis,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15.0,
-                                    ),
-                                  ),
-                                  const Spacer(),
-                                  Text(
-                                    "${rating.toStringAsFixed(1)}/5",
-                                    style: const TextStyle(
-                                      overflow: TextOverflow.ellipsis,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15.0,
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  Wrap(
-                                    children: [
-                                      _ratting(),
-                                    ],
-                                  )
-                                ],
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: Row(
+                          children: [
+                            const Text(
+                              "Rating",
+                              style: TextStyle(
+                                overflow: TextOverflow.ellipsis,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15.0,
                               ),
-                            )
-                          : const SizedBox(
-                              height: 0.0,
-                              width: 0.0,
                             ),
+                            const Spacer(),
+                            Text(
+                              "${hallmodel.rating!}/5",
+                              style: const TextStyle(
+                                overflow: TextOverflow.ellipsis,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15.0,
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Wrap(
+                              children: [
+                                _ratting(),
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
                       const SizedBox(
                         height: 20,
                       ),
