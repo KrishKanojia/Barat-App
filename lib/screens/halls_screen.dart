@@ -550,21 +550,6 @@ class _HallsScreenState extends State<HallsScreen> {
                                         ),
                                       ),
                                     );
-                                    // : SizedBox(
-                                    //     height: MediaQuery.of(context)
-                                    //             .size
-                                    //             .height *
-                                    //         0.5,
-                                    //     child: const Center(
-                                    //       child: Text(
-                                    //         "No Hall Found",
-                                    //         style: TextStyle(
-                                    //           fontWeight: FontWeight.w500,
-                                    //           color: Colors.black,
-                                    //         ),
-                                    //       ),
-                                    //     ),
-                                    //   );
                                   }).toList(),
                                 );
                               }

@@ -32,17 +32,22 @@ class _HallDetailScreenState extends State<HallDetailScreen> {
   HallModel hallmodel = Get.arguments[0]['hallmodel'];
   final areaid = Get.arguments[1]['areaid'];
 
-  Widget _ratting() {
+  Widget _ratting({
+    bool totalHallRating = true,
+    iconSize = 20.0,
+    starSize = 18.0,
+    individualFeedbackRating = 0.0,
+  }) {
     return Center(
       child: RatingStars(
-        value: hallmodel.rating!,
+        value: totalHallRating ? hallmodel.rating! : individualFeedbackRating,
         starBuilder: (index, color) => Icon(
           Icons.star,
-          size: 20,
+          size: iconSize,
           color: color,
         ),
         starCount: 5,
-        starSize: 18,
+        starSize: starSize,
         maxValue: 5,
         maxValueVisibility: false,
         valueLabelVisibility: false,
@@ -219,19 +224,6 @@ class _HallDetailScreenState extends State<HallDetailScreen> {
                                           arguments: [
                                             {'hallmodel': hallmodel},
                                             {"areaid": areaid},
-
-                                            // {"userID": userID},
-                                            // {"pricePerHead": pricePerHead},
-                                            // {"cateringPerHead": cateringPerHead},
-                                            // {"hallOwnerId": hallOwnerId},
-                                            // {"hallid": hallid},
-
-                                            // {"images": images},
-                                            // {"hallname": hallname},
-                                            // {"ownername": ownerName},
-                                            // {"ownercontact": ownerContact},
-                                            // {"owneremail": ownerEmail},
-                                            // {"halladdress": hallAddress},
                                           ]);
                                     } else {
                                       showAlertDialog(context);
@@ -250,7 +242,6 @@ class _HallDetailScreenState extends State<HallDetailScreen> {
                                     elevation: 9,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(15),
-                                      // <-- Radius
                                     ),
                                   ),
                                 ),
@@ -335,50 +326,54 @@ class _HallDetailScreenState extends State<HallDetailScreen> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.start,
                                           children: [
-                                            Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Row(children: [
-                                                    const Icon(
-                                                      Icons.person_pin,
-                                                      size: 30,
-                                                    ),
-                                                    const SizedBox(
-                                                      width: 10,
-                                                    ),
-                                                    ConstrainedBox(
-                                                      constraints:
-                                                          BoxConstraints(
-                                                              minWidth:
-                                                                  size.width *
-                                                                      0.6,
-                                                              maxWidth:
-                                                                  size.width *
-                                                                      0.6),
-                                                      child: Text(
-                                                        "${data["clientname"]}",
-                                                        style: const TextStyle(
-                                                          fontSize: 15,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(
-                                                      width: 10,
-                                                    ),
-                                                  ]),
-                                                  Text(
-                                                    "${data["rating"].toString()}",
-                                                    style: const TextStyle(
-                                                      fontSize: 15,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                    ),
+                                            Row(children: [
+                                              const Icon(
+                                                Icons.person_pin,
+                                                size: 30,
+                                              ),
+                                              const SizedBox(
+                                                width: 10,
+                                              ),
+                                              ConstrainedBox(
+                                                constraints: BoxConstraints(
+                                                    minWidth: size.width * 0.6,
+                                                    maxWidth: size.width * 0.6),
+                                                child: Text(
+                                                  "${data["clientname"]}",
+                                                  style: const TextStyle(
+                                                    fontSize: 15,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
                                                   ),
-                                                ]),
+                                                ),
+                                              ),
+                                            ]),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                Text(
+                                                  data["rating"].toString(),
+                                                  style: const TextStyle(
+                                                    fontSize: 15,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                ),
+                                                const SizedBox(
+                                                  width: 8,
+                                                ),
+                                                _ratting(
+                                                  totalHallRating: false,
+                                                  iconSize: 14.0,
+                                                  starSize: 14.0,
+                                                  individualFeedbackRating:
+                                                      double.parse(
+                                                    data["rating"].toString(),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
                                             const SizedBox(
                                               height: 8,
                                             ),

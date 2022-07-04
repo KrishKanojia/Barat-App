@@ -174,7 +174,13 @@ class _PriceScreenState extends State<PriceScreen> {
       setState(() {
         isload = false;
       });
-      print(e.toString());
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        duration: Duration(seconds: 3),
+        content: Text(
+          "Something Went Wrong Try Again",
+        ),
+      ));
+      print("Problem Occured $e");
     }
   }
 
@@ -222,7 +228,7 @@ class _PriceScreenState extends State<PriceScreen> {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         duration: Duration(seconds: 3),
         content: Text(
-          "Something went Wrong Try Again later",
+          "Something Went Wrong Try Again...",
         ),
       ));
     }

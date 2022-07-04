@@ -12,6 +12,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
@@ -125,10 +126,11 @@ class _MyAppState extends State<MyApp> {
           clientId:
               '635513644699-ie5f0v2ir9gjpidnmv8f3m8dlhgldi3p.apps.googleusercontent.com'),
     ];
-    // print(box.read('responseLogin'));
-    // box.listenKey('responseSignUp', (value) {
-    //   print('new key is $value');
-    // });
+
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     return ScreenUtilInit(
       designSize: const Size(360, 690),
       builder: () => GetMaterialApp(
