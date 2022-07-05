@@ -272,8 +272,6 @@ class _HomePageState extends State<HomePage> {
         Flexible(
             child: StreamBuilder<QuerySnapshot>(
                 stream: getHall.snapshots(),
-                // locationServices.fetchLocationArea()
-
                 builder: (BuildContext context,
                     AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -290,10 +288,6 @@ class _HomePageState extends State<HomePage> {
                     );
                     ;
                   } else if (!snapshot.hasData && snapshot.data!.size == 0) {
-                    // Assigning total document size to document field
-
-                    // Provider.of<CustomerData>(context, listen: false)
-                    //     .numberOfCust(context);
                     return const Center(
                       child: Text(
                         'Record not found',
@@ -301,13 +295,6 @@ class _HomePageState extends State<HomePage> {
                       ),
                     );
                   } else {
-                    // return ListView(
-                    //   shrinkWrap: true,
-                    //   children: snapshot.data!.docs
-                    //       .map((DocumentSnapshot documentSnapshot) {
-                    //     Map<String, dynamic> data =
-                    //         documentSnapshot.data()! as Map<String, dynamic>;
-
                     return ListView(
                       physics: const NeverScrollableScrollPhysics(),
                       // itemCount: snapshot.data!.docs.isEmpty ? 1 : snapshot.data!.docs.length,
@@ -382,14 +369,6 @@ class _HomePageState extends State<HomePage> {
                                             MediaQuery.of(context).size.width,
                                       ),
                                     ),
-                                    // child: FadeInImage(
-                                    //   image: NetworkImage(e.thumbnail),
-                                    //   placeholder:
-                                    //       AssetImage("assets/placeholder.jpg"),
-                                    //   width: MediaQuery.of(context).size.width,
-                                    //   height: 250,
-                                    //   fit: BoxFit.cover,
-                                    // ),
                                   ),
                                   Container(
                                     padding: const EdgeInsets.symmetric(

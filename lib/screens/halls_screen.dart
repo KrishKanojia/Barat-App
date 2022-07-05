@@ -320,116 +320,119 @@ class _HallsScreenState extends State<HallsScreen> {
                                                       MainAxisAlignment
                                                           .spaceBetween,
                                                   children: [
-                                                    Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .only(
-                                                                  left: 7.0),
-                                                          child: Container(
-                                                            constraints: BoxConstraints(
-                                                                minWidth: 50,
-                                                                maxWidth: MediaQuery.of(
-                                                                            context)
-                                                                        .size
-                                                                        .width -
-                                                                    100),
-                                                            child: Text(
-                                                              // data["hallName"]
-                                                              hallModel.hallname
-                                                                      .toString()
-                                                                      .substring(
-                                                                          0, 1)
-                                                                      .toUpperCase() +
-                                                                  // data["hallName"]
-                                                                  hallModel
-                                                                      .hallname
-                                                                      .toString()
-                                                                      .substring(
-                                                                          1,
-                                                                          // data["hallName"]
-                                                                          hallModel
-                                                                              .hallname
-                                                                              .toString()
-                                                                              .length),
-                                                              style:
-                                                                  const TextStyle(
-                                                                fontSize: 18.0,
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis,
-                                                                color: Colors
-                                                                    .black,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .only(
-                                                                  left: 7.0),
-                                                          child: Row(
-                                                            mainAxisSize:
-                                                                MainAxisSize
-                                                                    .min,
-                                                            children: [
-                                                              RatingStars(
-                                                                starSpacing:
-                                                                    5.0,
-                                                                value: hallModel
-                                                                    .rating,
-                                                                starBuilder:
-                                                                    (index, color) =>
-                                                                        Icon(
-                                                                  Icons.star,
-                                                                  size: 18,
-                                                                  color: color,
-                                                                ),
-                                                                starCount: 5,
-                                                                starSize: 20,
-                                                                maxValue: 5,
-                                                                maxValueVisibility:
-                                                                    false,
-                                                                valueLabelVisibility:
-                                                                    false,
-                                                                animationDuration:
-                                                                    const Duration(
-                                                                        milliseconds:
-                                                                            300),
-                                                                starOffColor: Colors
-                                                                    .black
-                                                                    .withOpacity(
-                                                                        0.6),
-                                                                starColor:
-                                                                    Colors
-                                                                        .yellow,
-                                                              ),
-                                                              const SizedBox(
-                                                                width: 5,
-                                                              ),
-                                                              Text(
-                                                                "${hallModel.rating!} ",
+                                                    Flexible(
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                        .only(
+                                                                    left: 7.0),
+                                                            child: Container(
+                                                              constraints: BoxConstraints(
+                                                                  minWidth: 50,
+                                                                  maxWidth: MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .width -
+                                                                      120),
+                                                              child: Text(
+                                                                // data["hallName"]
+                                                                hallModel
+                                                                        .hallname
+                                                                        .toString()
+                                                                        .substring(
+                                                                            0,
+                                                                            1)
+                                                                        .toUpperCase() +
+                                                                    // data["hallName"]
+                                                                    hallModel
+                                                                        .hallname
+                                                                        .toString()
+                                                                        .substring(
+                                                                            1,
+                                                                            // data["hallName"]
+                                                                            hallModel.hallname.toString().length),
                                                                 style:
                                                                     const TextStyle(
+                                                                  fontSize:
+                                                                      18.0,
                                                                   overflow:
                                                                       TextOverflow
                                                                           .ellipsis,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  fontSize:
-                                                                      15.0,
+                                                                  color: Colors
+                                                                      .black,
                                                                 ),
                                                               ),
-                                                            ],
+                                                            ),
                                                           ),
-                                                        ),
-                                                      ],
+                                                          Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                        .only(
+                                                                    left: 7.0),
+                                                            child: Row(
+                                                              mainAxisSize:
+                                                                  MainAxisSize
+                                                                      .min,
+                                                              children: [
+                                                                RatingStars(
+                                                                  starSpacing:
+                                                                      5.0,
+                                                                  value: hallModel
+                                                                      .rating,
+                                                                  starBuilder:
+                                                                      (index, color) =>
+                                                                          Icon(
+                                                                    Icons.star,
+                                                                    size: 18,
+                                                                    color:
+                                                                        color,
+                                                                  ),
+                                                                  starCount: 5,
+                                                                  starSize: 20,
+                                                                  maxValue: 5,
+                                                                  maxValueVisibility:
+                                                                      false,
+                                                                  valueLabelVisibility:
+                                                                      false,
+                                                                  animationDuration:
+                                                                      const Duration(
+                                                                          milliseconds:
+                                                                              300),
+                                                                  starOffColor: Colors
+                                                                      .black
+                                                                      .withOpacity(
+                                                                          0.6),
+                                                                  starColor:
+                                                                      Colors
+                                                                          .yellow,
+                                                                ),
+                                                                const SizedBox(
+                                                                  width: 5,
+                                                                ),
+                                                                Text(
+                                                                  "${hallModel.rating!} ",
+                                                                  style:
+                                                                      const TextStyle(
+                                                                    overflow:
+                                                                        TextOverflow
+                                                                            .ellipsis,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    fontSize:
+                                                                        15.0,
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
                                                     ),
                                                     StreamBuilder(
                                                         stream: FirebaseAuth

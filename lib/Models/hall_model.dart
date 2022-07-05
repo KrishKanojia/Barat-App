@@ -4,7 +4,7 @@ class HallModel {
   List? images;
 
   String? ownerName;
-  late var ownerContact;
+  String? ownerContact;
   String? ownerEmail;
   String? hallAddress;
   late var hallCapacity;

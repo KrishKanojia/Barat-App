@@ -169,7 +169,7 @@ class _PriceScreenState extends State<PriceScreen> {
         merchantCountryCode: 'US',
       ));
 
-      displayPaymentSheet();
+      await displayPaymentSheet();
     } catch (e) {
       setState(() {
         isload = false;
