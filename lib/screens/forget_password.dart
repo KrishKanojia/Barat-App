@@ -42,7 +42,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
         ),
       );
 
-      Get.off(() => const LoginPage());
+      Get.close(2);
     } on FirebaseAuthException catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

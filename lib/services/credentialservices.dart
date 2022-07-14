@@ -110,7 +110,7 @@ class CredentialServices extends GetxController {
 
             print(
                 "We are reading value from Credentinal Screen : ${box.read('user')}");
-            Get.back(canPop: true);
+            Get.back();
             box.write('user', userUid.value);
             box.write('name', username.value);
             box.write('email', useremail.value);
