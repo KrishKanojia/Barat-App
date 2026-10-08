@@ -238,7 +238,7 @@ class _HallDetailScreenState extends State<HallDetailScreen> {
                                   ),
                                   style: ElevatedButton.styleFrom(
                                     shadowColor: Colors.blueGrey,
-                                    primary: background1Color,
+                                    backgroundColor: background1Color,
                                     elevation: 9,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(15),

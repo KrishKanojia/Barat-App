@@ -47,14 +47,14 @@ class _HallsScreenState extends State<HallsScreen> {
             ),
             actions: <Widget>[
               ElevatedButton(
-                  style: ElevatedButton.styleFrom(primary: Colors.red),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                   child: const Text('Delete'),
                   onPressed: () {
                     locationServices.deleteHall(
                         context: context, areaId: areaId, hallId: hallId);
                   }),
               ElevatedButton(
-                  style: ElevatedButton.styleFrom(primary: Colors.blue[700]),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blue[700]),
                   child: const Text('Cancel'),
                   onPressed: () => Get.back()),
             ]);

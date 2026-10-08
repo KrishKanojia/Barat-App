@@ -16,7 +16,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
-import 'package:flutterfire_ui/auth.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -77,11 +76,12 @@ class _MyAppState extends State<MyApp> {
   Future<void> initMessaging() async {
     var androiInit =
         const AndroidInitializationSettings('drawable/ic_launcher');
-    var iosInit = const IOSInitializationSettings();
+    var iosInit = const DarwinInitializationSettings();
     var initSetting = InitializationSettings(android: androiInit, iOS: iosInit);
     fltNotification = FlutterLocalNotificationsPlugin();
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails('1', 'channelName', 'channel Description',
+        AndroidNotificationDetails('1', 'channelName',
+            channelDescription: 'channel Description',
             priority: Priority.high,
             importance: Importance.high,
             enableLights: true,
@@ -89,9 +89,10 @@ class _MyAppState extends State<MyApp> {
             color: Color(0xFF218bd4),
             icon: 'drawable/ic_launcher');
     await fltNotification.initialize(initSetting,
-        onSelectNotification: (String? payload) async {});
+        onDidReceiveNotificationResponse:
+            (NotificationResponse response) async {});
 
-    var iosDetails = const IOSNotificationDetails(presentSound: true);
+    var iosDetails = const DarwinNotificationDetails(presentSound: true);
     final NotificationDetails generalNotificationDetails = NotificationDetails(
       android: androidPlatformChannelSpecifics,
       iOS: iosDetails,
@@ -120,20 +121,13 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    const providerConfigs = [
-      EmailProviderConfiguration(),
-      GoogleProviderConfiguration(
-          clientId:
-              '635513644699-ie5f0v2ir9gjpidnmv8f3m8dlhgldi3p.apps.googleusercontent.com'),
-    ];
-
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
     return ScreenUtilInit(
       designSize: const Size(360, 690),
-      builder: () => GetMaterialApp(
+      builder: (context, child) => GetMaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Barat',
         theme: ThemeData(
@@ -143,16 +137,6 @@ class _MyAppState extends State<MyApp> {
         ),
         initialRoute: SplashScreen.routeName,
         routes: {
-          '/profile': (context) {
-            return ProfileScreen(
-              providerConfigs: providerConfigs,
-              actions: [
-                SignedOutAction((context) {
-                  Navigator.pushReplacementNamed(context, '/sign-in');
-                }),
-              ],
-            );
-          },
           LoginPage.routeName: (context) => const LoginPage(),
           SplashScreen.routeName: (context) => const SplashScreen(),
           HomePage.routeName: (context) => const HomePage(),

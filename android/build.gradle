@@ -1,21 +1,3 @@
-buildscript {
-//    ext.kotlin_version = '1.3.50'
-    ext.kotlin_version = '1.5.10'
-//    ext.kotlin_version = '1.6.10'
-    repositories {
-        google()
-        mavenCentral()
-    }
-
-    dependencies {
-//        classpath 'com.android.tools.build:gradle:4.2.2'
-        classpath 'com.google.gms:google-services:4.3.10'
-        classpath 'com.android.tools.build:gradle:4.1.1'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        
-    }
-}
-
 allprojects {
     repositories {
         google()
@@ -23,14 +5,49 @@ allprojects {
     }
 }
 
-rootProject.buildDir = '../build'
+// Some older plugins pin an outdated Kotlin Gradle plugin version in their
+// own buildscript block, which AGP 8's Kotlin compatibility check rejects.
+// Force a modern version across every subproject's buildscript classpath.
+subprojects {
+    buildscript {
+        configurations.classpath {
+            resolutionStrategy {
+                force 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.22'
+            }
+        }
+    }
+}
+
+rootProject.buildDir = "../build"
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
+
+// Some older plugins don't declare a namespace, which AGP 8 requires.
+// Fall back to the package name from their AndroidManifest.xml.
+// Must be registered before evaluationDependsOn forces early evaluation below.
 subprojects {
-    project.evaluationDependsOn(':app')
+    afterEvaluate { project ->
+        if (project.plugins.hasPlugin("com.android.library")) {
+            def androidExt = project.extensions.findByName("android")
+            if (androidExt != null && androidExt.namespace == null) {
+                def manifestFile = project.file("src/main/AndroidManifest.xml")
+                if (manifestFile.exists()) {
+                    def parsedManifest = new XmlParser().parse(manifestFile)
+                    def packageName = parsedManifest.attribute("package")
+                    if (packageName) {
+                        androidExt.namespace = packageName
+                    }
+                }
+            }
+        }
+    }
 }
 
-task clean(type: Delete) {
+subprojects {
+    project.evaluationDependsOn(":app")
+}
+
+tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }

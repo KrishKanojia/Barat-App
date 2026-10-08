@@ -226,7 +226,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                             child: ElevatedButton.icon(
                               style: ElevatedButton.styleFrom(
                                   minimumSize: const Size.fromHeight(50),
-                                  primary: whiteColor),
+                                  backgroundColor: whiteColor),
                               icon: const Icon(
                                 Icons.email,
                                 size: 32,

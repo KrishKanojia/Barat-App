@@ -16,7 +16,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_stars/flutter_rating_stars.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutterfire_ui/auth.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -100,14 +99,14 @@ class _HomePageState extends State<HomePage> {
             ),
             actions: <Widget>[
               ElevatedButton(
-                  style: ElevatedButton.styleFrom(primary: Colors.red),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                   child: const Text('Delete'),
                   onPressed: () {
                     locationServices.deleteArea(
                         context: context, areaId: areaId);
                   }),
               ElevatedButton(
-                  style: ElevatedButton.styleFrom(primary: Colors.blue[700]),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blue[700]),
                   child: const Text('Cancel'),
                   onPressed: () => Get.back()),
             ]);

@@ -14,8 +14,28 @@
       },
       "oauth_client": [
         {
-          "client_id": "635513644699-ie5f0v2ir9gjpidnmv8f3m8dlhgldi3p.apps.googleusercontent.com",
-          "client_type": 3
+          "client_id": "635513644699-hg00c3r29nl4t8dso430p8natkm1kvn3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.webconsultants.barat.barat",
+            "certificate_hash": "51fe31104500462bd61ebc69fdfb04319529def3"
+          }
+        },
+        {
+          "client_id": "635513644699-r24cjps1sipe62qgcv05p0qdj1f8gpo6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.webconsultants.barat.barat",
+            "certificate_hash": "be61f5b4ce17ae6b3973fb5d89b5e2fe0224a288"
+          }
+        },
+        {
+          "client_id": "635513644699-rmko8e0on71rd1mtvnmbsr99mi22dgvp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.webconsultants.barat.barat",
+            "certificate_hash": "7eb472776082bfecc987850d2fe50d67aaf37a24"
+          }
         }
       ],
       "api_key": [
@@ -25,12 +45,7 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "635513644699-ie5f0v2ir9gjpidnmv8f3m8dlhgldi3p.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

@@ -69,7 +69,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20.0),
           ),
-          primary: Colors.white,
+          backgroundColor: Colors.white,
         ),
         onPressed: () {
           if (credentialServices.getisLoading == false) {
@@ -170,7 +170,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
             ),
             actions: <Widget>[
               ElevatedButton(
-                  style: ElevatedButton.styleFrom(primary: secondaryColor),
+                  style: ElevatedButton.styleFrom(backgroundColor: secondaryColor),
                   child: const Text('OK'),
                   onPressed: () => Get.back()),
             ]);

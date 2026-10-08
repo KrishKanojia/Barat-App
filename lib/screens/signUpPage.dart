@@ -57,7 +57,7 @@ class _SignUpPageState extends State<SignUpPage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20.0),
           ),
-          primary: Colors.white,
+          backgroundColor: Colors.white,
         ),
         onPressed: () {
           credentialServices.getisLoading == false

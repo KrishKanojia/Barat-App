@@ -149,7 +149,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                               child: ElevatedButton.icon(
                                 style: ElevatedButton.styleFrom(
                                     minimumSize: const Size.fromHeight(40),
-                                    primary: whiteColor),
+                                    backgroundColor: whiteColor),
                                 icon: const Icon(
                                   Icons.email,
                                   size: 32,

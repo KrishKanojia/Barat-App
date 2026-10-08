@@ -163,10 +163,10 @@ class _PriceScreenState extends State<PriceScreen> {
       await Stripe.instance.initPaymentSheet(
           paymentSheetParameters: SetupPaymentSheetParameters(
         paymentIntentClientSecret: paymentIntentData!['client_secret'],
-        applePay: true,
-        googlePay: true,
+        applePay: const PaymentSheetApplePay(merchantCountryCode: 'US'),
+        googlePay: const PaymentSheetGooglePay(
+            merchantCountryCode: 'US', testEnv: true),
         merchantDisplayName: 'Asif',
-        merchantCountryCode: 'US',
       ));
 
       await displayPaymentSheet();
@@ -236,10 +236,7 @@ class _PriceScreenState extends State<PriceScreen> {
 
   displayPaymentSheet() async {
     try {
-      await Stripe.instance.presentPaymentSheet(
-          parameters: PresentPaymentSheetParameters(
-              clientSecret: paymentIntentData!['client_secret'],
-              confirmPayment: true));
+      await Stripe.instance.presentPaymentSheet();
       setState(() {
         paymentIntentData = null;
       });
